@@ -19,7 +19,7 @@ public class Especie {
     private String nome;
 
     @Column(nullable = false)
-    private String imagemUrl; // Acho que existe um tipo URL que seja melhor de usar neste caso
+    private String imagemUrl;
 
     @ManyToMany
     private Set<Tipo> tipos = new HashSet<>();

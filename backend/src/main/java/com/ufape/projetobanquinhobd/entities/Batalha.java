@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -15,13 +16,13 @@ public class Batalha {
     private Long id;
 
     @Column(nullable = false)
-    private String rodada; // Acho que essa não é o melhor tipo para representar isso, mas não sei qual seria, um enum talvez? um número?
+    private int rodada;
 
     @Column(nullable = false)
-    private int HoraFim;
+    private LocalDateTime horarioFim;
 
     @Column(nullable = false)
-    private int HoraInicio;
+    private LocalDateTime horarioInicio;
 
     @ManyToMany
     private Set<Time> timesParticipantes;
