@@ -1,9 +1,6 @@
 package com.ufape.projetobanquinhobd.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +19,12 @@ public class Torneio {
     private String nome;
 
     @Column(nullable = false)
+    private int qtdRodadas;
+
+    @Column(nullable = false)
+    private int qtdTimes;
+
+    @Column(nullable = false)
     private Date dataInicio;
 
     @Column(nullable = false)
@@ -30,6 +33,6 @@ public class Torneio {
     @OneToMany(mappedBy = "torneio")
     private Set<Batalha> batalhas;
 
-    @OneToMany(mappedBy = "torneio")
+    @ManyToMany
     private Set<Time> times;
 }

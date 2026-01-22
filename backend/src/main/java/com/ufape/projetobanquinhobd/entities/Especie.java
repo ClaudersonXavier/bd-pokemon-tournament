@@ -22,13 +22,7 @@ public class Especie {
     private String imagemUrl;
 
     @ManyToMany
-    private Set<Tipo> tipos = new HashSet<>();
-
-    public Especie(String nome, String imagemUrl, Set<Tipo> tipos) {
-        this.setNome(nome);
-        this.setImagemUrl(imagemUrl);
-        this.setTipos(tipos);
-    }
+    private final Set<Tipo> tipos = new HashSet<>();
 
     public Especie(String nome, String imagemUrl) {
         this.setNome(nome);
@@ -47,13 +41,6 @@ public class Especie {
             throw new IllegalArgumentException("URL da imagem é obrigatória");
         }
         this.imagemUrl = imagemUrl;
-    }
-
-    public void setTipos(Set<Tipo> tipos) {
-        if (tipos == null || tipos.isEmpty()) {
-            throw new IllegalArgumentException("A espécie deve ter pelo menos um tipo");
-        }
-        this.tipos = tipos;
     }
 
     public void addTipo(Tipo tipo) {
