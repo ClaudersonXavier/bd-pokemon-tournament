@@ -17,7 +17,7 @@ public class Tipo {
         this.setNome(nome);
     }
 
-    // Privada porque o nome é o Id e por isso não deve ser alterado
+    // Privada porque o nome é o ID e por isso não deve ser alterado
     private void setNome(String nome) {
         if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("Nome do tipo é obrigatório");
