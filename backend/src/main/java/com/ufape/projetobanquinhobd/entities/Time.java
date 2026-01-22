@@ -13,6 +13,7 @@ import java.util.Set;
 @Entity
 public class Time {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false)

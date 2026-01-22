@@ -14,6 +14,7 @@ import java.util.Set;
 @Entity
 public class Batalha {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
