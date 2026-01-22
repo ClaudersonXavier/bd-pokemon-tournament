@@ -1,6 +1,5 @@
 package com.ufape.projetobanquinhobd.entities;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
@@ -12,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Tipo {
     @Id
-    @Column(nullable = false, updatable = false)
     private String nome;
 
     public Tipo(String nome) {
