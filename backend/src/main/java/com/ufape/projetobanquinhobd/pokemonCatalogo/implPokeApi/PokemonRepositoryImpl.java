@@ -11,6 +11,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Component
 public class PokemonRepositoryImpl implements PokemonRepository {
     private final WebClient pokeApiClient;
@@ -30,16 +33,13 @@ public class PokemonRepositoryImpl implements PokemonRepository {
                 .bodyToMono(PokemonDTO.class)
                 .block();
 
-        Especie especie = new Especie(
-                pokemonDTO.name(),
-                pokemonDTO.sprites().front_default()
-        );
+        Set<Tipo> tipos = new HashSet<>();
 
         for (PokeApiType types : pokemonDTO.types()) {
             Tipo tipo = new Tipo(types.type().name());
-            especie.addTipo(tipo);
+            tipos.add(tipo);
         }
 
-        return especie;
+        return new Especie(pokemonDTO.name(), pokemonDTO.sprites().front_default(), tipos);
     }
 }

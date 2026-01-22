@@ -1,9 +1,6 @@
 package com.ufape.projetobanquinhobd.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +17,8 @@ public class Ataque {
 
     private int poder;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private Tipo tipo;
 
     public Ataque(String nome, String categoria, int poder, Tipo tipo) {

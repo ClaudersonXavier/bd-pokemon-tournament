@@ -24,9 +24,10 @@ public class Especie {
     @ManyToMany
     private final Set<Tipo> tipos = new HashSet<>();
 
-    public Especie(String nome, String imagemUrl) {
+    public Especie(String nome, String imagemUrl, Set<Tipo> tipos) {
         this.setNome(nome);
         this.setImagemUrl(imagemUrl);
+        this.setTipos(tipos);
     }
 
     public void setNome(String nome) {
@@ -54,6 +55,22 @@ public class Especie {
         if (tipo == null) {
             throw new IllegalArgumentException("Tipo não pode ser nulo");
         }
+
+        if (this.tipos.size() <= 1) {
+            throw new IllegalArgumentException("Espécie deve ter pelo menos um tipo");
+        }
+        
         this.tipos.remove(tipo);
+    }
+
+    private void setTipos(Set<Tipo> tipos) {
+        if (tipos == null || tipos.isEmpty()) {
+            throw new IllegalArgumentException("Espécie deve ter pelo menos um tipo");
+        }
+
+        // itera em cima do addTipo para garantir as validações
+        for (Tipo tipo : tipos) {
+            this.addTipo(tipo);
+        }
     }
 }
