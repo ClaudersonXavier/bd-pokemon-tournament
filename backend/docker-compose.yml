@@ -3,13 +3,11 @@ services:
     image: postgres:16
     container_name: projeto-banquinho-bd
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_DB: projeto_banquinho
-      POSTGRES_USER: dev
-      POSTGRES_PASSWORD: dev
-    volumes:
-      - projeto-banquinho-data:/var/lib/postgresql/data
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
 
 volumes:
   projeto-banquinho-data:
