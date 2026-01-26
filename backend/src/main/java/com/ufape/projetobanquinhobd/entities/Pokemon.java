@@ -81,7 +81,7 @@ public class Pokemon {
             throw new IllegalArgumentException("Time não pode ser nulo");
         }
 
-        if (time.getTreinador() == this.treinador) {
+        if (!(time.getTreinador() == this.treinador)) {
             throw new IllegalArgumentException("O time não pode pertencer ao mesmo treinador do pokémon");
         }
         this.times.add(time);
