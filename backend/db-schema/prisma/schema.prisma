@@ -1,0 +1,89 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Treinador {
+  id      String    @id @default(uuid()) @map("_id")
+  nome    String
+  times   Time[]    // Relação 1:N com Time
+  pokemons Pokemon[] // Relação 1:N com Pokemon
+}
+
+model Time {
+  id         String     @id @default(uuid()) @map("id")
+  nome       String
+  treinador  Treinador  @relation(fields: [treinadorId], references: [id])
+  treinadorId String
+  
+  pokemons   Pokemon[]  // Relação N:N com Pokemon (Tabela associativa implícita)
+  batalhas   Batalha[]  @relation("ParticipaBatalha")
+  vitorias   Batalha[]  @relation("VenceuBatalha")
+  torneios   Torneio[]  // Relação N:N com Torneio
+}
+
+model Pokemon {
+  id          String    @id @default(uuid()) @map("_id")
+  apelido     String?
+  treinador   Treinador @relation(fields: [treinadorId], references: [id])
+  treinadorId String
+  
+  especie     Especie   @relation(fields: [especieNome], references: [nome])
+  especieNome String
+
+  times       Time[]    // N:N
+  ataques     Ataque[]  // N:N (ataca_com no diagrama)
+}
+
+model Especie {
+  nome      String    @id
+  imageUrl  String
+  pokemons  Pokemon[]
+  tipos     Tipo[]    // N:N
+}
+
+model Tipo {
+  nome     String    @id
+  especies Especie[]
+  ataques  Ataque[]
+}
+
+model Ataque {
+  nome      String    @id
+  categoria String
+  poder     Int
+  tipo      Tipo      @relation(fields: [tipoNome], references: [nome])
+  tipoNome  String
+  
+  pokemons  Pokemon[] // N:N
+}
+
+model Batalha {
+  id          String   @id @default(uuid()) @map("_id")
+  horaInicio  DateTime
+  horaFim     DateTime
+  rodada      Int
+  
+  participantes Time[] @relation("ParticipaBatalha")
+  vencedor      Time?  @relation("VenceuBatalha", fields: [vencedorId], references: [id])
+  vencedorId    String?
+
+  torneio       Torneio @relation(fields: [torneioId], references: [id])
+  torneioId     String
+}
+
+model Torneio {
+  id         String    @id @default(uuid()) @map("id")
+  nome       String
+  dataInicio DateTime
+  dataFim    DateTime
+  vencedor   String?   // Atributo derivado/calculado conforme tracejado no diagrama
+  
+  times      Time[]    // N:N
+  batalhas   Batalha[]
+}
