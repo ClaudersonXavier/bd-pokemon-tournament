@@ -8,6 +8,9 @@ services:
       POSTGRES_DB: projeto_banquinho
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
+    volumes:
+      - projeto-banquinho-data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d/
 
 volumes:
   projeto-banquinho-data:
