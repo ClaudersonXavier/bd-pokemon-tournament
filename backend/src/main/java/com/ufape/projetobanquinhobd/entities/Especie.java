@@ -19,20 +19,15 @@ public class Especie {
     private String nome;
 
     @Column(nullable = false)
-    private String imagemUrl; // Acho que existe um tipo URL que seja melhor de usar neste caso
+    private String imagemUrl;
 
     @ManyToMany
-    private Set<Tipo> tipos = new HashSet<>();
+    private final Set<Tipo> tipos = new HashSet<>();
 
     public Especie(String nome, String imagemUrl, Set<Tipo> tipos) {
         this.setNome(nome);
         this.setImagemUrl(imagemUrl);
         this.setTipos(tipos);
-    }
-
-    public Especie(String nome, String imagemUrl) {
-        this.setNome(nome);
-        this.setImagemUrl(imagemUrl);
     }
 
     public void setNome(String nome) {
@@ -49,13 +44,6 @@ public class Especie {
         this.imagemUrl = imagemUrl;
     }
 
-    public void setTipos(Set<Tipo> tipos) {
-        if (tipos == null || tipos.isEmpty()) {
-            throw new IllegalArgumentException("A espécie deve ter pelo menos um tipo");
-        }
-        this.tipos = tipos;
-    }
-
     public void addTipo(Tipo tipo) {
         if (tipo == null) {
             throw new IllegalArgumentException("Tipo não pode ser nulo");
@@ -67,6 +55,22 @@ public class Especie {
         if (tipo == null) {
             throw new IllegalArgumentException("Tipo não pode ser nulo");
         }
+
+        if (this.tipos.size() <= 1) {
+            throw new IllegalArgumentException("Espécie deve ter pelo menos um tipo");
+        }
+        
         this.tipos.remove(tipo);
+    }
+
+    private void setTipos(Set<Tipo> tipos) {
+        if (tipos == null || tipos.isEmpty()) {
+            throw new IllegalArgumentException("Espécie deve ter pelo menos um tipo");
+        }
+
+        // itera em cima do addTipo para garantir as validações
+        for (Tipo tipo : tipos) {
+            this.addTipo(tipo);
+        }
     }
 }

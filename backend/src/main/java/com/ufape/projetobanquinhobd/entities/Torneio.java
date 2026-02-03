@@ -1,9 +1,6 @@
 package com.ufape.projetobanquinhobd.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +13,17 @@ import java.util.Set;
 @Entity
 public class Torneio {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false)
     private String nome;
+
+    @Column(nullable = false)
+    private int qtdRodadas;
+
+    @Column(nullable = false)
+    private int qtdTimes;
 
     @Column(nullable = false)
     private Date dataInicio;
@@ -30,6 +34,6 @@ public class Torneio {
     @OneToMany(mappedBy = "torneio")
     private Set<Batalha> batalhas;
 
-    @OneToMany(mappedBy = "torneio")
+    @ManyToMany
     private Set<Time> times;
 }

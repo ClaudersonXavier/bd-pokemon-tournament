@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model ataque {
+  poder           Int
+  categoria       String            @db.VarChar(255)
+  nome            String            @id @db.VarChar(255)
+  tipo_nome       String            @db.VarChar(255)
+  tipo            tipo              @relation(fields: [tipo_nome], references: [nome], onDelete: NoAction, onUpdate: NoAction, map: "fkkxv7h9ko1dq7ol6d5wrue8wjh")
+  pokemon_ataques pokemon_ataques[]
+}
+
+model batalha {
+  rodada                      Int
+  horario_fim                 DateTime                      @db.Timestamp(6)
+  horario_inicio              DateTime                      @db.Timestamp(6)
+  id                          BigInt                        @id @default(autoincrement())
+  time_vencedor_id            BigInt?                       @unique
+  torneio_id                  BigInt?
+  torneio                     torneio?                      @relation(fields: [torneio_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk4n7p7fiytuh0lagyvxwtlsbmr")
+  time                        time?                         @relation(fields: [time_vencedor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkc65apkqov09lhd0kfo3kg8xme")
+  batalha_times_participantes batalha_times_participantes[]
+}
+
+model batalha_times_participantes {
+  batalha_id             BigInt
+  times_participantes_id BigInt
+  batalha                batalha @relation(fields: [batalha_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk3ck9cpoc4fe4f5qb54xwisayb")
+  time                   time    @relation(fields: [times_participantes_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkhlhvxah8fo9ppa8n9qdxjbu6e")
+
+  @@id([batalha_id, times_participantes_id])
+}
+
+model especie {
+  imagem_url    String          @db.VarChar(255)
+  nome          String          @id @db.VarChar(255)
+  especie_tipos especie_tipos[]
+  pokemon       pokemon[]
+}
+
+model especie_tipos {
+  especie_nome String  @db.VarChar(255)
+  tipos_nome   String  @db.VarChar(255)
+  tipo         tipo    @relation(fields: [tipos_nome], references: [nome], onDelete: NoAction, onUpdate: NoAction, map: "fkge4wnnwrstw2iq57a55qix3pc")
+  especie      especie @relation(fields: [especie_nome], references: [nome], onDelete: NoAction, onUpdate: NoAction, map: "fkjjmt4t6i8sscy0bnkw5tto08m")
+
+  @@id([especie_nome, tipos_nome])
+}
+
+model pokemon {
+  id              BigInt            @id @default(autoincrement())
+  treinador_id    BigInt?
+  apelido         String            @unique @db.VarChar(255)
+  especie_nome    String?           @db.VarChar(255)
+  especie         especie?          @relation(fields: [especie_nome], references: [nome], onDelete: NoAction, onUpdate: NoAction, map: "fke1kfos2gpco9y0vce1cqh8yab")
+  treinador       treinador?        @relation(fields: [treinador_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkne6njqhdth9q1ulcpf7mervc7")
+  pokemon_ataques pokemon_ataques[]
+  pokemon_times   pokemon_times[]
+  time_pokemons   time_pokemons[]
+}
+
+model pokemon_ataques {
+  pokemon_id   BigInt
+  ataques_nome String  @db.VarChar(255)
+  ataque       ataque  @relation(fields: [ataques_nome], references: [nome], onDelete: NoAction, onUpdate: NoAction, map: "fkd8s3plgl2nydhftfrpic6t75l")
+  pokemon      pokemon @relation(fields: [pokemon_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkkdg46mjunx6rvj29qxqxp97hq")
+
+  @@id([pokemon_id, ataques_nome])
+}
+
+model pokemon_times {
+  pokemon_id BigInt
+  times_id   BigInt
+  time       time    @relation(fields: [times_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk12rmy3b37fypaw2im4ukdbkst")
+  pokemon    pokemon @relation(fields: [pokemon_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkkfp5plqdoyog2jirh14fn1fgc")
+
+  @@id([pokemon_id, times_id])
+}
+
+model time {
+  id                          BigInt                        @id @default(autoincrement())
+  treinador_id                BigInt?
+  nome                        String                        @db.VarChar(255)
+  batalha                     batalha?
+  batalha_times_participantes batalha_times_participantes[]
+  pokemon_times               pokemon_times[]
+  treinador                   treinador?                    @relation(fields: [treinador_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkaqbcqb20rumv6cpphytr55nkf")
+  time_pokemons               time_pokemons[]
+  time_torneios               time_torneios[]
+  torneio_times               torneio_times[]
+}
+
+model time_pokemons {
+  pokemons_id BigInt
+  time_id     BigInt
+  time        time    @relation(fields: [time_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkg5qgs9h44anrtnlpw12hxlp3t")
+  pokemon     pokemon @relation(fields: [pokemons_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkslmul2sa9m0w44idnvnmfmvdy")
+
+  @@id([pokemons_id, time_id])
+}
+
+model time_torneios {
+  time_id     BigInt
+  torneios_id BigInt
+  torneio     torneio @relation(fields: [torneios_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk4hw6t7hlb74m7ke4ki3h99k6i")
+  time        time    @relation(fields: [time_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fknifd53q6kcfj35bsl56s620a5")
+
+  @@id([time_id, torneios_id])
+}
+
+model tipo {
+  nome          String          @id @db.VarChar(255)
+  ataque        ataque[]
+  especie_tipos especie_tipos[]
+}
+
+model torneio {
+  qtd_rodadas   Int
+  qtd_times     Int
+  data_fim      DateTime        @db.Timestamp(6)
+  data_inicio   DateTime        @db.Timestamp(6)
+  id            BigInt          @id @default(autoincrement())
+  nome          String          @db.VarChar(255)
+  batalha       batalha[]
+  time_torneios time_torneios[]
+  torneio_times torneio_times[]
+}
+
+model torneio_times {
+  times_id   BigInt
+  torneio_id BigInt
+  torneio    torneio @relation(fields: [torneio_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk7pgehlqf0dx0brs94fjtsxr8h")
+  time       time    @relation(fields: [times_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkl8eixqflwswdvtnjefw45sh4x")
+
+  @@id([times_id, torneio_id])
+}
+
+model treinador {
+  id      BigInt    @id @default(autoincrement())
+  nome    String    @db.VarChar(255)
+  pokemon pokemon[]
+  time    time[]
+}
