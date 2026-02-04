@@ -120,15 +120,16 @@ model tipo {
 }
 
 model torneio {
-  qtd_rodadas   Int
-  qtd_times     Int
-  data_fim      DateTime        @db.Timestamp(6)
-  data_inicio   DateTime        @db.Timestamp(6)
-  id            BigInt          @id @default(autoincrement())
-  nome          String          @db.VarChar(255)
-  batalha       batalha[]
-  time_torneios time_torneios[]
-  torneio_times torneio_times[]
+  max_participantes            Int
+  data_abertura_inscricoes     DateTime        @db.Timestamp(6)
+  data_encerramento_inscricoes DateTime        @db.Timestamp(6)
+  data_fim                     DateTime        @db.Timestamp(6)
+  data_inicio                  DateTime        @db.Timestamp(6)
+  id                           BigInt          @id @default(autoincrement())
+  nome                         String          @db.VarChar(255)
+  batalha                      batalha[]
+  time_torneios                time_torneios[]
+  torneio_times                torneio_times[]
 }
 
 model torneio_times {
