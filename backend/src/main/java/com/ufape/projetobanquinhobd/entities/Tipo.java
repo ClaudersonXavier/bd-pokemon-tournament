@@ -2,7 +2,6 @@ package com.ufape.projetobanquinhobd.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import org.hibernate.annotations.Comment;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Comment("Tabela de tipos elementais dos Pokemon.")
 public class Tipo {
     @Id
-    @Comment("Nome do elemento (ex: Fogo, Agua).")
     private String nome;
 
     public Tipo(String nome) {

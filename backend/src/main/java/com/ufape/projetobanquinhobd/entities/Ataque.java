@@ -1,7 +1,6 @@
 package com.ufape.projetobanquinhobd.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Comment;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,22 +8,17 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Comment("Tabela de ataques disponiveis para Pokemon.")
 public class Ataque {
     @Id
-    @Comment("Nome do movimento.")
     private String nome;
 
     @Column(nullable = false)
-    @Comment("Categoria podendo ser: Physical, Special ou Status.")
     private String categoria;
 
-    @Comment("Valor da forca. Nulo para golpes de status.")
     private int poder;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    @Comment("Elemento ao qual o ataque pertence.")
     private Tipo tipo;
 
     public Ataque(String nome, String categoria, int poder, Tipo tipo) {

@@ -1,7 +1,6 @@
 package com.ufape.projetobanquinhobd.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Comment;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,31 +11,24 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Comment("Tabela de Pokemon pertencentes a treinadores.")
 public class Pokemon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("ID unico da instancia do Pokemon.")
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Comment("Nome dado pelo treinador ao especime.")
     private String apelido;
 
     @ManyToOne
-    @Comment("Especie deste Pokemon.")
     private Especie especie;
 
     @ManyToMany
-    @Comment("Lista de ataques aprendidos pelo Pokemon (maximo 4).")
     private final Set<Ataque> ataques = new HashSet<>();
 
     @ManyToOne
-    @Comment("Id do treinador deste pokemon")
     private Treinador treinador;
 
     @ManyToMany
-    @Comment("Times em que o Pokemon foi inscrito.")
     private final Set<Time> times = new HashSet<>();
 
     private static final int MAX_ATAQUES = 4;

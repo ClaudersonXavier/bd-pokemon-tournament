@@ -1,7 +1,6 @@
 package com.ufape.projetobanquinhobd.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Comment;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,35 +12,27 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Comment("Tabela de batalhas realizadas em torneios.")
 public class Batalha {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("Identificador unico do confronto.")
     private Long id;
 
     @Column(nullable = false)
-    @Comment("Fase da competicao (1: Oitavas, 2: Quartas...).")
     private int rodada;
 
     @Column(nullable = false)
-    @Comment("Horário do inicio da batalha")
     private LocalDateTime horarioInicio;
 
     @Column(nullable = false)
-    @Comment("Horário do fim da batalha")
     private LocalDateTime horarioFim;
 
     @ManyToMany
-    @Comment("Times participantes da batalha (máximo 2).")
     private final Set<Time> timesParticipantes = new HashSet<>();
 
     @ManyToOne
-    @Comment("Torneio ao qual a batalha pertence.")
     private Torneio torneio;
 
     @OneToOne
-    @Comment("Time que venceu este combate especifico.")
     private Time timeVencedor;
 
     private static final int MAX_TIMES_PARTICIPANTES = 2;

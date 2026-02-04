@@ -4,7 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
-import org.hibernate.annotations.Comment;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,18 +14,14 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Comment("Tabela de especies de Pokemon cadastradas.")
 public class Especie {
     @Id
-    @Comment("Nome unico da especie (ex: Pikachu).")
     private String nome;
 
     @Column(nullable = false)
-    @Comment("Link para o sprite oficial.")
     private String imagemUrl;
 
     @ManyToMany
-    @Comment("Elemento(s) aquela espécie pertence")
     private final Set<Tipo> tipos = new HashSet<>();
 
     public Especie(String nome, String imagemUrl, Set<Tipo> tipos) {
