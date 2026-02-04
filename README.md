@@ -2,7 +2,7 @@
 
 Projeto simples usando a PokeAPI como fonte de dados.
 
-## Backend
+## Instruções de como rodar o projeto
 
 ### Credenciais de acesso
 
@@ -15,7 +15,7 @@ As credenciais estao definidas em `backend/docker-compose.yml` e usadas em
 - Usuario: `dev`
 - Senha: `dev`
 
-### Como rodar o banco de dados:
+### Banco de dados
 
 #### Pre-requisitos
 
@@ -25,31 +25,37 @@ As credenciais estao definidas em `backend/docker-compose.yml` e usadas em
 
 #### Passos
 
-1. **Suba o banco de dados com Docker:**
+1. **Entre na pasta `backend/`:**
+   ```bash
+   cd backend
+   ```
+
+2. **Suba o banco de dados com Docker:**
    ```bash
    docker-compose up -d
    ```
 
-2. **Instale as dependencias (na pasta `db-schema/`):**
+3. **Instale as dependencias (na pasta `db-schema/`):**
    ```bash
    cd db-schema
    npm install
    ```
 
-3. **Crie um arquivo `.env` de ambiente para fazer a migracao, crie o arquivo ainda em `db-schema/`:**
+4. **Crie um arquivo `.env` de ambiente para fazer a migracao, crie o arquivo ainda em `db-schema/`:**
    ```
     DATABASE_URL="postgres://dev:dev@localhost:5433/projeto_banquinho?schema=public"
    ```
 
-4. **Em `db-schema/` rode as migracoes do Prisma:**
+5. **Em `db-schema/` rode as migracoes do Prisma:**
    ```bash
    npx prisma migrate dev
    ```
 
+   > **Pronto!** A migracao foi aplicada, o DDL foi executado e o banco ja tem as tabelas basicas do projeto.
+
 #### Observacoes
 
 - Certifique-se que o banco esta rodando antes de executar comandos do Prisma.
-- As variaveis do `.env` sao carregadas automaticamente se voce usar `import "dotenv/config"` no seu projeto.
 
 #### Comandos uteis
 
@@ -63,7 +69,13 @@ As credenciais estao definidas em `backend/docker-compose.yml` e usadas em
   npx prisma migrate status
   ```
 
-### Dicionario de Dados
+## Esquema conceitual do BD atualizado
+
+![Esquema conceitual](<backend/Modelo ER.png>)
+
+Caso queira ver o arquivo bruto ele está em: `backend/Modelo ER.png`
+
+## Dicionario de dados
 
 | Tabela           | Atributo         | Tipo         | Restricoes   | Semantica/Descricao                             |
 |:-----------------|:-----------------|:-------------|:-------------|:------------------------------------------------|
@@ -92,6 +104,9 @@ As credenciais estao definidas em `backend/docker-compose.yml` e usadas em
 | **Batalha**      | rodada           | INT          | NOT NULL     | Fase da competicao (1: Oitavas, 2: Quartas...). |
 | **Batalha**      | id_torneio       | INT          | FK, NOT NULL | Torneio ao qual a batalha pertence.             |
 | **Batalha**      | id_time_vencedor | INT          | FK           | Time que venceu este combate especifico.        |
+
+## Explicação de como os dados do banco foram povoados
+// TODO: Ainda vamos fazer isso
 
 ## Links uteis
 - API: https://pokeapi.co/
