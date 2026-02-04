@@ -10,7 +10,6 @@ services:
       POSTGRES_PASSWORD: dev
     volumes:
       - projeto-banquinho-data:/var/lib/postgresql/data
-      - ./init-db:/docker-entrypoint-initdb.d/
 
 volumes:
   projeto-banquinho-data:
