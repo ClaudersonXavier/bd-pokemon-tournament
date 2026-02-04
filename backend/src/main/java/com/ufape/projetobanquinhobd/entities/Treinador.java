@@ -1,6 +1,7 @@
 package com.ufape.projetobanquinhobd.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Comment;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +15,11 @@ import java.util.Set;
 public class Treinador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Comment("Identificador unico do treinador.")
     private Long id;
 
     @Column(nullable = false)
+    @Comment("Nome completo do treinador.")
     private String nome;
 
     @OneToMany(mappedBy = "treinador")

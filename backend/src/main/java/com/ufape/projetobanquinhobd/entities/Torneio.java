@@ -1,6 +1,7 @@
 package com.ufape.projetobanquinhobd.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Comment;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,21 +15,31 @@ import java.util.Set;
 public class Torneio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Comment("Identificador da competicao.")
     private long id;
 
     @Column(nullable = false)
+    @Comment("Nome daquele torneio")
     private String nome;
 
     @Column(nullable = false)
-    private int qtdRodadas;
+    @Comment("Quantidade máximo de participanetes que o torneio poderá ter")
+    private int  maxParticipantes;
 
     @Column(nullable = false)
-    private int qtdTimes;
+    @Comment("Data de abertura das inscricoes do torneio.")
+    private Date dataAberturaInscricoes;
 
     @Column(nullable = false)
+    @Comment("Data de encerramento das inscricoes do torneio.")
+    private Date dataEncerramentoInscricoes;
+
+    @Column(nullable = false)
+    @Comment("Data de inicio do torneio.")
     private Date dataInicio;
 
     @Column(nullable = false)
+    @Comment("Data do fim do torneio.")
     private Date dataFim;
 
     @OneToMany(mappedBy = "torneio")

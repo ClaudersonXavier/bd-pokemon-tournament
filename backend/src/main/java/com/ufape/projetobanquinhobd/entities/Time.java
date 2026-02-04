@@ -1,6 +1,7 @@
 package com.ufape.projetobanquinhobd.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Comment;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,12 +15,15 @@ import java.util.Set;
 public class Time {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Comment("Identificador unico da equipe.")
     private long id;
 
     @Column(nullable = false)
+    @Comment("Nome da equipe.")
     private String nome;
 
     @ManyToOne
+    @Comment("Dono responsavel pelo time.")
     private Treinador treinador;
 
     @ManyToMany
