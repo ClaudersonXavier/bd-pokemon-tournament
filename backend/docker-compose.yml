@@ -6,8 +6,8 @@ services:
       - "5433:5432"
     environment:
       POSTGRES_DB: projeto_banquinho
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
     volumes:
       - projeto-banquinho-data:/var/lib/postgresql/data
       - ./init-db:/docker-entrypoint-initdb.d/
