@@ -20,10 +20,13 @@ public class Torneio {
     private String nome;
 
     @Column(nullable = false)
-    private int qtdRodadas;
+    private int  maxParticipantes;
 
     @Column(nullable = false)
-    private int qtdTimes;
+    private Date dataAberturaInscricoes;
+
+    @Column(nullable = false)
+    private Date dataEncerramentoInscricoes;
 
     @Column(nullable = false)
     private Date dataInicio;

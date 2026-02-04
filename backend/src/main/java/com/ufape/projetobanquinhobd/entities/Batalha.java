@@ -21,10 +21,10 @@ public class Batalha {
     private int rodada;
 
     @Column(nullable = false)
-    private LocalDateTime horarioFim;
+    private LocalDateTime horarioInicio;
 
     @Column(nullable = false)
-    private LocalDateTime horarioInicio;
+    private LocalDateTime horarioFim;
 
     @ManyToMany
     private final Set<Time> timesParticipantes = new HashSet<>();
@@ -51,10 +51,6 @@ public class Batalha {
     public void setRodada(int rodada) {
         if (rodada < 0) {
             throw new IllegalArgumentException("Rodada não pode ser negativa");
-        }
-
-        if (rodada > torneio.getQtdRodadas()) {
-            throw new IllegalArgumentException("Rodada não pode ser maior que a quantidade de rodadas do torneio");
         }
 
         this.rodada = rodada;
@@ -112,4 +108,3 @@ public class Batalha {
         this.timeVencedor = timeVencedor;
     }
 }
-
