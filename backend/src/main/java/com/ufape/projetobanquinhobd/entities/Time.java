@@ -1,7 +1,6 @@
 package com.ufape.projetobanquinhobd.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Comment;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,27 +11,21 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Comment("Tabela de times montados por treinadores.")
 public class Time {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("Identificador unico da equipe.")
     private long id;
 
     @Column(nullable = false)
-    @Comment("Nome da equipe.")
     private String nome;
 
     @ManyToOne
-    @Comment("Dono responsavel pelo time.")
     private Treinador treinador;
 
     @ManyToMany
-    @Comment("Pokemons pertencentes ao time (maximo 6).")
     private final Set<Pokemon> pokemons = new HashSet<>();
 
     @ManyToMany
-    @Comment("Torneios em que o time esta inscrito.")
     private final Set<Torneio> torneios = new HashSet<>();
 
     private static final int MAX_POKEMONS_IN_TEAM = 6;
