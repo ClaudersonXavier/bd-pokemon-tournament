@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.2'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'nu.studer.jooq' version '9.0'
 }
 
 group = 'com.ufape'
@@ -31,48 +30,8 @@ dependencies {
     testImplementation 'io.projectreactor:reactor-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     runtimeOnly 'org.postgresql:postgresql'
-    implementation 'org.jooq:jooq'
-    
-    jooqGenerator 'org.postgresql:postgresql:42.7.2'
-}
-
-jooq {
-    version = '3.19.1'
-    configurations {
-        main {
-            generationTool {
-                logging = 'WARN'
-                jdbc {
-                    driver = 'org.postgresql.Driver'
-                    url = 'jdbc:postgresql://localhost:5433/projeto_banquinho'
-                    user = 'admin'
-                    password = 'admin'
-                }
-                generator {
-                    name = 'org.jooq.codegen.DefaultGenerator'
-                    database {
-                        name = 'org.jooq.meta.postgres.PostgresDatabase'
-                        inputSchema = 'public'
-                        includes = '.*'
-                    }
-                    target {
-                        packageName = 'com.ufape.projeto.jooq'
-                        directory = 'build/generated-sources/jooq'
-                    }
-                }
-            }
-        }
-    }
 }
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-
-configurations.all {
-    resolutionStrategy.eachDependency { details ->
-        if (details.requested.group == 'org.jooq') {
-            details.useVersion '3.19.1'
-        }
-    }
 }
