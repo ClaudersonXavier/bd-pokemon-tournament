@@ -104,8 +104,9 @@ CREATE TABLE "tipo" (
 
 -- CreateTable
 CREATE TABLE "torneio" (
-    "qtd_rodadas" INTEGER NOT NULL,
-    "qtd_times" INTEGER NOT NULL,
+    "max_participantes" INTEGER NOT NULL,
+    "data_abertura_inscricoes" TIMESTAMP(6) NOT NULL,
+    "data_encerramento_inscricoes" TIMESTAMP(6) NOT NULL,
     "data_fim" TIMESTAMP(6) NOT NULL,
     "data_inicio" TIMESTAMP(6) NOT NULL,
     "id" BIGSERIAL NOT NULL,
