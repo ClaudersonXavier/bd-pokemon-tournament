@@ -13,6 +13,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Comment("Tabela de batalhas realizadas em torneios.")
 public class Batalha {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +33,7 @@ public class Batalha {
     private LocalDateTime horarioFim;
 
     @ManyToMany
+    @Comment("Times participantes da batalha (máximo 2).")
     private final Set<Time> timesParticipantes = new HashSet<>();
 
     @ManyToOne

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Comment("Tabela de tipos elementais dos Pokemon.")
 public class Tipo {
     @Id
     @Comment("Nome do elemento (ex: Fogo, Agua).")

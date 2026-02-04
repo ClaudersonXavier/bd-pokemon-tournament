@@ -12,6 +12,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Comment("Tabela de torneios e seus periodos de inscricao e execucao.")
 public class Torneio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,8 +44,10 @@ public class Torneio {
     private Date dataFim;
 
     @OneToMany(mappedBy = "torneio")
+    @Comment("Batalhas que compoem o torneio.")
     private Set<Batalha> batalhas;
 
     @ManyToMany
+    @Comment("Times inscritos no torneio.")
     private Set<Time> times;
 }

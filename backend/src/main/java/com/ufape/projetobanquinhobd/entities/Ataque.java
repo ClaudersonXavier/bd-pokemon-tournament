@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Comment("Tabela de ataques disponiveis para Pokemon.")
 public class Ataque {
     @Id
     @Comment("Nome do movimento.")

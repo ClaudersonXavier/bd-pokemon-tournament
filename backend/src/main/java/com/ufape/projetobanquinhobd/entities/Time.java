@@ -12,6 +12,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Comment("Tabela de times montados por treinadores.")
 public class Time {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,9 +28,11 @@ public class Time {
     private Treinador treinador;
 
     @ManyToMany
+    @Comment("Pokemons pertencentes ao time (maximo 6).")
     private final Set<Pokemon> pokemons = new HashSet<>();
 
     @ManyToMany
+    @Comment("Torneios em que o time esta inscrito.")
     private final Set<Torneio> torneios = new HashSet<>();
 
     private static final int MAX_POKEMONS_IN_TEAM = 6;
