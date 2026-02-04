@@ -15,6 +15,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Comment("Tabela de especies de Pokemon cadastradas.")
 public class Especie {
     @Id
     @Comment("Nome unico da especie (ex: Pikachu).")

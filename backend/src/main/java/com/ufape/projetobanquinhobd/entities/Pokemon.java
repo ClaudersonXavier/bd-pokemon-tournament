@@ -12,6 +12,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Comment("Tabela de Pokemon pertencentes a treinadores.")
 public class Pokemon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +28,7 @@ public class Pokemon {
     private Especie especie;
 
     @ManyToMany
+    @Comment("Lista de ataques aprendidos pelo Pokemon (maximo 4).")
     private final Set<Ataque> ataques = new HashSet<>();
 
     @ManyToOne
@@ -34,6 +36,7 @@ public class Pokemon {
     private Treinador treinador;
 
     @ManyToMany
+    @Comment("Times em que o Pokemon foi inscrito.")
     private final Set<Time> times = new HashSet<>();
 
     private static final int MAX_ATAQUES = 4;
