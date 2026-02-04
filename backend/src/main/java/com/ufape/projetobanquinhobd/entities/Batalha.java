@@ -1,6 +1,7 @@
 package com.ufape.projetobanquinhobd.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Comment;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,24 +16,30 @@ import java.util.Set;
 public class Batalha {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Comment("Identificador unico do confronto.")
     private Long id;
 
     @Column(nullable = false)
+    @Comment("Fase da competicao (1: Oitavas, 2: Quartas...).")
     private int rodada;
 
     @Column(nullable = false)
-    private LocalDateTime horarioFim;
+    @Comment("Horário do inicio da batalha")
+    private LocalDateTime horarioInicio;
 
     @Column(nullable = false)
-    private LocalDateTime horarioInicio;
+    @Comment("Horário do fim da batalha")
+    private LocalDateTime horarioFim;
 
     @ManyToMany
     private final Set<Time> timesParticipantes = new HashSet<>();
 
     @ManyToOne
+    @Comment("Torneio ao qual a batalha pertence.")
     private Torneio torneio;
 
     @OneToOne
+    @Comment("Time que venceu este combate especifico.")
     private Time timeVencedor;
 
     private static final int MAX_TIMES_PARTICIPANTES = 2;
@@ -51,10 +58,6 @@ public class Batalha {
     public void setRodada(int rodada) {
         if (rodada < 0) {
             throw new IllegalArgumentException("Rodada não pode ser negativa");
-        }
-
-        if (rodada > torneio.getQtdRodadas()) {
-            throw new IllegalArgumentException("Rodada não pode ser maior que a quantidade de rodadas do torneio");
         }
 
         this.rodada = rodada;
@@ -112,4 +115,3 @@ public class Batalha {
         this.timeVencedor = timeVencedor;
     }
 }
-
