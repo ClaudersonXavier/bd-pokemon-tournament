@@ -88,14 +88,6 @@ CREATE TABLE "time_pokemons" (
 );
 
 -- CreateTable
-CREATE TABLE "time_torneios" (
-    "time_id" BIGINT NOT NULL,
-    "torneios_id" BIGINT NOT NULL,
-
-    CONSTRAINT "time_torneios_pkey" PRIMARY KEY ("time_id","torneios_id")
-);
-
--- CreateTable
 CREATE TABLE "tipo" (
     "nome" VARCHAR(255) NOT NULL,
 
@@ -118,9 +110,9 @@ CREATE TABLE "torneio" (
 -- CreateTable
 CREATE TABLE "torneio_times" (
     "times_id" BIGINT NOT NULL,
-    "torneio_id" BIGINT NOT NULL,
+    "torneios_id" BIGINT NOT NULL,
 
-    CONSTRAINT "torneio_times_pkey" PRIMARY KEY ("times_id","torneio_id")
+    CONSTRAINT "torneio_times_pkey" PRIMARY KEY ("times_id","torneios_id")
 );
 
 -- CreateTable
@@ -130,9 +122,6 @@ CREATE TABLE "treinador" (
 
     CONSTRAINT "treinador_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "batalha_time_vencedor_id_key" ON "batalha"("time_vencedor_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "pokemon_apelido_key" ON "pokemon"("apelido");
@@ -186,13 +175,7 @@ ALTER TABLE "time_pokemons" ADD CONSTRAINT "fkg5qgs9h44anrtnlpw12hxlp3t" FOREIGN
 ALTER TABLE "time_pokemons" ADD CONSTRAINT "fkslmul2sa9m0w44idnvnmfmvdy" FOREIGN KEY ("pokemons_id") REFERENCES "pokemon"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "time_torneios" ADD CONSTRAINT "fk4hw6t7hlb74m7ke4ki3h99k6i" FOREIGN KEY ("torneios_id") REFERENCES "torneio"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "time_torneios" ADD CONSTRAINT "fknifd53q6kcfj35bsl56s620a5" FOREIGN KEY ("time_id") REFERENCES "time"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "torneio_times" ADD CONSTRAINT "fk7pgehlqf0dx0brs94fjtsxr8h" FOREIGN KEY ("torneio_id") REFERENCES "torneio"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "torneio_times" ADD CONSTRAINT "fk2fxax425igb3x86yh5yf7590p" FOREIGN KEY ("torneios_id") REFERENCES "torneio"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "torneio_times" ADD CONSTRAINT "fkl8eixqflwswdvtnjefw45sh4x" FOREIGN KEY ("times_id") REFERENCES "time"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
