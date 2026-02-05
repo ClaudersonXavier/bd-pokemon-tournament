@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -38,5 +39,20 @@ public class Torneio {
     private Set<Batalha> batalhas;
 
     @ManyToMany
-    private Set<Time> times;
+    private Set<Time> times = new HashSet<>();
+
+    public Torneio(String nome, int maxParticipantes, Date dataAberturaInscricoes, 
+                   Date dataEncerramentoInscricoes, Date dataInicio, Date dataFim) {
+        this.nome = nome;
+        this.maxParticipantes = maxParticipantes;
+        this.dataAberturaInscricoes = dataAberturaInscricoes;
+        this.dataEncerramentoInscricoes = dataEncerramentoInscricoes;
+        this.dataInicio = dataInicio;
+        this.dataFim = dataFim;
+    }
+
+    public Set<Time> getTimes() {
+        return times;
+    }
+
 }

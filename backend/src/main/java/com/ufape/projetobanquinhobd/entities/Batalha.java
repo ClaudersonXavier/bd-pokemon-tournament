@@ -32,7 +32,7 @@ public class Batalha {
     @ManyToOne
     private Torneio torneio;
 
-    @OneToOne
+    @ManyToOne
     private Time timeVencedor;
 
     private static final int MAX_TIMES_PARTICIPANTES = 2;

@@ -20,7 +20,7 @@ model batalha {
   horario_fim                 DateTime                      @db.Timestamp(6)
   horario_inicio              DateTime                      @db.Timestamp(6)
   id                          BigInt                        @id @default(autoincrement())
-  time_vencedor_id            BigInt?                       @unique
+  time_vencedor_id            BigInt?
   torneio_id                  BigInt?
   torneio                     torneio?                      @relation(fields: [torneio_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk4n7p7fiytuh0lagyvxwtlsbmr")
   time                        time?                         @relation(fields: [time_vencedor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkc65apkqov09lhd0kfo3kg8xme")
@@ -86,12 +86,11 @@ model time {
   id                          BigInt                        @id @default(autoincrement())
   treinador_id                BigInt?
   nome                        String                        @db.VarChar(255)
-  batalha                     batalha?
+  batalha                     batalha[]
   batalha_times_participantes batalha_times_participantes[]
   pokemon_times               pokemon_times[]
   treinador                   treinador?                    @relation(fields: [treinador_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkaqbcqb20rumv6cpphytr55nkf")
   time_pokemons               time_pokemons[]
-  time_torneios               time_torneios[]
   torneio_times               torneio_times[]
 }
 
@@ -102,15 +101,6 @@ model time_pokemons {
   pokemon     pokemon @relation(fields: [pokemons_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkslmul2sa9m0w44idnvnmfmvdy")
 
   @@id([pokemons_id, time_id])
-}
-
-model time_torneios {
-  time_id     BigInt
-  torneios_id BigInt
-  torneio     torneio @relation(fields: [torneios_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk4hw6t7hlb74m7ke4ki3h99k6i")
-  time        time    @relation(fields: [time_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fknifd53q6kcfj35bsl56s620a5")
-
-  @@id([time_id, torneios_id])
 }
 
 model tipo {
@@ -128,17 +118,16 @@ model torneio {
   id                           BigInt          @id @default(autoincrement())
   nome                         String          @db.VarChar(255)
   batalha                      batalha[]
-  time_torneios                time_torneios[]
   torneio_times                torneio_times[]
 }
 
 model torneio_times {
-  times_id   BigInt
-  torneio_id BigInt
-  torneio    torneio @relation(fields: [torneio_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk7pgehlqf0dx0brs94fjtsxr8h")
-  time       time    @relation(fields: [times_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkl8eixqflwswdvtnjefw45sh4x")
+  times_id    BigInt
+  torneios_id BigInt
+  torneio     torneio @relation(fields: [torneios_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk2fxax425igb3x86yh5yf7590p")
+  time        time    @relation(fields: [times_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkl8eixqflwswdvtnjefw45sh4x")
 
-  @@id([times_id, torneio_id])
+  @@id([times_id, torneios_id])
 }
 
 model treinador {
