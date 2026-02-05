@@ -39,4 +39,9 @@ public class Torneio {
 
     @ManyToMany
     private Set<Time> times;
+
+    public Set<Time> getTimes() {
+        return times;
+    }
+
 }

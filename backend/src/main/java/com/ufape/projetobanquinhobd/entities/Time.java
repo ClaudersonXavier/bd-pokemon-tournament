@@ -75,4 +75,8 @@ public class Time {
 
         this.torneios.remove(torneio);
     }
+
+    public Treinador getTreinador() {
+        return treinador;
+    }
 }
