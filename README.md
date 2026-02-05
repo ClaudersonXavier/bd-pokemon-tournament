@@ -91,7 +91,7 @@ Descricao da Tabela: Tabela de ataques disponiveis para Pokemon.
 | :-------- | :----------- | :---------------------- | :-------------------------------------------------- |
 | nome      | VARCHAR(255) | PK, NOT NULL            | Nome do movimento.                                  |
 | categoria | VARCHAR(255) | NOT NULL                | Categoria podendo ser: Physical, Special ou Status. |
-| poder     | INTEGER      | NOT NULL                | Valor da forca. Nulo para golpes de status.         |
+| poder     | INTEGER      | NOT NULL                | Valor da forca. Use 0 para golpes de status.        |
 | tipo_nome | VARCHAR(255) | FK tipo(nome), NOT NULL | Elemento ao qual o ataque pertence.                 |
 
 ### Tabela: batalha
@@ -105,7 +105,7 @@ Descricao da Tabela: Tabela de batalhas realizadas em torneios.
 | horario_inicio   | TIMESTAMP(6) | NOT NULL                            | Horario do inicio da batalha.                   |
 | horario_fim      | TIMESTAMP(6) | NOT NULL                            | Horario do fim da batalha.                      |
 | torneio_id       | BIGINT       | FK torneio(id)                      | Torneio ao qual a batalha pertence.             |
-| time_vencedor_id | BIGINT       | FK time(id), UNIQUE                 | Time que venceu este combate especifico.        |
+| time_vencedor_id | BIGINT       | FK time(id)                         | Time que venceu este combate especifico.        |
 
 ### Tabela: batalha_times_participantes
 
@@ -181,15 +181,6 @@ Descricao da Tabela: Pokemons pertencentes ao time (maximo 6).
 | :---------- | :----------- | :--------------------------- | :------------------------ |
 | pokemons_id | BIGINT       | PK, FK pokemon(id), NOT NULL | Identificador do Pokemon. |
 | time_id     | BIGINT       | PK, FK time(id), NOT NULL    | Identificador do time.    |
-
-### Tabela: time_torneios
-
-Descricao da Tabela: Torneios em que o time esta inscrito.
-
-| Atributo    | Tipo de Dado | Restricoes                   | Semantica dos Atributos   |
-| :---------- | :----------- | :--------------------------- | :------------------------ |
-| time_id     | BIGINT       | PK, FK time(id), NOT NULL    | Identificador do time.    |
-| torneios_id | BIGINT       | PK, FK torneio(id), NOT NULL | Identificador do torneio. |
 
 ### Tabela: tipo
 
