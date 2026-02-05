@@ -6,6 +6,8 @@ import com.ufape.projetobanquinhobd.seeder.ataques.AtaqueSeeder;
 import com.ufape.projetobanquinhobd.seeder.treinadores.TreinadorSeeder;
 import com.ufape.projetobanquinhobd.seeder.pokemons.PokemonSeeder;
 import com.ufape.projetobanquinhobd.seeder.times.TimeSeeder;
+import com.ufape.projetobanquinhobd.seeder.torneios.TorneioSeeder;
+import com.ufape.projetobanquinhobd.seeder.batalhas.BatalhaSeeder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -61,6 +63,20 @@ public class SeedRunner {
             System.out.println(">>> 6. Executando seed de Times...\n");
             TimeSeeder timeSeeder = context.getBean(TimeSeeder.class);
             timeSeeder.seed();
+            
+            System.out.println("\n");
+            
+            // 7. Seed de Torneios
+            System.out.println(">>> 7. Executando seed de Torneios...\n");
+            TorneioSeeder torneioSeeder = context.getBean(TorneioSeeder.class);
+            torneioSeeder.seed();
+            
+            System.out.println("\n");
+            
+            // 8. Seed de Batalhas
+            System.out.println(">>> 8. Executando seed de Batalhas...\n");
+            BatalhaSeeder batalhaSeeder = context.getBean(BatalhaSeeder.class);
+            batalhaSeeder.seed();
             
             System.out.println("\n╔══════════════════════════════════════╗");
             System.out.println("║   ✓ SEED GERAL CONCLUÍDO!            ║");

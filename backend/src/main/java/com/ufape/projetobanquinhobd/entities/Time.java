@@ -25,7 +25,7 @@ public class Time {
     @ManyToMany
     private final Set<Pokemon> pokemons = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "times")
     private final Set<Torneio> torneios = new HashSet<>();
 
     private static final int MAX_POKEMONS_IN_TEAM = 6;
