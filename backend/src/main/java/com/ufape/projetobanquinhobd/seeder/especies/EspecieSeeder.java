@@ -146,7 +146,8 @@ public class EspecieSeeder {
         }
         
         for (PokemonDetailResponse.TypeSlot typeSlot : typeSlots) {
-            String nomeTipo = typeSlot.getType().getName();
+            // Capitalizar nome do tipo para padronização
+            String nomeTipo = capitalizeFirst(typeSlot.getType().getName());
             
             Tipo tipo = tipoService.buscarPorNome(nomeTipo)
                     .orElseGet(() -> {
@@ -162,5 +163,12 @@ public class EspecieSeeder {
         }
         
         return tipos;
+    }
+    
+    private String capitalizeFirst(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 }

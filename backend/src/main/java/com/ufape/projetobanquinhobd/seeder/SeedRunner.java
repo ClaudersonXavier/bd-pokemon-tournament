@@ -2,6 +2,8 @@ package com.ufape.projetobanquinhobd.seeder;
 
 import com.ufape.projetobanquinhobd.seeder.especies.EspecieSeeder;
 import com.ufape.projetobanquinhobd.seeder.tipos.TipoSeeder;
+import com.ufape.projetobanquinhobd.seeder.ataques.AtaqueSeeder;
+import com.ufape.projetobanquinhobd.seeder.treinadores.TreinadorSeeder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -30,14 +32,19 @@ public class SeedRunner {
             EspecieSeeder especieSeeder = context.getBean(EspecieSeeder.class);
             especieSeeder.seed(50); // Quantidade de espécies
             
-            // TODO: Adicionar outros seeders aqui conforme forem criados
+            System.out.println("\n");
+            
             // 3. Seed de Ataques
-            // AtaqueSeeder ataqueSeeder = context.getBean(AtaqueSeeder.class);
-            // ataqueSeeder.seed();
+            System.out.println(">>> 3. Executando seed de Ataques...\n");
+            AtaqueSeeder ataqueSeeder = context.getBean(AtaqueSeeder.class);
+            ataqueSeeder.seed(50); // Quantidade de ataques
+            
+            System.out.println("\n");
             
             // 4. Seed de Treinadores
-            // TreinadorSeeder treinadorSeeder = context.getBean(TreinadorSeeder.class);
-            // treinadorSeeder.seed();
+            System.out.println(">>> 4. Executando seed de Treinadores...\n");
+            TreinadorSeeder treinadorSeeder = context.getBean(TreinadorSeeder.class);
+            treinadorSeeder.seed();
             
             System.out.println("\n╔══════════════════════════════════════╗");
             System.out.println("║   ✓ SEED GERAL CONCLUÍDO!            ║");

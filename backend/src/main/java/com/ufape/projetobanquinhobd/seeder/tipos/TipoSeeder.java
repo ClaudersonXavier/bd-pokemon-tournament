@@ -37,7 +37,8 @@ public class TipoSeeder {
         for (TypeListResponse.TypeBasic typeBasic : listResponse.getResults()) {
             try {
                 count++;
-                String nomeTipo = typeBasic.getName();
+                // Capitalizar nome do tipo para padronização
+                String nomeTipo = capitalizeFirst(typeBasic.getName());
                 System.out.println("[" + count + "/" + listResponse.getResults().size() + "] Processando: " + nomeTipo);
                 
                 if (tipoService.buscarPorNome(nomeTipo).isPresent()) {
@@ -56,5 +57,12 @@ public class TipoSeeder {
         
         System.out.println("=== Seed de Tipos finalizado! ===");
         System.out.println("Total processado: " + count + " tipos");
+    }
+    
+    private String capitalizeFirst(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 }
