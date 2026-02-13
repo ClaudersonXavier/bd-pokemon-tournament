@@ -10,6 +10,38 @@ services:
       POSTGRES_PASSWORD: dev
     volumes:
       - projeto-banquinho-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d projeto_banquinho"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  prisma-migrate:
+    build:
+      context: ./db-schema
+      dockerfile: Dockerfile
+    container_name: projeto-banquinho-prisma
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://dev:dev@db:5432/projeto_banquinho?schema=public
+    restart: "no"
+
+  seeder:
+    build:
+      context: .
+      dockerfile: Dockerfile.seeder
+    container_name: projeto-banquinho-seeder
+    depends_on:
+      prisma-migrate:
+        condition: service_completed_successfully
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/projeto_banquinho
+      SPRING_DATASOURCE_USERNAME: dev
+      SPRING_DATASOURCE_PASSWORD: dev
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+    restart: "no"
 
 volumes:
   projeto-banquinho-data:

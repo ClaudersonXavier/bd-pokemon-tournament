@@ -1,0 +1,30 @@
+# Stage 1: Build com Gradle
+FROM eclipse-temurin:21-jdk AS builder
+
+WORKDIR /app
+
+# Copia arquivos de configuração do Gradle
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle .
+COPY settings.gradle .
+
+# Dá permissão de execução ao gradlew
+RUN chmod +x gradlew
+
+# Copia código fonte
+COPY src src
+
+# Compila o projeto (sem testes para acelerar)
+RUN ./gradlew build -x test --no-daemon
+
+# Stage 2: Runtime apenas com JRE
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+# Copia o JAR compilado
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+# Executa o SeedRunner como main class
+CMD ["java", "-cp", "app.jar", "-Dloader.main=com.ufape.projetobanquinhobd.seeder.SeedRunner", "org.springframework.boot.loader.launch.PropertiesLauncher"]
