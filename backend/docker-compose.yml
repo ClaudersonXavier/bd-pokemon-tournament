@@ -43,5 +43,22 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
     restart: "no"
 
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: projeto-banquinho-backend
+    depends_on:
+      prisma-migrate:
+        condition: service_completed_successfully
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/projeto_banquinho
+      SPRING_DATASOURCE_USERNAME: dev
+      SPRING_DATASOURCE_PASSWORD: dev
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
 volumes:
   projeto-banquinho-data:

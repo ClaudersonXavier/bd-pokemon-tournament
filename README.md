@@ -15,13 +15,9 @@ As credenciais estao definidas em `backend/docker-compose.yml` e usadas em
 - Usuario: `dev`
 - Senha: `dev`
 
-### Banco de dados
-
 #### Pre-requisitos
 
-- Node.js instalado
-- Docker rodando o PostgreSQL (veja o `docker-compose.yml`)
-- Variaveis de ambiente configuradas no `.env`
+- Docker instalado
 
 #### Passos
 
@@ -34,29 +30,14 @@ As credenciais estao definidas em `backend/docker-compose.yml` e usadas em
 2. **Suba o banco de dados com Docker:**
 
    ```bash
-   docker-compose up -d
+   docker compose up --build
    ```
 
-3. **Instale as dependencias (na pasta `db-schema/`):**
+3. **A aplicação ficará disponível em:**
 
    ```bash
-   cd db-schema
-   npm install
+   http://localhost:8080
    ```
-
-4. **Crie um arquivo `.env` de ambiente para fazer a migracao, crie o arquivo ainda em `db-schema/`:**
-
-   ```
-    DATABASE_URL="postgres://dev:dev@localhost:5433/projeto_banquinho?schema=public"
-   ```
-
-5. **Em `db-schema/` rode as migracoes do Prisma:**
-
-   ```bash
-   npx prisma migrate dev
-   ```
-
-   > **Pronto!** A migracao foi aplicada, o DDL foi executado e o banco ja tem as tabelas basicas do projeto.
 
 #### Observacoes
 
