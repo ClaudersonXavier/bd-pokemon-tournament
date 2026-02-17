@@ -2,15 +2,22 @@ FROM node:22-slim
 
 WORKDIR /app
 
-# Install openssl (required by Prisma)
-RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+# Instalar dependências necessárias para Prisma
+RUN apt-get update \
+  && apt-get install -y openssl \
+  && rm -rf /var/lib/apt/lists/*
 
-# Copy package files and install dependencies
+# Copiar arquivos de dependência
 COPY package*.json ./
+
+# Instalar dependências
 RUN npm install
 
-# Copy Prisma schema and migrations
+# Copiar schema e migrations
 COPY prisma ./prisma
 
-# Run migrations
+# Gerar Prisma Client
+RUN npx prisma generate
+
+# Executar migrations ao subir o container
 CMD ["npx", "prisma", "migrate", "deploy"]
