@@ -959,10 +959,10 @@ body, html {
   background: transparent;
   border: 3px solid #ffffff;
   color: #ffffff;
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   border-radius: 6px;
-  font-size: 24px;
+  font-size: 36px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: monospace;
@@ -1401,10 +1401,10 @@ body, html {
   background: transparent;
   border: 3px solid #ffffff;
   color: #ffffff;
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   border-radius: 6px;
-  font-size: 24px;
+  font-size: 36px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: monospace;
@@ -1413,7 +1413,7 @@ body, html {
 
 .btn-close-users:hover {
   background: #ffffff;
-  color: #1a5fb4;
+  color: #cc2200;
   transform: scale(1.1);
 }
 
@@ -1950,10 +1950,10 @@ body, html {
   background: transparent;
   border: 3px solid #ffffff;
   color: #ffffff;
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   border-radius: 6px;
-  font-size: 24px;
+  font-size: 36px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: monospace;
@@ -1962,7 +1962,7 @@ body, html {
 
 .btn-close-tournament:hover {
   background: #ffffff;
-  color: #4daf50;
+  color: #cc2200;
   transform: scale(1.1);
 }
 
@@ -2133,6 +2133,8 @@ body, html {
   color: #1a1a1a;
   margin: 0;
   line-height: 1.6;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* Footer do Formulário */
@@ -2254,10 +2256,10 @@ body, html {
   background: transparent;
   border: 3px solid #ffffff;
   color: #ffffff;
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   border-radius: 6px;
-  font-size: 24px;
+  font-size: 36px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: monospace;
@@ -2266,7 +2268,7 @@ body, html {
 
 .btn-close-password:hover {
   background: #ffffff;
-  color: #2196f3;
+  color: #cc2200;
   transform: scale(1.1);
 }
 

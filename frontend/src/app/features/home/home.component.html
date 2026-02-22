@@ -511,7 +511,7 @@
                     
                     <div class="filter-group">
                       <label class="filter-label">Status</label>
-                      <select class="filter-select" [(ngModel)]="filterStatus">
+                      <select class="filter-select" [(ngModel)]="filterStatus" title="Filtrar usuários por status">
                         <option value="all">Todos</option>
                         <option value="active">Ativos</option>
                         <option value="inactive">Inativos</option>
@@ -520,7 +520,7 @@
                     
                     <div class="filter-group">
                       <label class="filter-label">Role</label>
-                      <select class="filter-select" [(ngModel)]="filterRole">
+                      <select class="filter-select" [(ngModel)]="filterRole" title="Filtrar usuários por permissão (role)">
                         <option value="all">Todos</option>
                         <option value="USER">Usuários</option>
                         <option value="ADMIN">Admins</option>
@@ -674,17 +674,17 @@
                 
                 <div class="form-group">
                   <label class="form-label">Nome</label>
-                  <input type="text" class="form-input" [(ngModel)]="selectedUser.name" />
+                  <input type="text" class="form-input" [(ngModel)]="selectedUser.name" placeholder="Digite o nome do usuário" title="Nome do usuário" />
                 </div>
                 
                 <div class="form-group">
                   <label class="form-label">Email</label>
-                  <input type="email" class="form-input" [(ngModel)]="selectedUser.email" />
+                  <input type="email" class="form-input" [(ngModel)]="selectedUser.email" placeholder="Digite o email do usuário" title="Email do usuário" />
                 </div>
                 
                 <div class="form-group">
                   <label class="form-label">Role</label>
-                  <select class="form-select" [(ngModel)]="selectedUser.role">
+                  <select class="form-select" [(ngModel)]="selectedUser.role" title="Selecione a função do usuário">
                     <option value="USER">Usuário</option>
                     <option value="ADMIN">Administrador</option>
                   </select>
@@ -747,7 +747,7 @@
           <img src="/icons/plus.png" alt="Create" class="title-icon" />
           Criar Novo Torneio
         </h2>
-        <button class="btn-close-tournament" (click)="closeCreateTournament()">×</button>
+        <button class="btn-close-tournament" (click)="closeCreateTournament()">✕</button>
       </div>
 
       <div class="tournament-content">
@@ -941,6 +941,9 @@
         <!-- Conceitos BD -->
         <section class="form-section concepts-section">
           <h3 class="section-title">🗄️ Conceitos de Banco de Dados</h3>
+          <p class="tournament-subtitle">
+            💡 Esta tela demonstra múltiplos conceitos de BD: INSERT, chaves estrangeiras, validações, tipos ENUM e timestamps automáticos
+          </p>
           <div class="concepts-grid">
             <div class="concept-card">
               <h4>INSERT</h4>
