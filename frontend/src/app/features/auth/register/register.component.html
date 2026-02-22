@@ -1,0 +1,156 @@
+<div class="scene">
+  <!-- Sky background -->
+  <div class="sky"></div>
+
+  <!-- Register Card -->
+  <div class="login-wrapper">
+    <div class="login-card">
+
+      <!-- Logo/Header -->
+      <div class="card-header">
+        <img
+          src="/images/pixelart-login.png"
+          alt="Pokémon Tournament"
+          class="trainer-logo"
+        />
+        <h1 class="game-title">Pokémon</h1>
+        <h2 class="game-subtitle">Tournament</h2>
+        <p class="game-tagline">NOVO TREINADOR</p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+
+        <!-- Success message -->
+        <div class="success-msg global-success" *ngIf="registerSuccess">
+          <span>✓ {{ registerSuccess }}</span>
+        </div>
+
+        <!-- Error message -->
+        <div class="error-msg global-error" *ngIf="registerError">
+          <span>⚠ {{ registerError }}</span>
+        </div>
+
+        <!-- Name Field -->
+        <div class="field-group">
+          <label class="field-label" for="name">NOME DO TREINADOR</label>
+          <div class="input-wrapper" [class.error]="nameControl?.invalid && nameControl?.touched">
+            <span class="input-icon">👤</span>
+            <input
+              id="name"
+              type="text"
+              formControlName="name"
+              class="field-input"
+              placeholder="Seu nome completo"
+              autocomplete="name"
+            />
+          </div>
+          <div class="error-msg" *ngIf="nameControl?.invalid && nameControl?.touched">
+            <span *ngIf="nameControl?.errors?.['required']">⚠ Nome é obrigatório!</span>
+            <span *ngIf="nameControl?.errors?.['minlength']">⚠ Mínimo 3 caracteres!</span>
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="field-group">
+          <label class="field-label" for="email">TRAINER ID (EMAIL)</label>
+          <div class="input-wrapper" [class.error]="emailControl?.invalid && emailControl?.touched">
+            <span class="input-icon">✉</span>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              class="field-input"
+              placeholder="trainer@pokemon.com"
+              autocomplete="email"
+            />
+          </div>
+          <div class="error-msg" *ngIf="emailControl?.invalid && emailControl?.touched">
+            <span *ngIf="emailControl?.errors?.['required']">⚠ Email é obrigatório!</span>
+            <span *ngIf="emailControl?.errors?.['email']">⚠ Email inválido!</span>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="field-group">
+          <label class="field-label" for="password">SECRET CODE</label>
+          <div class="input-wrapper" [class.error]="passwordControl?.invalid && passwordControl?.touched">
+            <span class="input-icon">🔒</span>
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              class="field-input"
+              placeholder="••••••••"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="toggle-pw"
+              (click)="togglePassword()"
+              [attr.aria-label]="togglePasswordLabel"
+              [attr.title]="togglePasswordLabel"
+              [attr.aria-pressed]="showPassword"
+            >
+              {{ showPassword ? '👁' : '👁‍🗨' }}
+            </button>
+          </div>
+          <div class="error-msg" *ngIf="passwordControl?.invalid && passwordControl?.touched">
+            <span *ngIf="passwordControl?.errors?.['required']">⚠ Senha obrigatória!</span>
+            <span *ngIf="passwordControl?.errors?.['minlength']">⚠ Mínimo 6 caracteres!</span>
+          </div>
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div class="field-group">
+          <label class="field-label" for="confirmPassword">CONFIRMAR SENHA</label>
+          <div class="input-wrapper" [class.error]="confirmPasswordControl?.invalid && confirmPasswordControl?.touched">
+            <span class="input-icon">🔐</span>
+            <input
+              id="confirmPassword"
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              formControlName="confirmPassword"
+              class="field-input"
+              placeholder="••••••••"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="toggle-pw"
+              (click)="toggleConfirmPassword()"
+              [attr.aria-label]="toggleConfirmPasswordLabel"
+              [attr.title]="toggleConfirmPasswordLabel"
+              [attr.aria-pressed]="showConfirmPassword"
+            >
+              {{ showConfirmPassword ? '👁' : '👁‍🗨' }}
+            </button>
+          </div>
+          <div class="error-msg" *ngIf="(confirmPasswordControl?.invalid || registerForm.errors?.['passwordsMismatch']) && confirmPasswordControl?.touched">
+            <span *ngIf="confirmPasswordControl?.errors?.['required']">⚠ Confirmação obrigatória!</span>
+            <span *ngIf="registerForm.errors?.['passwordsMismatch']">⚠ Senhas não conferem!</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-submit" [class.loading]="isLoading" [disabled]="isLoading">
+          <span *ngIf="!isLoading">✓ CADASTRAR</span>
+          <span *ngIf="isLoading" class="loading-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </span>
+        </button>
+
+        <!-- Back to login link -->
+        <div class="card-footer-links">
+          <a routerLink="/login" class="pixel-link">Voltar ao Login</a>
+        </div>
+
+      </form>
+
+    </div>
+
+    <!-- Version tag -->
+    <div class="version-tag">V. 1.0.0 © 2025</div>
+  </div>
+</div>
