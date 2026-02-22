@@ -1,0 +1,112 @@
+<div class="scene">
+  <!-- Sky background layers -->
+  <div class="sky">
+    <div class="cloud cloud--medium"></div>
+    <div class="cloud cloud--small"></div>
+    <div class="cloud cloud--large"></div>
+  </div>
+
+  <!-- Grass layer -->
+  <div class="ground">
+    <div class="grass-strip"></div>
+  </div>
+
+  <!-- Login Card -->
+  <div class="login-wrapper">
+    <div class="login-card">
+
+      <!-- Logo/Header -->
+      <div class="card-header">
+        <img
+          src="/images/pixelart-login.png"
+          alt="Pokémon Tournament"
+          class="trainer-logo"
+        />
+        <h1 class="game-title">Pokémon</h1>
+        <h2 class="game-subtitle">Tournament</h2>
+        <p class="game-tagline">PRESS START TO PLAY</p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+
+        <!-- Error message -->
+        <div class="error-msg global-error" *ngIf="loginError">
+          <span>{{ loginError }}</span>
+        </div>
+
+        <!-- Email Field -->
+        <div class="field-group">
+          <label class="field-label" for="email">TRAINER ID</label>
+          <div class="input-wrapper" [class.error]="emailControl?.invalid && emailControl?.touched">
+            <span class="input-icon">✉</span>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              class="field-input"
+              placeholder="trainer@pokemon.com"
+              autocomplete="email"
+            />
+          </div>
+          <div class="error-msg" *ngIf="emailControl?.invalid && emailControl?.touched">
+            <span *ngIf="emailControl?.errors?.['required']">⚠ Trainer ID required!</span>
+            <span *ngIf="emailControl?.errors?.['email']">⚠ Invalid trainer email!</span>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="field-group">
+          <label class="field-label" for="password">SECRET CODE</label>
+          <div class="input-wrapper" [class.error]="passwordControl?.invalid && passwordControl?.touched">
+            <span class="input-icon">🔒</span>
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              class="field-input"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="toggle-pw"
+              (click)="togglePassword()"
+              [attr.aria-label]="togglePasswordLabel"
+              [attr.title]="togglePasswordLabel"
+              [attr.aria-pressed]="showPassword"
+            >
+              {{ showPassword ? '👁' : '👁‍🗨' }}
+            </button>
+          </div>
+          <div class="error-msg" *ngIf="passwordControl?.invalid && passwordControl?.touched">
+            <span *ngIf="passwordControl?.errors?.['required']">⚠ Secret code required!</span>
+            <span *ngIf="passwordControl?.errors?.['minlength']">⚠ Min 6 characters!</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-submit" [class.loading]="isLoading" [disabled]="isLoading">
+          <span *ngIf="!isLoading">ENTRAR</span>
+          <span *ngIf="isLoading" class="loading-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </span>
+        </button>
+
+        <!-- Forgot / Register links -->
+        <div class="card-footer-links">
+          <a routerLink="/recover-password" class="pixel-link">Esqueceu a senha?</a>
+          <span class="separator">|</span>
+          <a routerLink="/register" class="pixel-link">Novo treinador</a>
+        </div>
+
+      </form>
+
+    </div>
+
+    <!-- Version tag -->
+    <div class="version-tag">V. 1.0.0 © 2025</div>
+  </div>
+</div>
