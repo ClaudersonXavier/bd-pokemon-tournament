@@ -1,0 +1,62 @@
+<div class="edit-profile-container">
+  <div class="bg-sky"></div>
+
+  <section class="edit-card">
+    <header class="edit-header">
+      <h1>Editar Perfil</h1>
+      <p>Atualize seus dados e escolha seu treinador</p>
+    </header>
+
+    <div class="success-msg" *ngIf="saveSuccess">
+      ✓ {{ saveSuccess }}
+    </div>
+
+    <div class="avatar-preview">
+      <img
+        [src]="getSelectedTrainerPath()"
+        alt="Avatar selecionado"
+        class="avatar-preview-img"
+      />
+    </div>
+
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="edit-form">
+      <label for="name">Nome</label>
+      <input id="name" type="text" formControlName="name" placeholder="Seu nome" />
+      <small class="error" *ngIf="profileForm.controls.name.touched && profileForm.controls.name.invalid">
+        Nome obrigatório (mínimo 3 caracteres)
+      </small>
+
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" placeholder="voce@email.com" />
+      <small class="error" *ngIf="profileForm.controls.email.touched && profileForm.controls.email.invalid">
+        Email inválido
+      </small>
+
+      <div class="trainer-picker">
+        <p class="trainer-picker-title">Escolha seu treinador</p>
+        <div class="trainer-grid">
+          <button
+            class="trainer-option"
+            *ngFor="let trainer of trainerOptions"
+            type="button"
+            [class.active]="isTrainerSelected(trainer)"
+            (click)="selectTrainer(trainer)"
+          >
+            <img
+              [src]="'/images/trainers/' + trainer"
+              [alt]="'Treinador ' + trainer"
+              class="trainer-option-img"
+            />
+          </button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-cancel" (click)="cancel()">Cancelar</button>
+        <button type="submit" class="btn-save" [disabled]="isSaving">
+          {{ isSaving ? 'Salvando...' : 'Salvar Perfil' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
