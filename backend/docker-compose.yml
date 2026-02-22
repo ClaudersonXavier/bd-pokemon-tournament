@@ -5,13 +5,13 @@ services:
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_DB: projeto_banquinho
-      POSTGRES_USER: dev
-      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - projeto-banquinho-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dev -d projeto_banquinho"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -25,7 +25,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgres://dev:dev@db:5432/projeto_banquinho?schema=public
+        DATABASE_URL: ${DATABASE_URL}
     restart: "no"
 
   seeder:
@@ -37,10 +37,10 @@ services:
       prisma-migrate:
         condition: service_completed_successfully
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/projeto_banquinho
-      SPRING_DATASOURCE_USERNAME: dev
-      SPRING_DATASOURCE_PASSWORD: dev
-      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+        SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+        SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+        SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+        SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
     restart: "no"
 
   backend:
@@ -52,10 +52,10 @@ services:
       prisma-migrate:
         condition: service_completed_successfully
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/projeto_banquinho
-      SPRING_DATASOURCE_USERNAME: dev
-      SPRING_DATASOURCE_PASSWORD: dev
-      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+        SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+        SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+        SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+        SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
     ports:
       - "8080:8080"
     restart: unless-stopped

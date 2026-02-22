@@ -1,0 +1,47 @@
+# ENV
+.env
+
+# BUILD
+target/
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
+
+# LOGS
+*.log
+logs/
+
+# IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+*.stackdump
+
+# Mac
+.DS_Store
+
+# ANGULAR / NODE
+node_modules/
+dist/
+.angular/
+coverage/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TEMP
+tmp/
+temp/
+*.tmp
