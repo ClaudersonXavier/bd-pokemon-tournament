@@ -6,7 +6,8 @@ Projeto simples usando a PokeAPI como fonte de dados.
 
 ### Credenciais de acesso
 
-As credenciais estao definidas em `backend/docker-compose.yml` e usadas em
+As credenciais de desenvolvimento estao no arquivo `backend/.env.example` e sao
+consumidas pelo `backend/docker-compose.yml` e por
 `backend/src/main/resources/application.properties`:
 
 - Host: `localhost`
@@ -27,13 +28,19 @@ As credenciais estao definidas em `backend/docker-compose.yml` e usadas em
    cd backend
    ```
 
-2. **Suba o banco de dados com Docker:**
+2. **Copie o arquivo de exemplo de ambiente:**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Suba o banco de dados com Docker:**
 
    ```bash
    docker compose up --build
    ```
 
-3. **A aplicação ficará disponível em:**
+4. **A aplicacao ficara disponivel em:**
 
    ```bash
    http://localhost:8080
