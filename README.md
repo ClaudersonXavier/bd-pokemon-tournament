@@ -49,6 +49,7 @@ consumidas pelo `backend/docker-compose.yml` e por
 #### Observacoes
 
 - Certifique-se que o banco esta rodando antes de executar comandos do Prisma.
+- Se o arquivo `.env` nao existir, o `docker compose` usa valores padrao de desenvolvimento definidos em `backend/docker-compose.yml`.
 
 #### Comandos uteis
 
