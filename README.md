@@ -6,8 +6,8 @@ Projeto simples usando a PokeAPI como fonte de dados.
 
 ### Credenciais de acesso
 
-As credenciais de desenvolvimento estao no arquivo `backend/.env.example` e sao
-consumidas pelo `backend/docker-compose.yml` e por
+As credenciais de desenvolvimento estao no arquivo `.env.example` da raiz e sao
+consumidas pelo `docker-compose.yml` da raiz e por
 `backend/src/main/resources/application.properties`:
 
 - Host: `localhost`
@@ -22,34 +22,29 @@ consumidas pelo `backend/docker-compose.yml` e por
 
 #### Passos
 
-1. **Entre na pasta `backend/`:**
-
-   ```bash
-   cd backend
-   ```
-
-2. **Copie o arquivo de exemplo de ambiente:**
+1. **(Opcional) Copie o arquivo de exemplo de ambiente:**
 
    ```bash
    cp .env.example .env
    ```
 
-3. **Suba o banco de dados com Docker:**
+2. **Suba toda a stack com um único comando (a partir da raiz):**
 
    ```bash
    docker compose up --build
    ```
 
-4. **A aplicacao ficara disponivel em:**
+3. **As aplicacoes ficarao disponiveis em:**
 
    ```bash
-   http://localhost:8080
+   Backend:  http://localhost:8080
+   Frontend: http://localhost:4200
    ```
 
 #### Observacoes
 
-- Certifique-se que o banco esta rodando antes de executar comandos do Prisma.
-- Se o arquivo `.env` nao existir, o `docker compose` usa valores padrao de desenvolvimento definidos em `backend/docker-compose.yml`.
+- O compose da raiz inclui banco, migrate, seeder, backend e frontend.
+- Se o arquivo `.env` nao existir, o `docker compose` usa valores padrao de desenvolvimento definidos em `docker-compose.yml`.
 
 #### Comandos uteis
 
