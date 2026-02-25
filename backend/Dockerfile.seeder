@@ -17,6 +17,10 @@ COPY src src
 
 # Compila o projeto (sem testes para acelerar)
 RUN ./gradlew build -x test --no-daemon
+RUN set -eux; \
+    jar="$(find build/libs -maxdepth 1 -type f -name '*.jar' ! -name '*-plain.jar' | head -n 1)"; \
+    test -n "$jar"; \
+    cp "$jar" /app/app.jar
 
 # Stage 2: Runtime apenas com JRE
 FROM eclipse-temurin:21-jre
@@ -24,7 +28,7 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copia o JAR compilado
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=builder /app/app.jar /app/app.jar
 
 # Executa o SeedRunner como main class
 CMD ["java", "-cp", "app.jar", "-Dloader.main=com.ufape.projetobanquinhobd.seeder.SeedRunner", "org.springframework.boot.loader.launch.PropertiesLauncher"]
