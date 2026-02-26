@@ -134,6 +134,8 @@ model torneio_times {
 model treinador {
   id      BigInt    @id @default(autoincrement())
   nome    String    @db.VarChar(255)
+  email   String    @unique @db.VarChar(255)
+  senha   String    @db.VarChar(255)
   pokemon pokemon[]
   time    time[]
 }
