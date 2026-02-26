@@ -34,6 +34,8 @@ consumidas pelo `docker-compose.yml` da raiz e por
    docker compose up --build
    ```
 
+   O servico `frontend` e buildado a partir de `frontend/Dockerfile` e inicia em modo de desenvolvimento.
+
 3. **As aplicacoes ficarao disponiveis em:**
 
    ```bash
@@ -45,6 +47,7 @@ consumidas pelo `docker-compose.yml` da raiz e por
 
 - O compose da raiz inclui banco, migrate, seeder, backend e frontend.
 - Se o arquivo `.env` nao existir, o `docker compose` usa valores padrao de desenvolvimento definidos em `docker-compose.yml`.
+- O frontend roda com hot reload via volume bind (`./frontend:/app`) e dependencia persistida em `frontend-node-modules`.
 
 #### Comandos uteis
 

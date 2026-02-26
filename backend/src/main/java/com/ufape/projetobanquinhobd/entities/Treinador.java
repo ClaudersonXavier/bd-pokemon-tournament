@@ -19,14 +19,25 @@ public class Treinador {
     @Column(nullable = false)
     private String nome;
 
+    @Embedded
+    private CredenciaisUsuario credenciais;
+
     @OneToMany(mappedBy = "treinador")
     private final Set<Time> times = new HashSet<>();
 
     @OneToMany(mappedBy = "treinador")
     private final Set<Pokemon> pokemons = new HashSet<>();
 
-    public Treinador(String nome) {
+    public Treinador(String nome, CredenciaisUsuario credenciais) {
         this.setNome(nome);
+        this.setCredenciais(credenciais);
+    }
+
+    public void setCredenciais(CredenciaisUsuario credenciais) {
+        if (credenciais == null) {
+            throw new IllegalArgumentException("Credenciais são obrigatórias");
+        }
+        this.credenciais = credenciais;
     }
 
     public void setNome(String nome) {
