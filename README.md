@@ -632,3 +632,110 @@ Para mais detalhes técnicos sobre os seeders, consulte:
 
 - API: https://pokeapi.co/
 - Documentacao: https://pokeapi.co/docs/v2
+
+---
+
+## Views SQL
+
+As views foram criadas via migration Prisma e são aplicadas automaticamente ao subir o projeto com `docker compose up`.
+
+### View 1 — `v_resumo_batalhas_torneio`
+
+**Finalidade:** Apresenta um resumo completo de cada batalha disputada no sistema.
+
+**Colunas retornadas:**
+
+| Coluna | Descrição |
+|---|---|
+| `torneio_id` / `torneio_nome` | Identificação do torneio |
+| `batalha_id` | ID da batalha |
+| `rodada` | Fase da competição (1 = oitavas, 2 = quartas…) |
+| `horario_inicio` / `horario_fim` | Horários da batalha |
+| `duracao_minutos` | Tempo de duração calculado automaticamente |
+| `time_vencedor_id` / `time_vencedor_nome` | Vencedor do confronto |
+
+**Exemplos de consulta:**
+
+```sql
+-- Todas as batalhas da Liga Kanto Regional
+SELECT * FROM v_resumo_batalhas_torneio
+WHERE torneio_nome = 'Liga Kanto Regional';
+
+-- Ranking de batalhas por duração
+SELECT torneio_nome, rodada, time_vencedor_nome, duracao_minutos
+FROM v_resumo_batalhas_torneio
+ORDER BY duracao_minutos DESC;
+```
+
+---
+
+### View 2 — `v_time_pokemons_detalhado`
+
+**Finalidade:** Exibe a composição completa de cada time com todos os Pokémons, suas espécies, imagens e tipos.
+
+**Colunas retornadas:**
+
+| Coluna | Descrição |
+|---|---|
+| `time_id` / `time_nome` | Identificação do time |
+| `treinador_id` / `treinador_nome` | Dono do time |
+| `pokemon_id` / `pokemon_apelido` | Identificação do Pokémon |
+| `especie_nome` / `especie_imagem_url` | Espécie e sprite |
+| `tipos` | Tipos |
+
+**Exemplos de consulta:**
+
+```sql
+-- Todos os Pokémons do time de Ash
+SELECT pokemon_apelido, especie_nome, tipos
+FROM v_time_pokemons_detalhado
+WHERE treinador_nome = 'Ash Ketchum';
+
+-- Times que possuem Pokémons do tipo Fire
+SELECT DISTINCT time_nome, treinador_nome
+FROM v_time_pokemons_detalhado
+WHERE tipos LIKE '%Fire%';
+```
+
+---
+
+### View 3 — `v_treinador_desempenho_torneio`
+
+**Finalidade:** Apresenta o desempenho de cada treinador por torneio (total de batalhas, vitórias, derrotas e percentual de aproveitamento).
+
+**Colunas retornadas:**
+
+| Coluna | Descrição |
+|---|---|
+| `treinador_id` / `treinador_nome` | Identificação do treinador |
+| `torneio_id` / `torneio_nome` | Identificação do torneio |
+| `time_id` / `time_nome` | Time usado no torneio |
+| `total_batalhas` | Número de batalhas disputadas |
+| `total_vitorias` | Número de vitórias obtidas |
+| `total_derrotas` | Número de derrotas sofridas |
+| `percentual_vitorias` | Taxa de vitórias em % |
+
+**Exemplos de consulta:**
+
+```sql
+-- Ranking geral por percentual de vitórias
+SELECT treinador_nome, torneio_nome, total_batalhas,
+       total_vitorias, percentual_vitorias
+FROM v_treinador_desempenho_torneio
+ORDER BY percentual_vitorias DESC;
+
+-- Melhor treinador de cada torneio
+SELECT DISTINCT ON (torneio_nome)
+    torneio_nome, treinador_nome, percentual_vitorias
+FROM v_treinador_desempenho_torneio
+ORDER BY torneio_nome, percentual_vitorias DESC;
+
+-- Aproveitamento geral de um treinador em todos os torneios
+SELECT treinador_nome,
+       SUM(total_batalhas) AS batalhas_totais,
+       SUM(total_vitorias) AS vitorias_totais,
+       ROUND(SUM(total_vitorias)::NUMERIC / NULLIF(SUM(total_batalhas), 0) * 100, 2) AS aproveitamento_geral
+FROM v_treinador_desempenho_torneio
+WHERE treinador_nome = 'Ash Ketchum'
+GROUP BY treinador_nome;
+```
