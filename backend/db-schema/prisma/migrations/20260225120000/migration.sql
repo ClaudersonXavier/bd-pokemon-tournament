@@ -48,7 +48,7 @@ GROUP BY
     tm.id, tm.nome,
     tr.id, tr.nome,
     p.id, p.apelido,
-    e.nome, e.imagem_url;e;
+    e.nome, e.imagem_url;
 
 CREATE VIEW v_treinador_desempenho_torneio AS
 SELECT
