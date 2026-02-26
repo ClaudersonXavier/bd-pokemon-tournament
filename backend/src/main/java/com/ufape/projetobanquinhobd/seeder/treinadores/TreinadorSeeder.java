@@ -36,11 +36,13 @@ public class TreinadorSeeder {
                 System.out.println("[" + count + "/" + TREINADORES.size() + "] Processando: " + treinadorSeedData.nome);
                 
                 // Verificar se já existe (por enquanto cria sempre, mas pode adicionar validação)
-                Treinador treinador = new Treinador(treinadorSeedData.nome);
-                treinador.setCredenciais(new CredenciaisUsuario(
-                    treinadorSeedData.email,
-                    treinadorSeedData.senha
-                ));
+                Treinador treinador = new Treinador(
+                    treinadorSeedData.nome,
+                    new CredenciaisUsuario(
+                        treinadorSeedData.email,
+                        treinadorSeedData.senha
+                    )
+                );
                 treinadorService.salvar(treinador);
                 salvos++;
                 System.out.println("  ✓ Salvo com sucesso!");
