@@ -69,3 +69,6 @@ export interface Torneio {
   batalhas: Batalha[];
   times: Time[];
 }
+
+// Estatísticas
+export * from './estatisticas';

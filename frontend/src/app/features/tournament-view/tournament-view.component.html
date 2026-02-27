@@ -69,6 +69,54 @@
         <h2 class="content-title">Chaveamento do Torneio</h2>
         <p class="content-subtitle">Acompanhe o caminho até a final</p>
 
+        <!-- Estatísticas Gerais do Torneio -->
+        <div
+          class="tournament-stats"
+          *ngIf="estatisticasTorneio.totalBatalhas > 0"
+        >
+          <div class="stat-card">
+            <span class="stat-icon">⚔️</span>
+            <div class="stat-info">
+              <span class="stat-value">{{
+                estatisticasTorneio.totalBatalhas
+              }}</span>
+              <span class="stat-label">Total de Batalhas</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">✅</span>
+            <div class="stat-info">
+              <span class="stat-value">{{
+                estatisticasTorneio.batalhasFinalizadas
+              }}</span>
+              <span class="stat-label">Batalhas Finalizadas</span>
+            </div>
+          </div>
+          <div class="stat-card" *ngIf="estatisticasTorneio.duracaoMedia > 0">
+            <span class="stat-icon">⏱️</span>
+            <div class="stat-info">
+              <span class="stat-value"
+                >{{ estatisticasTorneio.duracaoMedia }}min</span
+              >
+              <span class="stat-label">Duração Média</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campeão do Torneio -->
+        <div class="champion-section" *ngIf="getCampeao()">
+          <div class="champion-card">
+            <div class="champion-crown">👑</div>
+            <h3 class="champion-title">Campeão do Torneio</h3>
+            <div class="champion-team">
+              <span class="champion-team-name">{{ getCampeao()?.nome }}</span>
+              <span class="champion-trainer" *ngIf="getCampeao()?.treinador">
+                Treinador: {{ getCampeao()?.treinador?.nome }}
+              </span>
+            </div>
+          </div>
+        </div>
+
         <!-- Bracket Visual -->
         <div class="bracket" *ngIf="bracketRounds.length > 0">
           <div
@@ -172,7 +220,15 @@
               <div class="trainer-info">
                 <h3 class="trainer-name">{{ treinador.nome }}</h3>
                 <p class="trainer-badges">
-                  🏅 {{ treinador.times?.length || 0 }} time(s)
+                  � {{ getTotalVitorias(treinador.id) }} vitória(s) • ⚔️
+                  {{ getTotalBatalhas(treinador.id) }} batalha(s)
+                </p>
+                <p
+                  class="trainer-winrate"
+                  *ngIf="getTotalBatalhas(treinador.id) > 0"
+                >
+                  📊 {{ getPercentualVitorias(treinador.id) }}% de
+                  aproveitamento
                 </p>
               </div>
               <div class="trainer-rank">
@@ -182,7 +238,11 @@
 
             <!-- Times do Treinador -->
             <div class="trainer-teams">
-              <h4 class="teams-title">Times</h4>
+              <h4 class="teams-title">
+                Times ({{ getTeamsForTrainer(treinador.id).length }})
+              </h4>
+
+              <!-- Tem times -->
               <div
                 class="teams-list"
                 *ngIf="getTeamsForTrainer(treinador.id).length > 0"
@@ -191,12 +251,63 @@
                   class="team-item"
                   *ngFor="let time of getTeamsForTrainer(treinador.id)"
                 >
-                  <div class="team-item-header">
-                    <span class="team-item-name">{{ time.nome }}</span>
+                  <div
+                    class="team-item-header"
+                    (click)="toggleTimeExpansion(time.id)"
+                  >
+                    <span class="team-item-name">🛡️ {{ time.nome }}</span>
+                    <button class="btn-expand" type="button">
+                      {{
+                        isTimeExpandido(time.id)
+                          ? "▼ Ocultar"
+                          : "▶ Ver Pokémons"
+                      }}
+                    </button>
                   </div>
+
+                  <!-- Pokémons detalhados carregados da view -->
+                  <div
+                    class="team-pokemons-detalhado"
+                    *ngIf="isTimeExpandido(time.id)"
+                  >
+                    <div
+                      class="pokemon-card"
+                      *ngFor="let pokemon of getPokemonsDoTime(time.id)"
+                    >
+                      <img
+                        [src]="
+                          pokemon.especieImagemUrl ||
+                          '/images/pokemon-placeholder.png'
+                        "
+                        [alt]="pokemon.pokemonApelido"
+                        class="pokemon-img"
+                      />
+                      <div class="pokemon-info">
+                        <span class="pokemon-apelido">{{
+                          pokemon.pokemonApelido
+                        }}</span>
+                        <span class="pokemon-especie">{{
+                          pokemon.especieNome
+                        }}</span>
+                        <span class="pokemon-tipos">{{ pokemon.tipos }}</span>
+                      </div>
+                    </div>
+                    <p
+                      class="loading-pokemons"
+                      *ngIf="getPokemonsDoTime(time.id).length === 0"
+                    >
+                      Carregando pokémons...
+                    </p>
+                  </div>
+
+                  <!-- Preview simples (quando não expandido) -->
                   <div
                     class="team-pokemons"
-                    *ngIf="time.pokemons && time.pokemons.length > 0"
+                    *ngIf="
+                      !isTimeExpandido(time.id) &&
+                      time.pokemons &&
+                      time.pokemons.length > 0
+                    "
                   >
                     <span
                       class="pokemon-badge"

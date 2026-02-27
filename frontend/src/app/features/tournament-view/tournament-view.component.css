@@ -148,7 +148,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-container p {
@@ -423,24 +425,43 @@
 
 .trainers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 28px;
+  margin-top: 24px;
 }
 
 .trainer-card {
   background: white;
   border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 28px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   border: 2px solid #e2e8f0;
   transition: all 0.3s ease;
   animation: fadeInUp 0.5s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.trainer-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .trainer-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  transform: translateY(-8px);
+  box-shadow: 0 16px 40px rgba(102, 126, 234, 0.2);
   border-color: #667eea;
+}
+
+.trainer-card:hover::before {
+  opacity: 1;
 }
 
 .trainer-header {
@@ -472,16 +493,32 @@
 }
 
 .trainer-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: #2d3748;
-  margin-bottom: 4px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a202c;
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
 }
 
 .trainer-badges {
   font-size: 14px;
-  color: #718096;
+  color: #4a5568;
   font-weight: 600;
+  line-height: 1.6;
+}
+
+.trainer-winrate {
+  font-size: 14px;
+  color: #38a169;
+  font-weight: 700;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(72, 187, 120, 0.1);
+  border-radius: 6px;
+  width: fit-content;
 }
 
 .trainer-rank {
@@ -540,38 +577,53 @@
   font-weight: 700;
   color: #2d3748;
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teams-title::before {
+  content: "🏆";
+  font-size: 18px;
 }
 
 .teams-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .team-item {
-  background: #f7fafc;
-  padding: 12px 16px;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  padding: 16px;
   border-radius: 12px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid #cbd5e0;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .team-item:hover {
-  background: #edf2f7;
+  background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
   border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  transform: translateX(4px);
 }
 
 .team-item-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  cursor: pointer;
+  padding: 4px 0;
 }
 
 .team-item-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #2d3748;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .team-item-level {
@@ -612,11 +664,22 @@
 }
 
 .no-teams {
-  color: #a0aec0;
+  color: #718096;
   font-size: 14px;
   font-style: italic;
   text-align: center;
-  padding: 20px;
+  padding: 24px;
+  background: #f7fafc;
+  border-radius: 8px;
+  border: 2px dashed #cbd5e0;
+  margin-top: 8px;
+}
+
+.no-teams::before {
+  content: "📋";
+  display: block;
+  font-size: 32px;
+  margin-bottom: 8px;
 }
 
 /* ---- EMPTY STATE ---- */
@@ -680,7 +743,8 @@
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -732,6 +796,238 @@
   .bracket-round {
     min-width: 250px;
   }
+}
+
+/* ---- ESTATÍSTICAS DO TORNEIO ---- */
+.tournament-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border-radius: 10px;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  font-size: 32px;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #718096;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ---- CAMPEÃO DO TORNEIO ---- */
+.champion-section {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.champion-card {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+  border: 3px solid #ffa500;
+  border-radius: 16px;
+  padding: 16px 24px;
+  text-align: center;
+  box-shadow:
+    0 8px 24px rgba(255, 215, 0, 0.4),
+    0 0 0 6px rgba(255, 215, 0, 0.1);
+  position: relative;
+  animation: championGlow 3s ease-in-out infinite;
+  min-width: 280px;
+}
+
+@keyframes championGlow {
+  0%,
+  100% {
+    box-shadow:
+      0 8px 24px rgba(255, 215, 0, 0.4),
+      0 0 0 6px rgba(255, 215, 0, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 10px 30px rgba(255, 215, 0, 0.6),
+      0 0 0 8px rgba(255, 215, 0, 0.15);
+  }
+}
+
+.champion-crown {
+  font-size: 40px;
+  margin-bottom: 8px;
+  animation: crownFloat 2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes crownFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(5deg);
+  }
+}
+
+.champion-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #b8860b;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 0 0 12px 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.champion-team {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.champion-team-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a202c;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.champion-trainer {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  font-style: italic;
+}
+
+/* ---- POKÉMONS DETALHADOS ---- */
+.team-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.btn-expand {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
+  white-space: nowrap;
+}
+
+.btn-expand:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.35);
+  background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+}
+
+.btn-expand:active {
+  transform: scale(0.98);
+}
+
+.team-pokemons-detalhado {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+  padding: 16px;
+  background: rgba(247, 250, 252, 0.8);
+  border-radius: 8px;
+}
+
+.pokemon-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.pokemon-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.pokemon-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+
+.pokemon-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.pokemon-apelido {
+  font-weight: 700;
+  font-size: 14px;
+  color: #2d3748;
+  text-align: center;
+}
+
+.pokemon-especie {
+  font-size: 12px;
+  color: #718096;
+  text-align: center;
+}
+
+.pokemon-tipos {
+  font-size: 11px;
+  color: #667eea;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.loading-pokemons {
+  text-align: center;
+  color: #718096;
+  font-size: 14px;
+  padding: 20px;
 }
 
 @media (max-width: 768px) {
