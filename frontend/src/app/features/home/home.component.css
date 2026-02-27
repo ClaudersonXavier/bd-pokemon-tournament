@@ -312,6 +312,14 @@ body, html {
   gap: 20px;
 }
 
+.content-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .content-title {
   font-family: 'Press Start 2P', monospace;
   font-size: 24px;
@@ -339,6 +347,60 @@ body, html {
   color: #777;
   letter-spacing: 0.5px;
   margin: 8px 0 0;
+}
+
+.btn-manage-pokemons {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ffde59, #ffb347);
+  color: #1a1a1a;
+  border: 3px solid #1a1a1a;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #1a1a1a;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.btn-manage-pokemons img {
+  width: 22px;
+  height: 22px;
+  image-rendering: pixelated;
+}
+
+.btn-manage-pokemons:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #1a1a1a;
+}
+
+.btn-manage-times {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #64b5f6, #42a5f5);
+  color: #1a1a1a;
+  border: 3px solid #1a1a1a;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #1a1a1a;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.btn-manage-times img {
+  width: 22px;
+  height: 22px;
+  image-rendering: pixelated;
+}
+
+.btn-manage-times:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #1a1a1a;
 }
 
 /* ---- TOURNAMENTS SECTION ---- */
@@ -2668,4 +2730,3 @@ body, html {
   border-radius: 12px;
   font-size: 0.78rem;
 }
-

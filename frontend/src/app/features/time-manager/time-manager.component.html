@@ -1,0 +1,211 @@
+<div class="time-page">
+  <div class="bg-sky"></div>
+
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-logo">
+        <img src="/icons/poke-ball.png" alt="Time" class="logo-img" />
+        <div class="logo-text">
+          <h1>Meus Times</h1>
+          <p>Gerencie suas equipes de batalha</p>
+        </div>
+      </div>
+
+      <div class="header-user">
+        <span class="user-name">{{ currentUser?.nome }}</span>
+        <span class="user-email">{{ currentUser?.email }}</span>
+        <button class="btn-back" (click)="goHome()">Voltar</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-main">
+    <section class="hero-card">
+      <div class="hero-copy">
+        <h2>Monte a equipe perfeita</h2>
+        <p>
+          Crie times com ate 6 pokemons e prepare-se para os torneios.
+          Organize seus monstrinhos como nos jogos classicos!
+        </p>
+        <div class="hero-stats">
+          <div class="chip">
+            <span class="chip-label">Times</span>
+            <strong>{{ times.length }}</strong>
+          </div>
+          <div class="chip">
+            <span class="chip-label">Pokemons disponiveis</span>
+            <strong>{{ pokemons.length }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="hero-illustration">
+        <img src="/images/pokemon-header.gif" alt="Pokemon Team" />
+      </div>
+    </section>
+
+    <div class="manager-grid">
+      <!-- Form Card - Create New Team -->
+      <div class="card form-card">
+        <div class="card-title">
+          <h3>Criar novo Time</h3>
+          <p>Escolha um nome e selecione ate 6 pokemons.</p>
+        </div>
+
+        <div class="field">
+          <label for="time-nome">Nome do Time</label>
+          <input
+            id="time-nome"
+            type="text"
+            maxlength="50"
+            placeholder="Ex: Time Kanto, Equipe Fogo..."
+            [(ngModel)]="newTime.nome"
+          />
+        </div>
+
+        <div class="field">
+          <label>Selecione os Pokemons (max 6)</label>
+          <p class="field-hint">{{ newTime.pokemonIds.length }}/6 selecionados</p>
+          <div class="search-box">
+            <input
+              type="text"
+              placeholder="Buscar pokemon..."
+              [(ngModel)]="searchPokemon"
+            />
+          </div>
+          <div class="pokemon-selector" *ngIf="!loadingPokemons">
+            <div
+              class="pokemon-option"
+              *ngFor="let pokemon of availablePokemons"
+              [class.selected]="isSelected('new', pokemon.id)"
+              (click)="togglePokemonSelection('new', pokemon.id)"
+            >
+              <img [src]="sprite(pokemon)" [alt]="pokemon.apelido || pokemon.especie?.nome" />
+              <span class="pokemon-name">{{ pokemon.apelido || pokemon.especie?.nome }}</span>
+            </div>
+          </div>
+          <div class="loading-state" *ngIf="loadingPokemons">
+            <p>Carregando pokemons...</p>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button
+            class="btn btn-primary"
+            (click)="criarTime()"
+            [disabled]="savingTime || !newTime.nome.trim()"
+          >
+            {{ savingTime ? 'Criando...' : 'Criar Time' }}
+          </button>
+        </div>
+
+        <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+      </div>
+
+      <!-- Teams List Card -->
+      <div class="card teams-card">
+        <div class="card-header">
+          <div>
+            <h3>Seus Times</h3>
+            <p>Edite ou remova suas equipes de batalha.</p>
+          </div>
+          <div class="search-box">
+            <input
+              type="text"
+              placeholder="Buscar time ou pokemon..."
+              [(ngModel)]="searchTime"
+            />
+          </div>
+        </div>
+
+        <div class="loading-state" *ngIf="loadingTimes">
+          <p>Carregando times...</p>
+        </div>
+
+        <div class="empty-state" *ngIf="!loadingTimes && filteredTimes.length === 0">
+          <div class="empty-icon">
+            <img src="/icons/poke-ball.png" alt="Empty" />
+          </div>
+          <p>Nenhum time encontrado</p>
+          <small>Crie seu primeiro time ao lado!</small>
+        </div>
+
+        <div class="teams-grid" *ngIf="!loadingTimes && filteredTimes.length > 0">
+          <div class="team-card" *ngFor="let time of filteredTimes">
+            <!-- View Mode -->
+            <ng-container *ngIf="editingTimeId !== time.id">
+              <div class="team-header">
+                <h4>{{ time.nome }}</h4>
+                <span class="team-badge">#{{ time.id }}</span>
+              </div>
+
+              <div class="team-pokemons">
+                <div class="pokemon-slot" *ngFor="let pokemon of time.pokemons">
+                  <img [src]="sprite(pokemon)" [alt]="pokemon.apelido || pokemon.especie?.nome" />
+                  <span class="slot-name">{{ pokemon.apelido || pokemon.especie?.nome }}</span>
+                </div>
+                <div class="pokemon-slot empty" *ngFor="let _ of getEmptySlots(time)">
+                  <span class="empty-slot">?</span>
+                </div>
+              </div>
+
+              <div class="team-info">
+                <span class="info-count">{{ time.pokemons?.length || 0 }}/6 pokemons</span>
+              </div>
+
+              <div class="team-actions">
+                <button class="btn btn-ghost" (click)="iniciarEdicao(time)">Editar</button>
+                <button
+                  class="btn btn-danger"
+                  (click)="removerTime(time)"
+                  [disabled]="deletingTimeId === time.id"
+                >
+                  {{ deletingTimeId === time.id ? 'Removendo...' : 'Remover' }}
+                </button>
+              </div>
+            </ng-container>
+
+            <!-- Edit Mode -->
+            <ng-container *ngIf="editingTimeId === time.id">
+              <div class="edit-panel">
+                <div class="field">
+                  <label>Nome do Time</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="editForm.nome"
+                    maxlength="50"
+                  />
+                </div>
+
+                <div class="field">
+                  <label>Pokemons ({{ editForm.pokemonIds.length }}/6)</label>
+                  <div class="pokemon-selector compact">
+                    <div
+                      class="pokemon-option"
+                      *ngFor="let pokemon of pokemons"
+                      [class.selected]="isSelected('edit', pokemon.id)"
+                      (click)="togglePokemonSelection('edit', pokemon.id)"
+                    >
+                      <img [src]="sprite(pokemon)" [alt]="pokemon.apelido || pokemon.especie?.nome" />
+                      <span class="pokemon-name">{{ pokemon.apelido || pokemon.especie?.nome }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="edit-actions">
+                  <button class="btn btn-ghost" (click)="cancelarEdicao()">Cancelar</button>
+                  <button
+                    class="btn btn-primary"
+                    (click)="salvarEdicao()"
+                    [disabled]="savingTime"
+                  >
+                    {{ savingTime ? 'Salvando...' : 'Salvar' }}
+                  </button>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TorneioRepository extends JpaRepository<Torneio, Long> {
+    boolean existsByTimes_Id(Long timeId);
 }

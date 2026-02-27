@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Treinador, Time, Pokemon } from '../models';
+import { Treinador, Time, Pokemon, Ataque } from '../models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TreinadorService {
-  private apiUrl = 'http://localhost:8080/api/treinadores';
+  private apiUrl = `${environment.apiUrl}/treinadores`;
 
   constructor(private http: HttpClient) {}
 
@@ -41,6 +42,10 @@ export class TreinadorService {
     return this.http.get<Time[]>(`${this.apiUrl}/times`);
   }
 
+  listarTimesDoTreinador(treinadorId: number): Observable<Time[]> {
+    return this.http.get<Time[]>(`${this.apiUrl}/${treinadorId}/times`);
+  }
+
   buscarTime(id: number): Observable<Time> {
     return this.http.get<Time>(`${this.apiUrl}/times/${id}`);
   }
@@ -57,24 +62,98 @@ export class TreinadorService {
     return this.http.delete<void>(`${this.apiUrl}/times/${id}`);
   }
 
+  criarTimeParaTreinador(
+    treinadorId: number,
+    payload: { nome: string; pokemonIds?: number[] },
+  ): Observable<Time> {
+    return this.http.post<Time>(`${this.apiUrl}/${treinadorId}/times`, payload);
+  }
+
+  atualizarTimeDoTreinador(
+    treinadorId: number,
+    timeId: number,
+    payload: { nome?: string; pokemonIds?: number[] },
+  ): Observable<Time> {
+    return this.http.put<Time>(
+      `${this.apiUrl}/${treinadorId}/times/${timeId}`,
+      payload,
+    );
+  }
+
+  deletarTimeDoTreinador(treinadorId: number, timeId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${treinadorId}/times/${timeId}`);
+  }
+
   // Métodos para Pokemons
-  listarPokemons(): Observable<Pokemon[]> {
-    return this.http.get<Pokemon[]>(`${this.apiUrl}/pokemons`);
+  listarPokemonsDoTreinador(treinadorId: number): Observable<Pokemon[]> {
+    return this.http.get<Pokemon[]>(`${this.apiUrl}/${treinadorId}/pokemons`);
   }
 
-  buscarPokemon(id: number): Observable<Pokemon> {
-    return this.http.get<Pokemon>(`${this.apiUrl}/pokemons/${id}`);
+  criarPokemonParaTreinador(
+    treinadorId: number,
+    payload: { apelido?: string | null; especieNome: string },
+  ): Observable<Pokemon> {
+    return this.http.post<Pokemon>(
+      `${this.apiUrl}/${treinadorId}/pokemons`,
+      payload,
+    );
   }
 
-  criarPokemon(pokemon: Pokemon): Observable<Pokemon> {
-    return this.http.post<Pokemon>(`${this.apiUrl}/pokemons`, pokemon);
+  atualizarPokemonDoTreinador(
+    treinadorId: number,
+    pokemonId: number,
+    payload: { apelido?: string | null; especieNome?: string | null },
+  ): Observable<Pokemon> {
+    return this.http.put<Pokemon>(
+      `${this.apiUrl}/${treinadorId}/pokemons/${pokemonId}`,
+      payload,
+    );
   }
 
-  atualizarPokemon(id: number, pokemon: Pokemon): Observable<Pokemon> {
-    return this.http.put<Pokemon>(`${this.apiUrl}/pokemons/${id}`, pokemon);
+  deletarPokemonDoTreinador(
+    treinadorId: number,
+    pokemonId: number,
+  ): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/${treinadorId}/pokemons/${pokemonId}`,
+    );
   }
 
-  deletarPokemon(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/pokemons/${id}`);
+  listarAtaquesDoPokemon(treinadorId: number, pokemonId: number): Observable<Ataque[]> {
+    return this.http.get<Ataque[]>(
+      `${this.apiUrl}/${treinadorId}/pokemons/${pokemonId}/ataques`,
+    );
+  }
+
+  definirAtaquesDoPokemon(
+    treinadorId: number,
+    pokemonId: number,
+    ataquesNomes: string[],
+  ): Observable<Pokemon> {
+    return this.http.put<Pokemon>(
+      `${this.apiUrl}/${treinadorId}/pokemons/${pokemonId}/ataques`,
+      { ataquesNomes },
+    );
+  }
+
+  adicionarAtaqueAoPokemon(
+    treinadorId: number,
+    pokemonId: number,
+    ataqueNome: string,
+  ): Observable<Pokemon> {
+    return this.http.post<Pokemon>(
+      `${this.apiUrl}/${treinadorId}/pokemons/${pokemonId}/ataques/${encodeURIComponent(ataqueNome)}`,
+      {},
+    );
+  }
+
+  removerAtaqueDoPokemon(
+    treinadorId: number,
+    pokemonId: number,
+    ataqueNome: string,
+  ): Observable<Pokemon> {
+    return this.http.delete<Pokemon>(
+      `${this.apiUrl}/${treinadorId}/pokemons/${pokemonId}/ataques/${encodeURIComponent(ataqueNome)}`,
+    );
   }
 }

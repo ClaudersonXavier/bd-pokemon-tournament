@@ -30,6 +30,22 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'pokemons',
+    loadComponent: () =>
+      import('./features/pokemon-manager/pokemon-manager.component').then(
+        (m) => m.PokemonManagerComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'times',
+    loadComponent: () =>
+      import('./features/time-manager/time-manager.component').then(
+        (m) => m.TimeManagerComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'tournament/:id',
     loadComponent: () =>
       import('./features/tournament-view/tournament-view.component').then(

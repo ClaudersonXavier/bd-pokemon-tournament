@@ -82,10 +82,22 @@
       <!-- Tournaments Tab -->
       <section class="tab-content" *ngIf="isTabActive('tournaments')">
         <div class="content-card">
-          <h2 class="content-title">Torneios</h2>
-          <p class="content-subtitle">
-            Encontre e participe de torneios incríveis!
-          </p>
+          <div class="content-header-row">
+            <div>
+              <h2 class="content-title">Torneios</h2>
+              <p class="content-subtitle">
+                Encontre e participe de torneios incríveis!
+              </p>
+            </div>
+            <button class="btn-manage-pokemons" (click)="goToPokemons()">
+              <img src="/icons/poke-ball.png" alt="Pokemons" />
+              Meus Pokemons
+            </button>
+            <button class="btn-manage-times" (click)="goToTimes()">
+              <img src="/icons/poke-ball.png" alt="Times" />
+              Meus Times
+            </button>
+          </div>
 
           <!-- Loading State -->
           <div *ngIf="loadingTorneios" class="tournaments-loading">

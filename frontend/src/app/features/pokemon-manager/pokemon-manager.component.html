@@ -1,0 +1,205 @@
+<div class="pokemon-page">
+  <div class="bg-sky"></div>
+
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-logo">
+        <img src="/icons/poke-ball.png" alt="Pokemon" class="logo-img" />
+        <div class="logo-text">
+          <h1>Meus Pokemons</h1>
+          <p>Gerencie sua box de batalha</p>
+        </div>
+      </div>
+
+      <div class="header-user">
+        <span class="user-name">{{ currentUser?.nome }}</span>
+        <span class="user-email">{{ currentUser?.email }}</span>
+        <button class="btn-back" (click)="goHome()">Voltar</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-main">
+    <section class="hero-card">
+      <div class="hero-copy">
+        <h2>Organize sua Box</h2>
+        <p>
+          Crie, edite e remova pokemons do seu treinador. Escolha a especie,
+          defina apelidos e deixe sua colecao pronta para montar times.
+        </p>
+        <div class="hero-stats">
+          <div class="chip">
+            <span class="chip-label">Pokemons</span>
+            <strong>{{ pokemons.length }}</strong>
+          </div>
+          <div class="chip">
+            <span class="chip-label">Especies</span>
+            <strong>{{ especies.length }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="hero-illustration">
+        <img src="/images/pokemon-header.gif" alt="Pokemon" />
+      </div>
+    </section>
+
+    <div class="manager-grid">
+      <div class="card form-card">
+        <div class="card-title">
+          <h3>Novo Pokemon</h3>
+          <p>Escolha a especie e opcionalmente um apelido.</p>
+        </div>
+
+        <div class="field">
+          <label for="especie-nome">Especie</label>
+          <select
+            id="especie-nome"
+            [(ngModel)]="newPokemon.especieNome"
+            [disabled]="loadingEspecies"
+          >
+            <option value="" disabled>
+              {{ loadingEspecies ? 'Carregando especies...' : 'Selecione uma especie' }}
+            </option>
+            <option *ngFor="let especie of especies" [value]="especie.nome">
+              {{ especie.nome }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="pokemon-apelido">Apelido (opcional)</label>
+          <input
+            id="pokemon-apelido"
+            type="text"
+            maxlength="60"
+            placeholder="Ex: Relampago, Tanque, Ninja..."
+            [(ngModel)]="newPokemon.apelido"
+          />
+        </div>
+
+        <div class="actions">
+          <button
+            class="btn btn-primary"
+            (click)="criarPokemon()"
+            [disabled]="savingPokemon || !newPokemon.especieNome"
+          >
+            {{ savingPokemon ? 'Criando...' : 'Adicionar Pokemon' }}
+          </button>
+        </div>
+
+        <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+      </div>
+
+      <div class="card list-card">
+        <div class="card-header">
+          <div>
+            <h3>Sua Box</h3>
+            <p>Visualize, pesquise e edite seus pokemons.</p>
+          </div>
+          <div class="search-box">
+            <input
+              type="text"
+              placeholder="Buscar por apelido ou especie..."
+              [(ngModel)]="searchPokemon"
+            />
+          </div>
+        </div>
+
+        <div class="loading-state" *ngIf="loadingPokemons">
+          <p>Carregando pokemons...</p>
+        </div>
+
+        <div class="empty-state" *ngIf="!loadingPokemons && filteredPokemons.length === 0">
+          <div class="empty-icon">
+            <img src="/icons/poke-ball.png" alt="Empty" />
+          </div>
+          <p>Nenhum pokemon encontrado</p>
+          <small>Adicione seu primeiro pokemon no painel ao lado.</small>
+        </div>
+
+        <div class="pokemon-grid" *ngIf="!loadingPokemons && filteredPokemons.length > 0">
+          <div class="pokemon-card" *ngFor="let pokemon of filteredPokemons">
+            <div class="pokemon-top">
+              <span class="pokemon-id">#{{ pokemon.id }}</span>
+              <span class="pokemon-species">{{ pokemon.especie.nome }}</span>
+            </div>
+
+            <div class="pokemon-body">
+              <img [src]="imageFor(pokemon)" [alt]="pokemon.especie.nome" />
+              <h4>{{ pokemon.apelido || pokemon.especie.nome }}</h4>
+              <small class="attack-count">{{ (pokemon.ataques || []).length }}/4 ataques</small>
+            </div>
+
+            <div class="pokemon-actions">
+              <button class="btn btn-ghost" (click)="iniciarEdicao($event, pokemon)">Editar</button>
+              <button
+                class="btn btn-danger"
+                (click)="removerPokemon($event, pokemon)"
+                [disabled]="deletingPokemonId === pokemon.id"
+              >
+                {{ deletingPokemonId === pokemon.id ? 'Removendo...' : 'Remover' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="edit-overlay" *ngIf="editingPokemon as pokemonSelecionado" (click)="cancelarEdicao()">
+    <div class="edit-modal" (click)="$event.stopPropagation()">
+      <div class="edit-hero">
+        <img [src]="imageFor(pokemonSelecionado)" [alt]="pokemonSelecionado.especie.nome" />
+        <div>
+          <h3>Editando {{ pokemonSelecionado.apelido || pokemonSelecionado.especie.nome }}</h3>
+          <p>Personalize especie, apelido e os 4 ataques do seu pokemon.</p>
+        </div>
+      </div>
+
+      <div class="edit-content">
+        <div class="field">
+          <label>Especie</label>
+          <select [(ngModel)]="editForm.especieNome">
+            <option *ngFor="let especie of especies" [value]="especie.nome">
+              {{ especie.nome }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Apelido</label>
+          <input type="text" maxlength="60" [(ngModel)]="editForm.apelido" />
+        </div>
+
+        <div class="field">
+          <label>Ataques ({{ editForm.ataquesNomes.length }}/4)</label>
+          <p class="attack-hint">Clique para selecionar ou remover ataques.</p>
+
+          <div class="loading-state" *ngIf="loadingAtaques">
+            <p>Carregando ataques...</p>
+          </div>
+
+          <div class="attack-grid" *ngIf="!loadingAtaques">
+            <button
+              type="button"
+              class="attack-option"
+              *ngFor="let ataque of ataquesCatalogo"
+              [class.selected]="isAttackSelected(ataque.nome)"
+              (click)="toggleAttackSelection($event, ataque.nome)"
+            >
+              <span class="attack-name">{{ ataque.nome }}</span>
+              <span class="attack-meta">{{ ataque.tipo.nome }} · {{ ataque.categoria }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="edit-actions">
+        <button class="btn btn-ghost" (click)="cancelarEdicao()">Cancelar</button>
+        <button class="btn btn-primary" (click)="salvarEdicao()" [disabled]="savingPokemon">
+          {{ savingPokemon ? 'Salvando...' : 'Salvar alteracoes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
