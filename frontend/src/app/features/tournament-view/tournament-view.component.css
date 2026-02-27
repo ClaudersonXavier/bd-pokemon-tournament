@@ -117,13 +117,6 @@
   font-weight: 500;
 }
 
-.tournament-description {
-  color: #718096;
-  font-size: 16px;
-  line-height: 1.6;
-  margin-top: 12px;
-}
-
 /* ---- LOADING & ERROR ---- */
 .loading-container,
 .error-container {

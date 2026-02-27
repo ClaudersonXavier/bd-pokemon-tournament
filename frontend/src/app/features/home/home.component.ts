@@ -51,47 +51,12 @@ export class HomeComponent implements OnInit {
   // Criar Torneio
   newTournament = {
     name: '',
-    description: '',
     startDate: '',
     endDate: '',
+    registrationStartDate: '',
+    registrationEndDate: '',
     maxParticipants: 16,
-    minLevel: 1,
-    maxLevel: 100,
-    allowedTypes: [] as string[],
-    organizerId: 1,
-    status: 'SCHEDULED',
-    prizePool: 10000,
-    registrationDeadline: '',
   };
-
-  // Mock data para dropdowns (simulando SELECT queries)
-  availableOrganizers = [
-    { id: 1, name: 'Admin Principal', tournaments: 12 },
-    { id: 2, name: 'Ash Ketchum', tournaments: 8 },
-    { id: 3, name: 'Professor Oak', tournaments: 15 },
-    { id: 4, name: 'Misty Waters', tournaments: 5 },
-  ];
-
-  pokemonTypes = [
-    'Normal',
-    'Fogo',
-    'Água',
-    'Elétrico',
-    'Planta',
-    'Gelo',
-    'Lutador',
-    'Venenoso',
-    'Terrestre',
-    'Voador',
-    'Psíquico',
-    'Inseto',
-    'Pedra',
-    'Fantasma',
-    'Dragão',
-    'Sombrio',
-    'Metálico',
-    'Fada',
-  ];
 
   // Mock data para demonstração das queries de BD
   mockStats = {
@@ -436,30 +401,24 @@ export class HomeComponent implements OnInit {
   }
 
   classificarTorneios(torneios: Torneio[]): void {
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0); // Zerar horas para comparação apenas de datas
-
     this.torneiosAbertos = [];
     this.torneiosEmAndamento = [];
     this.torneiosEncerrados = [];
 
     torneios.forEach((torneio) => {
-      const dataInicio = new Date(torneio.dataInicio);
-      const dataFim = new Date(torneio.dataFim);
+      const status = this.getStatusTorneio(torneio);
 
-      dataInicio.setHours(0, 0, 0, 0);
-      dataFim.setHours(0, 0, 0, 0);
-
-      if (dataFim < hoje) {
-        // Encerrado: data de fim já passou
+      if (status === 'ENCERRADO') {
         this.torneiosEncerrados.push(torneio);
-      } else if (dataInicio > hoje) {
-        // Aberto: ainda não começou (inscrições abertas)
-        this.torneiosAbertos.push(torneio);
-      } else {
-        // Em andamento: entre data de início e data de fim
-        this.torneiosEmAndamento.push(torneio);
+        return;
       }
+
+      if (status === 'EM_ANDAMENTO') {
+        this.torneiosEmAndamento.push(torneio);
+        return;
+      }
+
+      this.torneiosAbertos.push(torneio);
     });
 
     // Ordenar por data
@@ -619,31 +578,12 @@ export class HomeComponent implements OnInit {
   resetTournamentForm(): void {
     this.newTournament = {
       name: '',
-      description: '',
       startDate: '',
       endDate: '',
+      registrationStartDate: '',
+      registrationEndDate: '',
       maxParticipants: 16,
-      minLevel: 1,
-      maxLevel: 100,
-      allowedTypes: [],
-      organizerId: 1,
-      status: 'SCHEDULED',
-      prizePool: 10000,
-      registrationDeadline: '',
     };
-  }
-
-  togglePokemonType(type: string): void {
-    const index = this.newTournament.allowedTypes.indexOf(type);
-    if (index > -1) {
-      this.newTournament.allowedTypes.splice(index, 1);
-    } else {
-      this.newTournament.allowedTypes.push(type);
-    }
-  }
-
-  isTypeSelected(type: string): boolean {
-    return this.newTournament.allowedTypes.includes(type);
   }
 
   saveTournament(): void {
@@ -653,46 +593,27 @@ export class HomeComponent implements OnInit {
       '🗄️ SQL Simulado:',
       `
       INSERT INTO tournaments (
-        name, description, start_date, end_date, max_participants,
-        min_level, max_level, organizer_id, status, prize_pool,
-        registration_deadline, created_at
+        name, start_date, end_date,
+        max_participants,
+        registration_start_date, registration_end_date, created_at
       ) VALUES (
         '${this.newTournament.name}',
-        '${this.newTournament.description}',
         '${this.newTournament.startDate}',
         '${this.newTournament.endDate}',
         ${this.newTournament.maxParticipants},
-        ${this.newTournament.minLevel},
-        ${this.newTournament.maxLevel},
-        ${this.newTournament.organizerId},
-        '${this.newTournament.status}',
-        ${this.newTournament.prizePool},
-        '${this.newTournament.registrationDeadline}',
+        '${this.newTournament.registrationStartDate}',
+        '${this.newTournament.registrationEndDate}',
         NOW()
       );
     `,
     );
 
-    // Simular INSERT INTO tournament_allowed_types (relação N:N)
-    if (this.newTournament.allowedTypes.length > 0) {
-      console.log(
-        '🗄️ SQL Simulado (Tipos Permitidos):',
-        `
-        INSERT INTO tournament_allowed_types (tournament_id, type_name)
-        VALUES
-        ${this.newTournament.allowedTypes
-          .map((type) => `(LAST_INSERT_ID(), '${type}')`)
-          .join(',\n        ')};
-      `,
-      );
-    }
-
     // Na versão real, enviar para o backend
     const torneioParaSalvar: any = {
       nome: this.newTournament.name,
       maxParticipantes: this.newTournament.maxParticipants,
-      dataAberturaInscricoes: this.newTournament.registrationDeadline,
-      dataEncerramentoInscricoes: this.newTournament.registrationDeadline,
+      dataAberturaInscricoes: this.newTournament.registrationStartDate,
+      dataEncerramentoInscricoes: this.newTournament.registrationEndDate,
       dataInicio: this.newTournament.startDate,
       dataFim: this.newTournament.endDate,
     };
@@ -711,16 +632,29 @@ export class HomeComponent implements OnInit {
   }
 
   get isTournamentFormValid(): boolean {
+    const registrationStart = this.parseDateMs(
+      this.newTournament.registrationStartDate,
+    );
+    const registrationEnd = this.parseDateMs(this.newTournament.registrationEndDate);
+    const startDate = this.parseDateMs(this.newTournament.startDate);
+    const endDate = this.parseDateMs(this.newTournament.endDate);
+    const hasValidDateOrder =
+      registrationStart !== null &&
+      registrationEnd !== null &&
+      startDate !== null &&
+      endDate !== null &&
+      registrationStart <= registrationEnd &&
+      registrationEnd <= startDate &&
+      startDate <= endDate;
+
     return !!(
       this.newTournament.name.trim() &&
-      this.newTournament.description.trim() &&
       this.newTournament.startDate &&
       this.newTournament.endDate &&
-      this.newTournament.registrationDeadline &&
-      this.newTournament.maxParticipants > 0 &&
-      this.newTournament.minLevel >= 1 &&
-      this.newTournament.maxLevel <= 100 &&
-      this.newTournament.minLevel < this.newTournament.maxLevel
+      this.newTournament.registrationStartDate &&
+      this.newTournament.registrationEndDate &&
+      hasValidDateOrder &&
+      this.newTournament.maxParticipants > 0
     );
   }
 
@@ -835,12 +769,89 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  isInscricaoAberta(torneio: Torneio): boolean {
+    if (typeof torneio.inscricoesAbertas === 'boolean') {
+      return torneio.inscricoesAbertas;
+    }
+
+    const agora = this.getTodayMs();
+    const abertura = this.parseDateMs(torneio.dataAberturaInscricoes);
+    const encerramento = this.parseDateMs(torneio.dataEncerramentoInscricoes);
+
+    if (abertura === null || encerramento === null) {
+      return false;
+    }
+
+    return agora >= abertura && agora <= encerramento;
+  }
+
   inscreverNoTorneio(torneio: Torneio): void {
+    if (!this.isInscricaoAberta(torneio)) {
+      alert(`As inscrições para ${torneio.nome} estão encerradas.`);
+      return;
+    }
+
     // TODO: Implementar lógica de inscrição quando houver o endpoint
     alert(`Você se inscreveu no torneio: ${torneio.nome}`);
   }
 
   verDetalhesTorneio(torneio: Torneio): void {
     this.router.navigate(['/tournament', torneio.id]);
+  }
+
+  private getStatusTorneio(
+    torneio: Torneio,
+  ): 'ABERTO' | 'EM_ANDAMENTO' | 'ENCERRADO' {
+    if (
+      torneio.statusAtual === 'ABERTO' ||
+      torneio.statusAtual === 'EM_ANDAMENTO' ||
+      torneio.statusAtual === 'ENCERRADO'
+    ) {
+      return torneio.statusAtual;
+    }
+
+    const agora = this.getTodayMs();
+    const inicio = this.parseDateMs(torneio.dataInicio);
+    const fim = this.parseDateMs(torneio.dataFim);
+
+    if (fim !== null && agora > fim) {
+      return 'ENCERRADO';
+    }
+
+    if (inicio !== null && agora >= inicio) {
+      return 'EM_ANDAMENTO';
+    }
+
+    return 'ABERTO';
+  }
+
+  private parseDateMs(dateValue: string): number | null {
+    const parsedDate = this.parseDate(dateValue);
+    if (!parsedDate) {
+      return null;
+    }
+
+    parsedDate.setHours(0, 0, 0, 0);
+    const timestamp = parsedDate.getTime();
+    return Number.isNaN(timestamp) ? null : timestamp;
+  }
+
+  private getTodayMs(): number {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today.getTime();
+  }
+
+  private parseDate(dateValue: string): Date | null {
+    const onlyDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue);
+    if (onlyDateMatch) {
+      const year = Number(onlyDateMatch[1]);
+      const month = Number(onlyDateMatch[2]) - 1;
+      const day = Number(onlyDateMatch[3]);
+      return new Date(year, month, day);
+    }
+
+    const parsed = new Date(dateValue);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
   }
 }

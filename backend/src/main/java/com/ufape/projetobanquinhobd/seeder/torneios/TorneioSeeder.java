@@ -97,7 +97,7 @@ public class TorneioSeeder {
         Date dataInicio;
         Date dataFim;
 
-        TorneioConfig(int maxParticipantes, Date dataAbertura, Date dataEncerramento, 
+        TorneioConfig(int maxParticipantes, Date dataAbertura, Date dataEncerramento,
                      Date dataInicio, Date dataFim) {
             this.maxParticipantes = maxParticipantes;
             this.dataAberturaInscricoes = dataAbertura;

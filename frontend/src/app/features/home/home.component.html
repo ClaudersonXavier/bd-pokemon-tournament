@@ -111,9 +111,7 @@
             <!-- Torneios Abertos (Inscrições) -->
             <div class="tournament-section" *ngIf="torneiosAbertos.length > 0">
               <h3 class="section-title">
-                <span class="status-badge status-open"
-                  >📝 Inscrições Abertas</span
-                >
+                <span class="status-badge status-open">📝 Abertos</span>
               </h3>
               <div class="tournaments-grid">
                 <div
@@ -154,10 +152,15 @@
                   </div>
                   <div class="tournament-actions">
                     <button
-                      class="btn-tournament btn-primary"
+                      class="btn-tournament btn-primary btn-register"
+                      [disabled]="!isInscricaoAberta(torneio)"
                       (click)="inscreverNoTorneio(torneio)"
                     >
-                      Inscrever-se
+                      {{
+                        isInscricaoAberta(torneio)
+                          ? 'Inscrever-se'
+                          : 'Inscrições Encerradas'
+                      }}
                     </button>
                     <button
                       class="btn-tournament btn-secondary"
@@ -1191,58 +1194,6 @@
             </div>
           </div>
 
-          <div class="form-row">
-            <div class="form-group full-width">
-              <label class="form-label" for="tournament-description"
-                >Descrição *</label
-              >
-              <textarea
-                id="tournament-description"
-                class="form-textarea"
-                [(ngModel)]="newTournament.description"
-                placeholder="Descreva o torneio, regras especiais, premiações, etc."
-                rows="4"
-                maxlength="500"
-              ></textarea>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" for="tournament-organizer"
-                >Organizador (FK) *</label
-              >
-              <select
-                id="tournament-organizer"
-                class="form-select"
-                [(ngModel)]="newTournament.organizerId"
-              >
-                <option
-                  *ngFor="let org of availableOrganizers"
-                  [value]="org.id"
-                >
-                  {{ org.name }} ({{ org.tournaments }} torneios)
-                </option>
-              </select>
-              <small class="form-hint"
-                >SELECT id, name FROM users WHERE role = 'ADMIN'</small
-              >
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="tournament-status">Status *</label>
-              <select
-                id="tournament-status"
-                class="form-select"
-                [(ngModel)]="newTournament.status"
-              >
-                <option value="SCHEDULED">Agendado</option>
-                <option value="REGISTRATION">Inscrições Abertas</option>
-                <option value="IN_PROGRESS">Em Andamento</option>
-                <option value="COMPLETED">Finalizado</option>
-              </select>
-            </div>
-          </div>
         </section>
 
         <!-- Datas -->
@@ -1251,14 +1202,26 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label" for="registration-deadline"
-                >Prazo de Inscrição *</label
+              <label class="form-label" for="registration-start-date"
+                >Abertura das Inscrições *</label
               >
               <input
-                type="datetime-local"
-                id="registration-deadline"
+                type="date"
+                id="registration-start-date"
                 class="form-input"
-                [(ngModel)]="newTournament.registrationDeadline"
+                [(ngModel)]="newTournament.registrationStartDate"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="registration-end-date"
+                >Encerramento das Inscrições *</label
+              >
+              <input
+                type="date"
+                id="registration-end-date"
+                class="form-input"
+                [(ngModel)]="newTournament.registrationEndDate"
               />
             </div>
 
@@ -1267,7 +1230,7 @@
                 >Data de Início *</label
               >
               <input
-                type="datetime-local"
+                type="date"
                 id="start-date"
                 class="form-input"
                 [(ngModel)]="newTournament.startDate"
@@ -1277,7 +1240,7 @@
             <div class="form-group">
               <label class="form-label" for="end-date">Data de Término *</label>
               <input
-                type="datetime-local"
+                type="date"
                 id="end-date"
                 class="form-input"
                 [(ngModel)]="newTournament.endDate"
@@ -1305,85 +1268,15 @@
               />
             </div>
 
-            <div class="form-group">
-              <label class="form-label" for="min-level">Nível Mínimo *</label>
-              <input
-                type="number"
-                id="min-level"
-                class="form-input"
-                [(ngModel)]="newTournament.minLevel"
-                min="1"
-                max="100"
-              />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="max-level">Nível Máximo *</label>
-              <input
-                type="number"
-                id="max-level"
-                class="form-input"
-                [(ngModel)]="newTournament.maxLevel"
-                min="1"
-                max="100"
-              />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="prize-pool">Premiação (₽) *</label>
-              <input
-                type="number"
-                id="prize-pool"
-                class="form-input"
-                [(ngModel)]="newTournament.prizePool"
-                min="0"
-                step="1000"
-              />
-            </div>
           </div>
-        </section>
-
-        <!-- Tipos Permitidos -->
-        <section class="form-section">
-          <h3 class="section-title">Tipos de Pokémon Permitidos</h3>
-          <p class="form-hint">
-            Relação N:N - Cada tipo selecionado gera um INSERT em
-            tournament_allowed_types
-          </p>
-
-          <div class="types-grid">
-            <button
-              *ngFor="let type of pokemonTypes"
-              type="button"
-              class="type-badge"
-              [class.type-selected]="isTypeSelected(type)"
-              (click)="togglePokemonType(type)"
-            >
-              {{ type }}
-            </button>
-          </div>
-
-          <p
-            class="selected-types-info"
-            *ngIf="newTournament.allowedTypes.length > 0"
-          >
-            ✅ {{ newTournament.allowedTypes.length }} tipo(s) selecionado(s):
-            {{ newTournament.allowedTypes.join(", ") }}
-          </p>
-          <p
-            class="selected-types-info no-types"
-            *ngIf="newTournament.allowedTypes.length === 0"
-          >
-            ℹ️ Nenhum tipo selecionado = Todos os tipos permitidos
-          </p>
         </section>
 
         <!-- Conceitos BD -->
         <section class="form-section concepts-section">
           <h3 class="section-title">🗄️ Conceitos de Banco de Dados</h3>
           <p class="tournament-subtitle">
-            💡 Esta tela demonstra múltiplos conceitos de BD: INSERT, chaves
-            estrangeiras, validações, tipos ENUM e timestamps automáticos
+            💡 Esta tela demonstra múltiplos conceitos de BD: INSERT, validações
+            e timestamps automáticos
           </p>
           <div class="concepts-grid">
             <div class="concept-card">
@@ -1393,35 +1286,15 @@
               </p>
             </div>
             <div class="concept-card">
-              <h4>Foreign Key</h4>
-              <p>
-                organizer_id referencia users(id) - garante integridade
-                referencial
-              </p>
-            </div>
-            <div class="concept-card">
-              <h4>Relação N:N</h4>
-              <p>
-                Tournament ↔ Types através da tabela tournament_allowed_types
-              </p>
-            </div>
-            <div class="concept-card">
               <h4>Validação</h4>
               <p>
-                Campos NOT NULL, CHECK constraints (min_level &lt; max_level)
+                Campos obrigatórios e regras de datas do torneio/inscrição
               </p>
             </div>
             <div class="concept-card">
               <h4>Timestamps</h4>
               <p>
                 created_at TIMESTAMP DEFAULT NOW() registra momento da criação
-              </p>
-            </div>
-            <div class="concept-card">
-              <h4>ENUM</h4>
-              <p>
-                Status usa tipo ENUM('SCHEDULED', 'REGISTRATION', 'IN_PROGRESS',
-                'COMPLETED')
               </p>
             </div>
           </div>
