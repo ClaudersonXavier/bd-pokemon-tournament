@@ -83,81 +83,69 @@
       <section class="tab-content" *ngIf="isTabActive('tournaments')">
         <!-- Header Fixo -->
         <div class="content-header-fixed">
-          <div class="content-header-row">
-            <div>
-              <h2 class="content-title">Torneios</h2>
-              <p class="content-subtitle">
-                Encontre e participe de torneios incríveis!
-              </p>
-            </div>
+          <h2 class="content-title">Torneios</h2>
+          <p class="content-subtitle">
+            Encontre e participe de torneios incríveis!
+          </p>
+        </div>
 
-            <!-- Área de Conteúdo Rolável -->
-            <div class="content-scrollable">
-              <div class="content-card">
-                <!-- Filtros de Torneios -->
-                <div
-                  class="tournaments-filters"
-                  *ngIf="!loadingTorneios && !errorTorneios"
+        <!-- Área de Conteúdo Rolável -->
+        <div class="content-scrollable">
+          <div class="content-card">
+            <!-- Filtros de Torneios -->
+            <div
+              class="tournaments-filters"
+              *ngIf="!loadingTorneios && !errorTorneios"
+            >
+              <!-- Barra de Pesquisa -->
+              <div class="filter-search">
+                <span class="search-icon">🔍</span>
+                <input
+                  type="text"
+                  class="search-input"
+                  [(ngModel)]="searchTorneio"
+                  placeholder="Buscar torneio por nome..."
+                />
+                <button
+                  class="btn-clear-search"
+                  *ngIf="searchTorneio"
+                  (click)="searchTorneio = ''"
                 >
-                  <!-- Barra de Pesquisa -->
-                  <div class="filter-search">
-                    <span class="search-icon">🔍</span>
-                    <input
-                      type="text"
-                      class="search-input"
-                      [(ngModel)]="searchTorneio"
-                      placeholder="Buscar torneio por nome..."
-                    />
-                    <button
-                      class="btn-clear-search"
-                      *ngIf="searchTorneio"
-                      (click)="searchTorneio = ''"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <!-- Filtros de Status -->
-                  <div class="filter-status">
-                    <button
-                      class="status-filter-btn"
-                      [class.active]="filterStatus === 'ALL'"
-                      (click)="setFilterStatus('ALL')"
-                    >
-                      🌟 Todos
-                    </button>
-                    <button
-                      class="status-filter-btn"
-                      [class.active]="filterStatus === 'ABERTO'"
-                      (click)="setFilterStatus('ABERTO')"
-                    >
-                      📝 Abertos
-                    </button>
-                    <button
-                      class="status-filter-btn"
-                      [class.active]="filterStatus === 'EM_ANDAMENTO'"
-                      (click)="setFilterStatus('EM_ANDAMENTO')"
-                    >
-                      ⚔️ Em Andamento
-                    </button>
-                    <button
-                      class="status-filter-btn"
-                      [class.active]="filterStatus === 'ENCERRADO'"
-                      (click)="setFilterStatus('ENCERRADO')"
-                    >
-                      🏆 Encerrados
-                    </button>
-                  </div>
-                </div>
+                  ✕
+                </button>
               </div>
-              <button class="btn-manage-pokemons" (click)="goToPokemons()">
-                <img src="/icons/poke-ball.png" alt="Pokemons" />
-                Meus Pokemons
-              </button>
-              <button class="btn-manage-times" (click)="goToTimes()">
-                <img src="/icons/poke-ball.png" alt="Times" />
-                Meus Times
-              </button>
+
+              <!-- Filtros de Status -->
+              <div class="filter-status">
+                <button
+                  class="status-filter-btn"
+                  [class.active]="filterStatus === 'ALL'"
+                  (click)="setFilterStatus('ALL')"
+                >
+                  🌟 Todos
+                </button>
+                <button
+                  class="status-filter-btn"
+                  [class.active]="filterStatus === 'ABERTO'"
+                  (click)="setFilterStatus('ABERTO')"
+                >
+                  📝 Abertos
+                </button>
+                <button
+                  class="status-filter-btn"
+                  [class.active]="filterStatus === 'EM_ANDAMENTO'"
+                  (click)="setFilterStatus('EM_ANDAMENTO')"
+                >
+                  ⚔️ Em Andamento
+                </button>
+                <button
+                  class="status-filter-btn"
+                  [class.active]="filterStatus === 'ENCERRADO'"
+                  (click)="setFilterStatus('ENCERRADO')"
+                >
+                  🏆 Encerrados
+                </button>
+              </div>
             </div>
 
             <!-- Loading State -->
@@ -466,6 +454,14 @@
                 (click)="openChangePassword()"
               >
                 Alterar Senha
+              </button>
+              <button class="btn-manage-pokemons" (click)="goToPokemons()">
+                <img src="/icons/poke-ball.png" alt="Pokemons" />
+                Meus Pokemons
+              </button>
+              <button class="btn-manage-times" (click)="goToTimes()">
+                <img src="/icons/poke-ball.png" alt="Times" />
+                Meus Times
               </button>
             </div>
           </div>
