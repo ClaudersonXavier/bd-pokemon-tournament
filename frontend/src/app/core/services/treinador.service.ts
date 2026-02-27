@@ -32,6 +32,10 @@ export class TreinadorService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  atualizarNomeTreinador(id: number, nome: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/nome`, { nome });
+  }
+
   // Métodos para Times
   listarTimes(): Observable<Time[]> {
     return this.http.get<Time[]>(`${this.apiUrl}/times`);

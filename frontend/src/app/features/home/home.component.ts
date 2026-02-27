@@ -1,10 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService, User } from '../../core/services/auth.service';
 import { TorneioService } from '../../core/services/torneio.service';
-import { Torneio } from '../../core/models';
+import { TreinadorService } from '../../core/services/treinador.service';
+import {
+  EstatisticasService,
+  EstatisticasGerais,
+  TopTreinador,
+  TorneioResumo,
+} from '../../core/services/estatisticas.service';
+import { Torneio, Treinador } from '../../core/models';
+
+export interface TreinadorUserDTO {
+  id: number;
+  nome: string;
+  email: string;
+  isAdmin: boolean;
+}
 
 type Tab = 'tournaments' | 'profile' | 'admin';
 
@@ -25,14 +39,14 @@ export class HomeComponent implements OnInit {
   showCreateTournament = false;
   showChangePassword = false;
   searchTerm = '';
-  filterStatus = 'all';
   filterRole = 'all';
   currentPage = 1;
   itemsPerPage = 10;
-  selectedUser: any = null;
+  selectedUser: TreinadorUserDTO | null = null;
   showEditModal = false;
   showDeleteModal = false;
-  userToDelete: any = null;
+  userToDelete: TreinadorUserDTO | null = null;
+  readonly ADMIN_EMAIL = 'admin@pokemon.com';
 
   // Torneios
   torneiosAbertos: Torneio[] = [];
@@ -41,12 +55,28 @@ export class HomeComponent implements OnInit {
   loadingTorneios = true;
   errorTorneios = '';
 
+  // Treinadores (user management)
+  treinadores: TreinadorUserDTO[] = [];
+  loadingTreinadores = false;
+  errorTreinadores = '';
+  savingUser = false;
+  deletingUser = false;
+
+  // Estatísticas
+  loadingStats = false;
+  statsGerais: EstatisticasGerais | null = null;
+  topTreinadores: TopTreinador[] = [];
+  resumoTorneios: TorneioResumo[] = [];
+
   // Alterar Senha
   passwordForm = {
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   };
+  savingPassword = false;
+  passwordError = '';
+  passwordSuccess = '';
 
   // Criar Torneio
   newTournament = {
@@ -57,318 +87,17 @@ export class HomeComponent implements OnInit {
     registrationEndDate: '',
     maxParticipants: 16,
   };
-
-  // Mock data para demonstração das queries de BD
-  mockStats = {
-    overview: {
-      totalUsers: 1247,
-      totalTournaments: 38,
-      totalBattles: 5621,
-      avgBattlesPerDay: 47,
-    },
-    topTrainers: [
-      {
-        position: 1,
-        name: 'Ash Ketchum',
-        battles: 156,
-        victories: 128,
-        winRate: 82.05,
-      },
-      {
-        position: 2,
-        name: 'Misty Waters',
-        battles: 142,
-        victories: 115,
-        winRate: 80.99,
-      },
-      {
-        position: 3,
-        name: 'Brock Stone',
-        battles: 138,
-        victories: 109,
-        winRate: 78.99,
-      },
-      {
-        position: 4,
-        name: 'Gary Oak',
-        battles: 134,
-        victories: 105,
-        winRate: 78.36,
-      },
-      {
-        position: 5,
-        name: 'May Haruka',
-        battles: 129,
-        victories: 98,
-        winRate: 75.97,
-      },
-      {
-        position: 6,
-        name: 'Dawn Hikari',
-        battles: 125,
-        victories: 94,
-        winRate: 75.2,
-      },
-      {
-        position: 7,
-        name: 'Serena Yvonne',
-        battles: 121,
-        victories: 89,
-        winRate: 73.55,
-      },
-      {
-        position: 8,
-        name: 'Cilan Dent',
-        battles: 118,
-        victories: 86,
-        winRate: 72.88,
-      },
-      {
-        position: 9,
-        name: 'Iris Dragon',
-        battles: 115,
-        victories: 83,
-        winRate: 72.17,
-      },
-      {
-        position: 10,
-        name: 'Clemont Citron',
-        battles: 112,
-        victories: 80,
-        winRate: 71.43,
-      },
-    ],
-    popularPokemons: [
-      { name: 'Pikachu', type: 'Elétrico', timesUsed: 892, winRate: 68.5 },
-      { name: 'Charizard', type: 'Fogo', timesUsed: 756, winRate: 72.3 },
-      { name: 'Blastoise', type: 'Água', timesUsed: 698, winRate: 70.1 },
-      { name: 'Venusaur', type: 'Planta', timesUsed: 645, winRate: 69.8 },
-      { name: 'Gengar', type: 'Fantasma', timesUsed: 587, winRate: 74.2 },
-      { name: 'Dragonite', type: 'Dragão', timesUsed: 534, winRate: 76.5 },
-      { name: 'Gyarados', type: 'Água', timesUsed: 512, winRate: 71.9 },
-      { name: 'Alakazam', type: 'Psíquico', timesUsed: 489, winRate: 73.1 },
-    ],
-    tournaments: [
-      {
-        name: 'Copa Kanto 2026',
-        participants: 64,
-        battles: 127,
-        status: 'Em Andamento',
-        rank: 1,
-      },
-      {
-        name: 'Liga Johto Classic',
-        participants: 48,
-        battles: 94,
-        status: 'Finalizado',
-        rank: 2,
-      },
-      {
-        name: 'Torneio Hoenn Masters',
-        participants: 32,
-        battles: 63,
-        status: 'Em Andamento',
-        rank: 3,
-      },
-      {
-        name: 'Desafio Sinnoh',
-        participants: 24,
-        battles: 47,
-        status: 'Agendado',
-        rank: 4,
-      },
-    ],
-    monthlyGrowth: [
-      { month: 'Fev/2026', newUsers: 87, total: 1247 },
-      { month: 'Jan/2026', newUsers: 94, total: 1160 },
-      { month: 'Dez/2025', newUsers: 102, total: 1066 },
-      { month: 'Nov/2025', newUsers: 78, total: 964 },
-      { month: 'Out/2025', newUsers: 91, total: 886 },
-      { month: 'Set/2025', newUsers: 85, total: 795 },
-    ],
-    typeMatchups: [
-      {
-        type1: 'Fogo',
-        type2: 'Planta',
-        battles: 234,
-        type1Wins: 189,
-        type1Percentage: 80.77,
-      },
-      {
-        type1: 'Água',
-        type2: 'Fogo',
-        battles: 218,
-        type1Wins: 175,
-        type1Percentage: 80.28,
-      },
-      {
-        type1: 'Elétrico',
-        type2: 'Água',
-        battles: 203,
-        type1Wins: 162,
-        type1Percentage: 79.8,
-      },
-      {
-        type1: 'Planta',
-        type2: 'Água',
-        battles: 197,
-        type1Wins: 156,
-        type1Percentage: 79.19,
-      },
-      {
-        type1: 'Dragão',
-        type2: 'Dragão',
-        battles: 145,
-        type1Wins: 73,
-        type1Percentage: 50.34,
-      },
-    ],
-  };
-
-  // Mock data para gerenciar usuários
-  mockUsers = [
-    {
-      id: 1,
-      name: 'Ash Ketchum',
-      email: 'ash@pokemon.com',
-      role: 'ADMIN',
-      active: true,
-      createdAt: '2025-01-15',
-      battles: 156,
-      victories: 128,
-      winRate: 82.05,
-    },
-    {
-      id: 2,
-      name: 'Misty Waters',
-      email: 'misty@pokemon.com',
-      role: 'USER',
-      active: true,
-      createdAt: '2025-02-10',
-      battles: 142,
-      victories: 115,
-      winRate: 80.99,
-    },
-    {
-      id: 3,
-      name: 'Brock Stone',
-      email: 'brock@pokemon.com',
-      role: 'USER',
-      active: true,
-      createdAt: '2025-01-20',
-      battles: 138,
-      victories: 109,
-      winRate: 78.99,
-    },
-    {
-      id: 4,
-      name: 'Gary Oak',
-      email: 'gary@pokemon.com',
-      role: 'USER',
-      active: true,
-      createdAt: '2025-03-05',
-      battles: 134,
-      victories: 105,
-      winRate: 78.36,
-    },
-    {
-      id: 5,
-      name: 'May Haruka',
-      email: 'may@pokemon.com',
-      role: 'USER',
-      active: false,
-      createdAt: '2024-12-01',
-      battles: 129,
-      victories: 98,
-      winRate: 75.97,
-    },
-    {
-      id: 6,
-      name: 'Dawn Hikari',
-      email: 'dawn@pokemon.com',
-      role: 'USER',
-      active: true,
-      createdAt: '2025-02-14',
-      battles: 125,
-      victories: 94,
-      winRate: 75.2,
-    },
-    {
-      id: 7,
-      name: 'Serena Yvonne',
-      email: 'serena@pokemon.com',
-      role: 'USER',
-      active: true,
-      createdAt: '2025-01-28',
-      battles: 121,
-      victories: 89,
-      winRate: 73.55,
-    },
-    {
-      id: 8,
-      name: 'Cilan Dent',
-      email: 'cilan@pokemon.com',
-      role: 'ADMIN',
-      active: true,
-      createdAt: '2025-02-01',
-      battles: 118,
-      victories: 86,
-      winRate: 72.88,
-    },
-    {
-      id: 9,
-      name: 'Iris Dragon',
-      email: 'iris@pokemon.com',
-      role: 'USER',
-      active: false,
-      createdAt: '2024-11-15',
-      battles: 115,
-      victories: 83,
-      winRate: 72.17,
-    },
-    {
-      id: 10,
-      name: 'Clemont Citron',
-      email: 'clemont@pokemon.com',
-      role: 'USER',
-      active: true,
-      createdAt: '2025-02-20',
-      battles: 112,
-      victories: 80,
-      winRate: 71.43,
-    },
-    {
-      id: 11,
-      name: 'Bonnie Eureka',
-      email: 'bonnie@pokemon.com',
-      role: 'USER',
-      active: true,
-      createdAt: '2025-03-01',
-      battles: 85,
-      victories: 58,
-      winRate: 68.24,
-    },
-    {
-      id: 12,
-      name: 'Tracey Sketch',
-      email: 'tracey@pokemon.com',
-      role: 'USER',
-      active: true,
-      createdAt: '2025-01-10',
-      battles: 92,
-      victories: 61,
-      winRate: 66.3,
-    },
-  ];
+  savingTournament = false;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private torneioService: TorneioService,
+    private treinadorService: TreinadorService,
+    private estatisticasService: EstatisticasService,
   ) {}
 
   ngOnInit(): void {
-    // Get current user from auth service
     const userSignal = this.authService.currentUser();
     this.currentUser = userSignal;
 
@@ -382,6 +111,8 @@ export class HomeComponent implements OnInit {
     this.loadTorneios();
   }
 
+  // ─── Torneios ────────────────────────────────────────────────────────────────
+
   loadTorneios(): void {
     this.loadingTorneios = true;
     this.errorTorneios = '';
@@ -391,8 +122,7 @@ export class HomeComponent implements OnInit {
         this.classificarTorneios(torneios);
         this.loadingTorneios = false;
       },
-      error: (error) => {
-        console.error('Erro ao buscar torneios:', error);
+      error: () => {
         this.errorTorneios =
           'Não foi possível carregar os torneios. Tente novamente mais tarde.';
         this.loadingTorneios = false;
@@ -407,21 +137,15 @@ export class HomeComponent implements OnInit {
 
     torneios.forEach((torneio) => {
       const status = this.getStatusTorneio(torneio);
-
       if (status === 'ENCERRADO') {
         this.torneiosEncerrados.push(torneio);
-        return;
-      }
-
-      if (status === 'EM_ANDAMENTO') {
+      } else if (status === 'EM_ANDAMENTO') {
         this.torneiosEmAndamento.push(torneio);
-        return;
+      } else {
+        this.torneiosAbertos.push(torneio);
       }
-
-      this.torneiosAbertos.push(torneio);
     });
 
-    // Ordenar por data
     this.torneiosAbertos.sort(
       (a, b) =>
         new Date(a.dataInicio).getTime() - new Date(b.dataInicio).getTime(),
@@ -435,85 +159,101 @@ export class HomeComponent implements OnInit {
     );
   }
 
-  setActiveTab(tab: Tab): void {
-    this.activeTab = tab;
-  }
+  // ─── User Management ─────────────────────────────────────────────────────────
 
-  logout(): void {
-    this.authService.logout();
-  }
+  loadTreinadores(): void {
+    this.loadingTreinadores = true;
+    this.errorTreinadores = '';
 
-  viewTournament(torneioId: number): void {
-    this.router.navigate(['/tournament', torneioId]);
-  }
-
-  isTabActive(tab: Tab): boolean {
-    return this.activeTab === tab;
-  }
-
-  toggleUserManagement(): void {
-    this.showUserManagement = !this.showUserManagement;
-  }
-
-  closeUserManagement(): void {
-    this.showUserManagement = false;
-    this.searchTerm = '';
-    this.filterStatus = 'all';
-    this.filterRole = 'all';
-    this.currentPage = 1;
-  }
-
-  get filteredUsers() {
-    return this.mockUsers.filter((user) => {
-      const matchesSearch =
-        user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchesStatus =
-        this.filterStatus === 'all' ||
-        (this.filterStatus === 'active' && user.active) ||
-        (this.filterStatus === 'inactive' && !user.active);
-      const matchesRole =
-        this.filterRole === 'all' || user.role === this.filterRole;
-
-      return matchesSearch && matchesStatus && matchesRole;
+    this.treinadorService.listarTreinadores().subscribe({
+      next: (treinadores: Treinador[]) => {
+        this.treinadores = treinadores.map((t) => ({
+          id: t.id,
+          nome: t.nome,
+          email: (t as any).credenciais?.email ?? '',
+          isAdmin:
+            ((t as any).credenciais?.email ?? '').toLowerCase() ===
+            this.ADMIN_EMAIL,
+        }));
+        this.loadingTreinadores = false;
+      },
+      error: () => {
+        this.errorTreinadores = 'Não foi possível carregar os treinadores.';
+        this.loadingTreinadores = false;
+      },
     });
   }
 
-  get paginatedUsers() {
+  get filteredUsers(): TreinadorUserDTO[] {
+    return this.treinadores.filter((user) => {
+      const matchesSearch =
+        user.nome.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchesRole =
+        this.filterRole === 'all' ||
+        (this.filterRole === 'ADMIN' && user.isAdmin) ||
+        (this.filterRole === 'USER' && !user.isAdmin);
+      return matchesSearch && matchesRole;
+    });
+  }
+
+  get paginatedUsers(): TreinadorUserDTO[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     return this.filteredUsers.slice(start, start + this.itemsPerPage);
   }
 
-  get totalPages() {
+  get totalPages(): number {
     return Math.ceil(this.filteredUsers.length / this.itemsPerPage);
   }
 
   get userOverview() {
     return {
-      totalActive: this.mockUsers.filter((u) => u.active).length,
-      totalInactive: this.mockUsers.filter((u) => !u.active).length,
-      totalAdmins: this.mockUsers.filter((u) => u.role === 'ADMIN').length,
-      newThisWeek: this.mockUsers.filter(
-        (u) =>
-          new Date(u.createdAt) >
-          new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      ).length,
+      totalTreinadores: this.treinadores.length,
+      totalAdmins: this.treinadores.filter((u) => u.isAdmin).length,
     };
   }
 
-  editUser(user: any): void {
+  toggleUserManagement(): void {
+    this.showUserManagement = !this.showUserManagement;
+    if (this.showUserManagement && this.treinadores.length === 0) {
+      this.loadTreinadores();
+    }
+  }
+
+  closeUserManagement(): void {
+    this.showUserManagement = false;
+    this.searchTerm = '';
+    this.filterRole = 'all';
+    this.currentPage = 1;
+  }
+
+  editUser(user: TreinadorUserDTO): void {
     this.selectedUser = { ...user };
     this.showEditModal = true;
   }
 
   saveUser(): void {
-    const index = this.mockUsers.findIndex(
-      (u) => u.id === this.selectedUser.id,
-    );
-    if (index !== -1) {
-      this.mockUsers[index] = { ...this.selectedUser };
-    }
-    this.closeEditModal();
+    if (!this.selectedUser || this.savingUser) return;
+    this.savingUser = true;
+
+    this.treinadorService
+      .atualizarNomeTreinador(this.selectedUser.id, this.selectedUser.nome)
+      .subscribe({
+        next: () => {
+          const idx = this.treinadores.findIndex(
+            (u) => u.id === this.selectedUser!.id,
+          );
+          if (idx !== -1) {
+            this.treinadores[idx] = { ...this.selectedUser! };
+          }
+          this.savingUser = false;
+          this.closeEditModal();
+        },
+        error: () => {
+          this.savingUser = false;
+          alert('❌ Erro ao salvar alterações. Tente novamente.');
+        },
+      });
   }
 
   closeEditModal(): void {
@@ -521,19 +261,28 @@ export class HomeComponent implements OnInit {
     this.selectedUser = null;
   }
 
-  confirmDelete(user: any): void {
+  confirmDelete(user: TreinadorUserDTO): void {
     this.userToDelete = user;
     this.showDeleteModal = true;
   }
 
   deleteUser(): void {
-    const index = this.mockUsers.findIndex(
-      (u) => u.id === this.userToDelete.id,
-    );
-    if (index !== -1) {
-      this.mockUsers[index].active = false;
-    }
-    this.closeDeleteModal();
+    if (!this.userToDelete || this.deletingUser) return;
+    this.deletingUser = true;
+
+    this.treinadorService.deletarTreinador(this.userToDelete.id).subscribe({
+      next: () => {
+        this.treinadores = this.treinadores.filter(
+          (u) => u.id !== this.userToDelete!.id,
+        );
+        this.deletingUser = false;
+        this.closeDeleteModal();
+      },
+      error: () => {
+        this.deletingUser = false;
+        alert('❌ Erro ao remover treinador. Tente novamente.');
+      },
+    });
   }
 
   closeDeleteModal(): void {
@@ -541,17 +290,8 @@ export class HomeComponent implements OnInit {
     this.userToDelete = null;
   }
 
-  toggleUserStatus(user: any): void {
-    user.active = !user.active;
-  }
-
-  promoteUser(user: any): void {
-    user.role = user.role === 'ADMIN' ? 'USER' : 'ADMIN';
-  }
-
   clearFilters(): void {
     this.searchTerm = '';
-    this.filterStatus = 'all';
     this.filterRole = 'all';
     this.currentPage = 1;
   }
@@ -562,7 +302,54 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  // Create Tournament methods
+  // ─── Estatísticas ────────────────────────────────────────────────────────────
+
+  loadStatistics(): void {
+    this.loadingStats = true;
+
+    this.estatisticasService.obterEstatisticasGerais().subscribe({
+      next: (data) => {
+        this.statsGerais = data;
+      },
+      error: () => {
+        this.statsGerais = null;
+      },
+    });
+
+    this.estatisticasService.obterTopTreinadores().subscribe({
+      next: (data) => {
+        this.topTreinadores = data;
+      },
+      error: () => {
+        this.topTreinadores = [];
+      },
+    });
+
+    this.estatisticasService.obterResumoTorneios().subscribe({
+      next: (data) => {
+        this.resumoTorneios = data;
+        this.loadingStats = false;
+      },
+      error: () => {
+        this.resumoTorneios = [];
+        this.loadingStats = false;
+      },
+    });
+  }
+
+  toggleStatistics(): void {
+    this.showStatistics = !this.showStatistics;
+    if (this.showStatistics) {
+      this.loadStatistics();
+    }
+  }
+
+  closeStatistics(): void {
+    this.showStatistics = false;
+  }
+
+  // ─── Criar Torneio ───────────────────────────────────────────────────────────
+
   toggleCreateTournament(): void {
     this.showCreateTournament = !this.showCreateTournament;
     if (this.showCreateTournament) {
@@ -587,28 +374,9 @@ export class HomeComponent implements OnInit {
   }
 
   saveTournament(): void {
-    // Simulação de INSERT INTO tournaments
-    // Na versão real, isso seria uma chamada HTTP POST para o backend
-    console.log(
-      '🗄️ SQL Simulado:',
-      `
-      INSERT INTO tournaments (
-        name, start_date, end_date,
-        max_participants,
-        registration_start_date, registration_end_date, created_at
-      ) VALUES (
-        '${this.newTournament.name}',
-        '${this.newTournament.startDate}',
-        '${this.newTournament.endDate}',
-        ${this.newTournament.maxParticipants},
-        '${this.newTournament.registrationStartDate}',
-        '${this.newTournament.registrationEndDate}',
-        NOW()
-      );
-    `,
-    );
+    if (!this.isTournamentFormValid || this.savingTournament) return;
+    this.savingTournament = true;
 
-    // Na versão real, enviar para o backend
     const torneioParaSalvar: any = {
       nome: this.newTournament.name,
       maxParticipantes: this.newTournament.maxParticipants,
@@ -620,12 +388,13 @@ export class HomeComponent implements OnInit {
 
     this.torneioService.criarTorneio(torneioParaSalvar).subscribe({
       next: (torneio) => {
+        this.savingTournament = false;
         alert(`✅ Torneio "${torneio.nome}" criado com sucesso!`);
-        this.loadTorneios(); // Recarregar lista de torneios
+        this.loadTorneios();
         this.closeCreateTournament();
       },
-      error: (error) => {
-        console.error('Erro ao criar torneio:', error);
+      error: () => {
+        this.savingTournament = false;
         alert('❌ Erro ao criar torneio. Tente novamente.');
       },
     });
@@ -635,7 +404,9 @@ export class HomeComponent implements OnInit {
     const registrationStart = this.parseDateMs(
       this.newTournament.registrationStartDate,
     );
-    const registrationEnd = this.parseDateMs(this.newTournament.registrationEndDate);
+    const registrationEnd = this.parseDateMs(
+      this.newTournament.registrationEndDate,
+    );
     const startDate = this.parseDateMs(this.newTournament.startDate);
     const endDate = this.parseDateMs(this.newTournament.endDate);
     const hasValidDateOrder =
@@ -658,23 +429,8 @@ export class HomeComponent implements OnInit {
     );
   }
 
-  getSelectedTrainerPath(): string {
-    return `/images/trainers/${this.selectedTrainer}`;
-  }
+  // ─── Alterar Senha ───────────────────────────────────────────────────────────
 
-  goToEditProfile(): void {
-    this.router.navigate(['/edit-profile']);
-  }
-
-  toggleStatistics(): void {
-    this.showStatistics = !this.showStatistics;
-  }
-
-  closeStatistics(): void {
-    this.showStatistics = false;
-  }
-
-  // Change Password methods
   openChangePassword(): void {
     this.showChangePassword = true;
     this.resetPasswordForm();
@@ -691,45 +447,49 @@ export class HomeComponent implements OnInit {
       newPassword: '',
       confirmPassword: '',
     };
+    this.passwordError = '';
+    this.passwordSuccess = '';
   }
 
   saveNewPassword(): void {
-    // Validações
+    this.passwordError = '';
+    this.passwordSuccess = '';
+
     if (!this.isPasswordFormValid) {
-      alert('❌ Por favor, preencha todos os campos corretamente!');
+      this.passwordError = 'Por favor, preencha todos os campos.';
       return;
     }
 
     if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
-      alert('❌ As senhas não coincidem!');
+      this.passwordError = 'As senhas não coincidem.';
       return;
     }
 
     if (this.passwordForm.newPassword.length < 6) {
-      alert('❌ A nova senha deve ter pelo menos 6 caracteres!');
+      this.passwordError = 'A nova senha deve ter pelo menos 6 caracteres.';
       return;
     }
 
-    // Simulação de UPDATE no banco de dados
-    console.log(
-      '🗄️ SQL Simulado:',
-      `
-      UPDATE users 
-      SET password = PASSWORD_HASH('${this.passwordForm.newPassword}'),
-          updated_at = NOW()
-      WHERE id = ${this.currentUser?.id}
-        AND password = PASSWORD_HASH('${this.passwordForm.currentPassword}');
-        
-      -- Verifica se a senha atual está correta
-      -- Se rows_affected = 0, senha atual incorreta
-      -- Se rows_affected = 1, senha alterada com sucesso
-    `,
-    );
+    this.savingPassword = true;
 
-    alert(
-      `✅ Senha alterada com sucesso!\n\nConcepts demonstrados:\n- UPDATE com WHERE multiple conditions\n- PASSWORD_HASH para segurança\n- Timestamp automático (updated_at)\n- Verificação de senha antiga`,
-    );
-    this.closeChangePassword();
+    this.authService
+      .changePassword(
+        this.passwordForm.currentPassword,
+        this.passwordForm.newPassword,
+      )
+      .subscribe({
+        next: () => {
+          this.savingPassword = false;
+          this.passwordSuccess = 'Senha alterada com sucesso!';
+          setTimeout(() => this.closeChangePassword(), 1500);
+        },
+        error: (err) => {
+          this.savingPassword = false;
+          const msg = err?.error?.erro;
+          this.passwordError =
+            msg || 'Erro ao alterar senha. Tente novamente.';
+        },
+      });
   }
 
   get isPasswordFormValid(): boolean {
@@ -748,6 +508,57 @@ export class HomeComponent implements OnInit {
     return 'strong';
   }
 
+  // ─── Navegação ───────────────────────────────────────────────────────────────
+
+  setActiveTab(tab: Tab): void {
+    this.activeTab = tab;
+  }
+
+  logout(): void {
+    this.authService.logout();
+  }
+
+  isTabActive(tab: Tab): boolean {
+    return this.activeTab === tab;
+  }
+
+  goToEditProfile(): void {
+    this.router.navigate(['/edit-profile']);
+  }
+
+  // ─── Torneio Actions ─────────────────────────────────────────────────────────
+
+  inscreverNoTorneio(torneio: Torneio): void {
+    if (!this.isInscricaoAberta(torneio)) {
+      alert(`As inscrições para ${torneio.nome} estão encerradas.`);
+      return;
+    }
+    alert(`Você se inscreveu no torneio: ${torneio.nome}`);
+  }
+
+  verDetalhesTorneio(torneio: Torneio): void {
+    this.router.navigate(['/tournament', torneio.id]);
+  }
+
+  isInscricaoAberta(torneio: Torneio): boolean {
+    if (typeof torneio.inscricoesAbertas === 'boolean') {
+      return torneio.inscricoesAbertas;
+    }
+
+    const agora = this.getTodayMs();
+    const abertura = this.parseDateMs(torneio.dataAberturaInscricoes);
+    const encerramento = this.parseDateMs(torneio.dataEncerramentoInscricoes);
+
+    if (abertura === null || encerramento === null) return false;
+    return agora >= abertura && agora <= encerramento;
+  }
+
+  // ─── Trainer Avatar ──────────────────────────────────────────────────────────
+
+  getSelectedTrainerPath(): string {
+    return `/images/trainers/${this.selectedTrainer}`;
+  }
+
   private loadSelectedTrainer(): void {
     const savedTrainer = localStorage.getItem(this.getTrainerStorageKey());
     if (savedTrainer) {
@@ -760,6 +571,8 @@ export class HomeComponent implements OnInit {
     return `trainer-avatar-${userId}`;
   }
 
+  // ─── Helpers ─────────────────────────────────────────────────────────────────
+
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR', {
@@ -767,36 +580,6 @@ export class HomeComponent implements OnInit {
       month: '2-digit',
       year: 'numeric',
     });
-  }
-
-  isInscricaoAberta(torneio: Torneio): boolean {
-    if (typeof torneio.inscricoesAbertas === 'boolean') {
-      return torneio.inscricoesAbertas;
-    }
-
-    const agora = this.getTodayMs();
-    const abertura = this.parseDateMs(torneio.dataAberturaInscricoes);
-    const encerramento = this.parseDateMs(torneio.dataEncerramentoInscricoes);
-
-    if (abertura === null || encerramento === null) {
-      return false;
-    }
-
-    return agora >= abertura && agora <= encerramento;
-  }
-
-  inscreverNoTorneio(torneio: Torneio): void {
-    if (!this.isInscricaoAberta(torneio)) {
-      alert(`As inscrições para ${torneio.nome} estão encerradas.`);
-      return;
-    }
-
-    // TODO: Implementar lógica de inscrição quando houver o endpoint
-    alert(`Você se inscreveu no torneio: ${torneio.nome}`);
-  }
-
-  verDetalhesTorneio(torneio: Torneio): void {
-    this.router.navigate(['/tournament', torneio.id]);
   }
 
   private getStatusTorneio(
@@ -814,23 +597,14 @@ export class HomeComponent implements OnInit {
     const inicio = this.parseDateMs(torneio.dataInicio);
     const fim = this.parseDateMs(torneio.dataFim);
 
-    if (fim !== null && agora > fim) {
-      return 'ENCERRADO';
-    }
-
-    if (inicio !== null && agora >= inicio) {
-      return 'EM_ANDAMENTO';
-    }
-
+    if (fim !== null && agora > fim) return 'ENCERRADO';
+    if (inicio !== null && agora >= inicio) return 'EM_ANDAMENTO';
     return 'ABERTO';
   }
 
   private parseDateMs(dateValue: string): number | null {
     const parsedDate = this.parseDate(dateValue);
-    if (!parsedDate) {
-      return null;
-    }
-
+    if (!parsedDate) return null;
     parsedDate.setHours(0, 0, 0, 0);
     const timestamp = parsedDate.getTime();
     return Number.isNaN(timestamp) ? null : timestamp;

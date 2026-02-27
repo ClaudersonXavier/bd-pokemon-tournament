@@ -432,328 +432,167 @@
               </div>
 
               <div class="statistics-content">
-                <!-- Overview Cards -->
-                <section class="stats-section">
-                  <h3 class="section-title">Visão Geral</h3>
-                  <div class="overview-grid">
-                    <div class="stat-card">
-                      <div class="stat-card-icon">
-                        <img src="/icons/user-account.png" alt="Users" />
-                      </div>
-                      <div class="stat-card-content">
-                        <span class="stat-card-value">{{
-                          mockStats.overview.totalUsers
-                        }}</span>
-                        <span class="stat-card-label"
-                          >Usuários Registrados</span
-                        >
-                      </div>
-                    </div>
-                    <div class="stat-card">
-                      <div class="stat-card-icon">
-                        <img src="/icons/trofeu.png" alt="Tournaments" />
-                      </div>
-                      <div class="stat-card-content">
-                        <span class="stat-card-value">{{
-                          mockStats.overview.totalTournaments
-                        }}</span>
-                        <span class="stat-card-label">Torneios Criados</span>
-                      </div>
-                    </div>
-                    <div class="stat-card">
-                      <div class="stat-card-icon">
-                        <img src="/icons/poke-ball.png" alt="Battles" />
-                      </div>
-                      <div class="stat-card-content">
-                        <span class="stat-card-value">{{
-                          mockStats.overview.totalBattles
-                        }}</span>
-                        <span class="stat-card-label">Batalhas Realizadas</span>
-                      </div>
-                    </div>
-                    <div class="stat-card">
-                      <div class="stat-card-icon">
-                        <img src="/icons/combo-chart.png" alt="Average" />
-                      </div>
-                      <div class="stat-card-content">
-                        <span class="stat-card-value">{{
-                          mockStats.overview.avgBattlesPerDay
-                        }}</span>
-                        <span class="stat-card-label">Média Batalhas/Dia</span>
-                      </div>
-                    </div>
-                  </div>
-                </section>
+                <!-- Loading State -->
+                <div *ngIf="loadingStats" class="loading-state">
+                  <p>⏳ Carregando estatísticas...</p>
+                </div>
 
-                <!-- Top Trainers Table -->
-                <section class="stats-section">
-                  <h3 class="section-title">Top 10 Treinadores</h3>
-                  <p class="section-subtitle">
-                    Query: SELECT com JOIN, GROUP BY e ORDER BY
-                  </p>
-                  <div class="table-container">
-                    <table class="stats-table">
-                      <thead>
-                        <tr>
-                          <th>#</th>
-                          <th>Nome</th>
-                          <th>Batalhas</th>
-                          <th>Vitórias</th>
-                          <th>Taxa de Vitória %</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let trainer of mockStats.topTrainers">
-                          <td
-                            class="rank-badge"
-                            [class.top-3]="trainer.position <= 3"
-                          >
-                            {{ trainer.position }}
-                          </td>
-                          <td class="trainer-name">{{ trainer.name }}</td>
-                          <td>{{ trainer.battles }}</td>
-                          <td class="victories">{{ trainer.victories }}</td>
-                          <td>
-                            <div class="win-rate-bar">
-                              <div
-                                class="win-rate-fill"
-                                [style.width.%]="trainer.winRate"
-                              ></div>
-                              <span class="win-rate-text"
-                                >{{ trainer.winRate }}%</span
-                              >
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
+                <ng-container *ngIf="!loadingStats">
+                  <!-- Overview Cards -->
+                  <section class="stats-section" *ngIf="statsGerais">
+                    <h3 class="section-title">Visão Geral</h3>
+                    <p class="section-subtitle">
+                      Query: SELECT COUNT(*) FROM cada tabela principal
+                    </p>
+                    <div class="overview-grid">
+                      <div class="stat-card">
+                        <div class="stat-card-icon">
+                          <img src="/icons/user-account.png" alt="Users" />
+                        </div>
+                        <div class="stat-card-content">
+                          <span class="stat-card-value">{{
+                            statsGerais.totalTreinadores
+                          }}</span>
+                          <span class="stat-card-label">Treinadores Registrados</span>
+                        </div>
+                      </div>
+                      <div class="stat-card">
+                        <div class="stat-card-icon">
+                          <img src="/icons/trofeu.png" alt="Tournaments" />
+                        </div>
+                        <div class="stat-card-content">
+                          <span class="stat-card-value">{{
+                            statsGerais.totalTorneios
+                          }}</span>
+                          <span class="stat-card-label">Torneios Criados</span>
+                        </div>
+                      </div>
+                      <div class="stat-card">
+                        <div class="stat-card-icon">
+                          <img src="/icons/poke-ball.png" alt="Battles" />
+                        </div>
+                        <div class="stat-card-content">
+                          <span class="stat-card-value">{{
+                            statsGerais.totalBatalhas
+                          }}</span>
+                          <span class="stat-card-label">Batalhas Realizadas</span>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
 
-                <!-- Popular Pokemons Table -->
-                <section class="stats-section">
-                  <h3 class="section-title">Pokémons Mais Populares</h3>
-                  <p class="section-subtitle">
-                    Query: JOIN com tipos + GROUP BY + Agregação
-                  </p>
-                  <div class="table-container">
-                    <table class="stats-table">
-                      <thead>
-                        <tr>
-                          <th>Pokémon</th>
-                          <th>Tipo</th>
-                          <th>Vezes Usado</th>
-                          <th>Taxa de Vitória %</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let pokemon of mockStats.popularPokemons">
-                          <td class="pokemon-name">{{ pokemon.name }}</td>
-                          <td>
-                            <span class="type-badge">{{ pokemon.type }}</span>
-                          </td>
-                          <td>{{ pokemon.timesUsed }}</td>
-                          <td>
-                            <div class="win-rate-bar">
-                              <div
-                                class="win-rate-fill"
-                                [style.width.%]="pokemon.winRate"
-                              ></div>
-                              <span class="win-rate-text"
-                                >{{ pokemon.winRate }}%</span
-                              >
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-
-                <!-- Tournaments Analysis -->
-                <section class="stats-section">
-                  <h3 class="section-title">Análise de Torneios</h3>
-                  <p class="section-subtitle">
-                    Query: Window Functions (RANK) + CTEs
-                  </p>
-                  <div class="table-container">
-                    <table class="stats-table">
-                      <thead>
-                        <tr>
-                          <th>Ranking</th>
-                          <th>Nome do Torneio</th>
-                          <th>Participantes</th>
-                          <th>Batalhas</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let tournament of mockStats.tournaments">
-                          <td class="rank-badge">{{ tournament.rank }}</td>
-                          <td class="tournament-name">{{ tournament.name }}</td>
-                          <td>{{ tournament.participants }}</td>
-                          <td>{{ tournament.battles }}</td>
-                          <td>
-                            <span
-                              class="status-badge"
-                              [class.status-active]="
-                                tournament.status === 'Em Andamento'
-                              "
-                              [class.status-completed]="
-                                tournament.status === 'Finalizado'
-                              "
-                              [class.status-scheduled]="
-                                tournament.status === 'Agendado'
-                              "
+                  <!-- Top Trainers Table -->
+                  <section class="stats-section">
+                    <h3 class="section-title">Top Treinadores</h3>
+                    <p class="section-subtitle">
+                      Query: GROUP BY treinador + SUM(vitórias) — view v_treinador_desempenho_torneio
+                    </p>
+                    <div *ngIf="topTreinadores.length === 0" class="empty-state">
+                      <p>Nenhum dado de desempenho encontrado ainda.</p>
+                    </div>
+                    <div class="table-container" *ngIf="topTreinadores.length > 0">
+                      <table class="stats-table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Nome</th>
+                            <th>Batalhas</th>
+                            <th>Vitórias</th>
+                            <th>Taxa de Vitória %</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let trainer of topTreinadores; let i = index">
+                            <td
+                              class="rank-badge"
+                              [class.top-3]="i < 3"
                             >
-                              {{ tournament.status }}
-                            </span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
+                              {{ i + 1 }}
+                            </td>
+                            <td class="trainer-name">{{ trainer.treinador_nome }}</td>
+                            <td>{{ trainer.total_batalhas }}</td>
+                            <td class="victories">{{ trainer.total_vitorias }}</td>
+                            <td>
+                              <div class="win-rate-bar">
+                                <div
+                                  class="win-rate-fill"
+                                  [style.width.%]="trainer.percentual_vitorias"
+                                ></div>
+                                <span class="win-rate-text"
+                                  >{{ trainer.percentual_vitorias }}%</span
+                                >
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
 
-                <!-- Monthly Growth Table -->
-                <section class="stats-section">
-                  <h3 class="section-title">Evolução de Cadastros</h3>
-                  <p class="section-subtitle">
-                    Query: DATE_TRUNC + Agregação Temporal + Window Function
-                  </p>
-                  <div class="table-container">
-                    <table class="stats-table">
-                      <thead>
-                        <tr>
-                          <th>Mês</th>
-                          <th>Novos Usuários</th>
-                          <th>Total Acumulado</th>
-                          <th>Crescimento</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr
-                          *ngFor="
-                            let month of mockStats.monthlyGrowth;
-                            let i = index
-                          "
-                        >
-                          <td class="month-name">{{ month.month }}</td>
-                          <td>{{ month.newUsers }}</td>
-                          <td class="total-users">{{ month.total }}</td>
-                          <td>
-                            <div class="growth-bar">
-                              <div
-                                class="growth-fill"
-                                [style.width.%]="(month.newUsers / 102) * 100"
-                              ></div>
-                              <span class="growth-text"
-                                >+{{ month.newUsers }}</span
-                              >
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
+                  <!-- Tournaments Analysis -->
+                  <section class="stats-section">
+                    <h3 class="section-title">Análise de Torneios</h3>
+                    <p class="section-subtitle">
+                      Query: GROUP BY torneio + COUNT(times) + COUNT(batalhas)
+                    </p>
+                    <div *ngIf="resumoTorneios.length === 0" class="empty-state">
+                      <p>Nenhum torneio com dados suficientes ainda.</p>
+                    </div>
+                    <div class="table-container" *ngIf="resumoTorneios.length > 0">
+                      <table class="stats-table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Nome do Torneio</th>
+                            <th>Participantes</th>
+                            <th>Batalhas</th>
+                            <th>Início</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let t of resumoTorneios; let i = index">
+                            <td class="rank-badge">{{ i + 1 }}</td>
+                            <td class="tournament-name">{{ t.torneio_nome }}</td>
+                            <td>{{ t.total_participantes }}</td>
+                            <td>{{ t.total_batalhas }}</td>
+                            <td>{{ formatDate(t.data_inicio) }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
 
-                <!-- Type Matchups Table -->
-                <section class="stats-section">
-                  <h3 class="section-title">Matchup Entre Tipos</h3>
-                  <p class="section-subtitle">
-                    Query: Self JOIN + Estatísticas Cruzadas + HAVING
-                  </p>
-                  <div class="table-container">
-                    <table class="stats-table">
-                      <thead>
-                        <tr>
-                          <th>Tipo 1</th>
-                          <th>vs</th>
-                          <th>Tipo 2</th>
-                          <th>Batalhas</th>
-                          <th>Vitórias Tipo 1</th>
-                          <th>Percentual</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let matchup of mockStats.typeMatchups">
-                          <td>
-                            <span class="type-badge type-left">{{
-                              matchup.type1
-                            }}</span>
-                          </td>
-                          <td class="vs-label">⚔️</td>
-                          <td>
-                            <span class="type-badge type-right">{{
-                              matchup.type2
-                            }}</span>
-                          </td>
-                          <td>{{ matchup.battles }}</td>
-                          <td>{{ matchup.type1Wins }}</td>
-                          <td>
-                            <div class="win-rate-bar">
-                              <div
-                                class="win-rate-fill"
-                                [style.width.%]="matchup.type1Percentage"
-                              ></div>
-                              <span class="win-rate-text"
-                                >{{ matchup.type1Percentage }}%</span
-                              >
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-
-                <!-- SQL Queries Info -->
-                <section class="stats-section">
-                  <h3 class="section-title">Conceitos de BD Demonstrados</h3>
-                  <div class="concepts-grid">
-                    <div class="concept-card">
-                      <span class="concept-icon">🔗</span>
-                      <span class="concept-name">JOINs Múltiplos</span>
+                  <!-- SQL Concepts -->
+                  <section class="stats-section">
+                    <h3 class="section-title">Conceitos de BD Demonstrados</h3>
+                    <div class="concepts-grid">
+                      <div class="concept-card">
+                        <span class="concept-icon">🔗</span>
+                        <span class="concept-name">JOINs Múltiplos</span>
+                      </div>
+                      <div class="concept-card">
+                        <span class="concept-icon">📊</span>
+                        <span class="concept-name">Agregações (COUNT, SUM)</span>
+                      </div>
+                      <div class="concept-card">
+                        <span class="concept-icon">📈</span>
+                        <span class="concept-name">Window Functions (RANK)</span>
+                      </div>
+                      <div class="concept-card">
+                        <span class="concept-icon">🗂️</span>
+                        <span class="concept-name">Views (v_treinador_desempenho)</span>
+                      </div>
+                      <div class="concept-card">
+                        <span class="concept-icon">🔍</span>
+                        <span class="concept-name">GROUP BY + HAVING</span>
+                      </div>
+                      <div class="concept-card">
+                        <span class="concept-icon">⚡</span>
+                        <span class="concept-name">Índices e Otimização</span>
+                      </div>
                     </div>
-                    <div class="concept-card">
-                      <span class="concept-icon">📊</span>
-                      <span class="concept-name"
-                        >Agregações (COUNT, SUM, AVG)</span
-                      >
-                    </div>
-                    <div class="concept-card">
-                      <span class="concept-icon">📈</span>
-                      <span class="concept-name"
-                        >Window Functions (RANK, ROW_NUMBER)</span
-                      >
-                    </div>
-                    <div class="concept-card">
-                      <span class="concept-icon">🗂️</span>
-                      <span class="concept-name"
-                        >CTEs (Common Table Expressions)</span
-                      >
-                    </div>
-                    <div class="concept-card">
-                      <span class="concept-icon">📅</span>
-                      <span class="concept-name">DATE_TRUNC Temporal</span>
-                    </div>
-                    <div class="concept-card">
-                      <span class="concept-icon">🔍</span>
-                      <span class="concept-name">Self JOINs</span>
-                    </div>
-                    <div class="concept-card">
-                      <span class="concept-icon">🎯</span>
-                      <span class="concept-name"
-                        >Subconsultas Correlacionadas</span
-                      >
-                    </div>
-                    <div class="concept-card">
-                      <span class="concept-icon">⚡</span>
-                      <span class="concept-name">Índices e Otimização</span>
-                    </div>
-                  </div>
-                </section>
+                  </section>
+                </ng-container>
               </div>
             </div>
           </div>
@@ -776,29 +615,27 @@
               </div>
 
               <div class="users-content">
+                <!-- Loading/Error States -->
+                <div *ngIf="loadingTreinadores" class="loading-state">
+                  <p>⏳ Carregando treinadores...</p>
+                </div>
+                <div *ngIf="errorTreinadores && !loadingTreinadores" class="error-state">
+                  <p>❌ {{ errorTreinadores }}</p>
+                  <button class="btn-retry" (click)="loadTreinadores()">Tentar Novamente</button>
+                </div>
+
                 <!-- Overview Cards -->
-                <section class="users-section">
+                <section class="users-section" *ngIf="!loadingTreinadores && !errorTreinadores">
                   <div class="overview-grid">
                     <div class="stat-card">
                       <div class="stat-card-icon">
-                        <img src="/icons/user-account.png" alt="Active" />
+                        <img src="/icons/user-account.png" alt="Treinadores" />
                       </div>
                       <div class="stat-card-content">
                         <span class="stat-card-value">{{
-                          userOverview.totalActive
+                          userOverview.totalTreinadores
                         }}</span>
-                        <span class="stat-card-label">Usuários Ativos</span>
-                      </div>
-                    </div>
-                    <div class="stat-card inactive">
-                      <div class="stat-card-icon">
-                        <img src="/icons/user-account.png" alt="Inactive" />
-                      </div>
-                      <div class="stat-card-content">
-                        <span class="stat-card-value">{{
-                          userOverview.totalInactive
-                        }}</span>
-                        <span class="stat-card-label">Usuários Inativos</span>
+                        <span class="stat-card-label">Total de Treinadores</span>
                       </div>
                     </div>
                     <div class="stat-card admin">
@@ -812,25 +649,14 @@
                         <span class="stat-card-label">Administradores</span>
                       </div>
                     </div>
-                    <div class="stat-card new">
-                      <div class="stat-card-icon">
-                        <img src="/icons/plus.png" alt="New" />
-                      </div>
-                      <div class="stat-card-content">
-                        <span class="stat-card-value">{{
-                          userOverview.newThisWeek
-                        }}</span>
-                        <span class="stat-card-label">Novos (7 dias)</span>
-                      </div>
-                    </div>
                   </div>
                 </section>
 
                 <!-- Filters Section -->
-                <section class="users-section">
+                <section class="users-section" *ngIf="!loadingTreinadores && !errorTreinadores">
                   <h3 class="section-title">Filtros e Busca</h3>
                   <p class="section-subtitle">
-                    Query: WHERE com múltiplos filtros + ILIKE para busca
+                    Query: SELECT treinador WHERE nome ILIKE ? OR email ILIKE ?
                   </p>
 
                   <div class="filters-container">
@@ -845,27 +671,14 @@
                     </div>
 
                     <div class="filter-group">
-                      <label class="filter-label">Status</label>
-                      <select
-                        class="filter-select"
-                        [(ngModel)]="filterStatus"
-                        title="Filtrar usuários por status"
-                      >
-                        <option value="all">Todos</option>
-                        <option value="active">Ativos</option>
-                        <option value="inactive">Inativos</option>
-                      </select>
-                    </div>
-
-                    <div class="filter-group">
-                      <label class="filter-label">Role</label>
+                      <label class="filter-label">Permissão</label>
                       <select
                         class="filter-select"
                         [(ngModel)]="filterRole"
-                        title="Filtrar usuários por permissão (role)"
+                        title="Filtrar treinadores por permissão (role)"
                       >
                         <option value="all">Todos</option>
-                        <option value="USER">Usuários</option>
+                        <option value="USER">Treinadores</option>
                         <option value="ADMIN">Admins</option>
                       </select>
                     </div>
@@ -882,86 +695,56 @@
                 </section>
 
                 <!-- Users Table -->
-                <section class="users-section">
+                <section class="users-section" *ngIf="!loadingTreinadores && !errorTreinadores">
                   <h3 class="section-title">
-                    Lista de Usuários ({{ filteredUsers.length }} encontrados)
+                    Lista de Treinadores ({{ filteredUsers.length }} encontrados)
                   </h3>
                   <p class="section-subtitle">
-                    Query: SELECT com JOIN + GROUP BY + Paginação (LIMIT/OFFSET)
+                    Query: SELECT * FROM treinador — paginação com LIMIT/OFFSET
                   </p>
 
-                  <div class="table-container">
+                  <div *ngIf="filteredUsers.length === 0 && !loadingTreinadores" class="empty-state">
+                    <p>Nenhum treinador encontrado com os filtros atuais.</p>
+                  </div>
+
+                  <div class="table-container" *ngIf="filteredUsers.length > 0">
                     <table class="stats-table users-table">
                       <thead>
                         <tr>
                           <th>ID</th>
                           <th>Nome</th>
                           <th>Email</th>
-                          <th>Role</th>
-                          <th>Status</th>
-                          <th>Cadastro</th>
-                          <th>Batalhas</th>
-                          <th>Taxa %</th>
+                          <th>Permissão</th>
                           <th>Ações</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr *ngFor="let user of paginatedUsers">
                           <td class="user-id">{{ user.id }}</td>
-                          <td class="user-name">{{ user.name }}</td>
+                          <td class="user-name">{{ user.nome }}</td>
                           <td class="user-email">{{ user.email }}</td>
                           <td>
                             <span
                               class="role-badge"
-                              [class.role-admin]="user.role === 'ADMIN'"
+                              [class.role-admin]="user.isAdmin"
                             >
-                              {{ user.role }}
+                              {{ user.isAdmin ? "ADMIN" : "TREINADOR" }}
                             </span>
-                          </td>
-                          <td>
-                            <span
-                              class="status-badge"
-                              [class.status-active]="user.active"
-                              [class.status-inactive]="!user.active"
-                            >
-                              {{ user.active ? "Ativo" : "Inativo" }}
-                            </span>
-                          </td>
-                          <td class="user-date">{{ user.createdAt }}</td>
-                          <td>{{ user.battles }}</td>
-                          <td>
-                            <span class="win-rate-simple"
-                              >{{ user.winRate }}%</span
-                            >
                           </td>
                           <td class="user-actions">
                             <button
                               class="btn-action btn-edit"
                               (click)="editUser(user)"
-                              title="Editar"
+                              title="Editar nome"
+                              [disabled]="user.isAdmin"
                             >
                               ✏️
-                            </button>
-                            <button
-                              class="btn-action btn-toggle"
-                              (click)="toggleUserStatus(user)"
-                              [title]="user.active ? 'Desativar' : 'Ativar'"
-                            >
-                              {{ user.active ? "🔒" : "🔓" }}
-                            </button>
-                            <button
-                              class="btn-action btn-promote"
-                              (click)="promoteUser(user)"
-                              [title]="
-                                user.role === 'ADMIN' ? 'Rebaixar' : 'Promover'
-                              "
-                            >
-                              {{ user.role === "ADMIN" ? "⬇️" : "⬆️" }}
                             </button>
                             <button
                               class="btn-action btn-delete"
                               (click)="confirmDelete(user)"
                               title="Excluir"
+                              [disabled]="user.isAdmin"
                             >
                               🗑️
                             </button>
@@ -1041,14 +824,14 @@
           <div class="modal-overlay" *ngIf="showEditModal">
             <div class="modal-container">
               <div class="modal-header">
-                <h3 class="modal-title">Editar Usuário</h3>
+                <h3 class="modal-title">Editar Treinador</h3>
                 <button class="btn-close-modal" (click)="closeEditModal()">
                   ✕
                 </button>
               </div>
               <div class="modal-content">
                 <p class="modal-subtitle">
-                  Query: UPDATE usuarios SET ... WHERE id = ?
+                  Query: UPDATE treinador SET nome = ? WHERE id = ?
                 </p>
 
                 <div class="form-group">
@@ -1056,52 +839,33 @@
                   <input
                     type="text"
                     class="form-input"
-                    [(ngModel)]="selectedUser.name"
-                    placeholder="Digite o nome do usuário"
-                    title="Nome do usuário"
+                    [(ngModel)]="selectedUser!.nome"
+                    placeholder="Digite o nome do treinador"
+                    title="Nome do treinador"
                   />
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">Email</label>
+                  <label class="form-label">Email (somente leitura)</label>
                   <input
                     type="email"
                     class="form-input"
-                    [(ngModel)]="selectedUser.email"
-                    placeholder="Digite o email do usuário"
-                    title="Email do usuário"
+                    [value]="selectedUser!.email"
+                    disabled
+                    title="Email do treinador"
                   />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Role</label>
-                  <select
-                    class="form-select"
-                    [(ngModel)]="selectedUser.role"
-                    title="Selecione a função do usuário"
-                  >
-                    <option value="USER">Usuário</option>
-                    <option value="ADMIN">Administrador</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">
-                    <input
-                      type="checkbox"
-                      class="form-checkbox"
-                      [(ngModel)]="selectedUser.active"
-                    />
-                    Usuário Ativo
-                  </label>
                 </div>
               </div>
               <div class="modal-footer">
                 <button class="btn-modal btn-cancel" (click)="closeEditModal()">
                   Cancelar
                 </button>
-                <button class="btn-modal btn-save" (click)="saveUser()">
-                  Salvar Alterações
+                <button
+                  class="btn-modal btn-save"
+                  (click)="saveUser()"
+                  [disabled]="savingUser"
+                >
+                  {{ savingUser ? "Salvando..." : "Salvar Alterações" }}
                 </button>
               </div>
             </div>
@@ -1118,16 +882,14 @@
               </div>
               <div class="modal-content">
                 <p class="modal-subtitle">
-                  Query: UPDATE usuarios SET ativo = false WHERE id = ?
+                  Query: DELETE FROM treinador WHERE id = ?
                 </p>
                 <p class="confirm-message">
-                  Tem certeza que deseja <strong>desativar</strong> o usuário
-                  <strong>{{ userToDelete?.name }}</strong
-                  >?
+                  Tem certeza que deseja <strong>excluir permanentemente</strong> o treinador
+                  <strong>{{ userToDelete?.nome }}</strong>?
                 </p>
                 <p class="confirm-warning">
-                  ⚠️ Esta ação utilizará soft delete, mantendo os dados no
-                  banco.
+                  ⚠️ Esta ação é irreversível. Todos os dados associados serão removidos.
                 </p>
               </div>
               <div class="modal-footer">
@@ -1137,17 +899,63 @@
                 >
                   Cancelar
                 </button>
-                <button class="btn-modal btn-delete" (click)="deleteUser()">
-                  Confirmar Desativação
+                <button
+                  class="btn-modal btn-delete"
+                  (click)="deleteUser()"
+                  [disabled]="deletingUser"
+                >
+                  {{ deletingUser ? "Excluindo..." : "Confirmar Exclusão" }}
                 </button>
               </div>
             </div>
           </div>
 
+          <!-- Torneios Gerenciados pelo Admin -->
           <div class="admin-section">
-            <h3>Torneios Gerenciados</h3>
-            <div class="admin-placeholder">
-              <p>Nenhum torneio criado ainda</p>
+            <h3>Torneios Cadastrados</h3>
+            <div *ngIf="loadingTorneios" class="loading-state"><p>Carregando...</p></div>
+            <div *ngIf="!loadingTorneios && (torneiosAbertos.length + torneiosEmAndamento.length + torneiosEncerrados.length) === 0" class="admin-placeholder">
+              <p>Nenhum torneio cadastrado ainda. Clique em "Criar Novo Torneio" para começar.</p>
+            </div>
+            <div *ngIf="!loadingTorneios && (torneiosAbertos.length + torneiosEmAndamento.length + torneiosEncerrados.length) > 0" class="table-container">
+              <table class="stats-table">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Status</th>
+                    <th>Participantes</th>
+                    <th>Início</th>
+                    <th>Fim</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let t of torneiosAbertos">
+                    <td>{{ t.nome }}</td>
+                    <td><span class="status-badge status-open">Aberto</span></td>
+                    <td>{{ t.times?.length || 0 }}/{{ t.maxParticipantes }}</td>
+                    <td>{{ formatDate(t.dataInicio) }}</td>
+                    <td>{{ formatDate(t.dataFim) }}</td>
+                    <td><button class="btn-action btn-edit" (click)="verDetalhesTorneio(t)" title="Ver detalhes">👁️</button></td>
+                  </tr>
+                  <tr *ngFor="let t of torneiosEmAndamento">
+                    <td>{{ t.nome }}</td>
+                    <td><span class="status-badge status-progress">Em Andamento</span></td>
+                    <td>{{ t.times?.length || 0 }}/{{ t.maxParticipantes }}</td>
+                    <td>{{ formatDate(t.dataInicio) }}</td>
+                    <td>{{ formatDate(t.dataFim) }}</td>
+                    <td><button class="btn-action btn-edit" (click)="verDetalhesTorneio(t)" title="Ver detalhes">👁️</button></td>
+                  </tr>
+                  <tr *ngFor="let t of torneiosEncerrados">
+                    <td>{{ t.nome }}</td>
+                    <td><span class="status-badge status-closed">Encerrado</span></td>
+                    <td>{{ t.times?.length || 0 }}/{{ t.maxParticipantes }}</td>
+                    <td>{{ formatDate(t.dataInicio) }}</td>
+                    <td>{{ formatDate(t.dataFim) }}</td>
+                    <td><button class="btn-action btn-edit" (click)="verDetalhesTorneio(t)" title="Ver detalhes">👁️</button></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -1476,6 +1284,14 @@
           </div>
         </section>
 
+        <!-- Feedback de erro/sucesso -->
+        <div *ngIf="passwordError" class="form-error-msg">
+          ❌ {{ passwordError }}
+        </div>
+        <div *ngIf="passwordSuccess" class="form-success-msg">
+          ✅ {{ passwordSuccess }}
+        </div>
+
         <!-- Footer com Botões -->
         <div class="password-footer">
           <button class="btn-modal btn-cancel" (click)="closeChangePassword()">
@@ -1486,11 +1302,12 @@
             [disabled]="
               !isPasswordFormValid ||
               passwordForm.newPassword !== passwordForm.confirmPassword ||
-              passwordForm.newPassword.length < 6
+              passwordForm.newPassword.length < 6 ||
+              savingPassword
             "
             (click)="saveNewPassword()"
           >
-            Alterar Senha
+            {{ savingPassword ? "Salvando..." : "Alterar Senha" }}
           </button>
         </div>
       </div>

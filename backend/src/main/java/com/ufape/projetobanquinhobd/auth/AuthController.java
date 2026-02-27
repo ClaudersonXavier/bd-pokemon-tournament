@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,5 +120,71 @@ public class AuthController {
                 treinador.getCredenciais().getEmail(),
                 false
         ));
+    }
+
+    // PUT /api/auth/change-password
+    // Altera a senha do treinador autenticado.
+
+    @Transactional
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(401).body(Map.of("erro", "Não autenticado"));
+        }
+
+        String email = auth.getName();
+        String senhaAtual = body.get("senhaAtual");
+        String novaSenha = body.get("novaSenha");
+
+        if (senhaAtual == null || novaSenha == null || senhaAtual.isBlank() || novaSenha.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("erro", "senhaAtual e novaSenha são obrigatórios"));
+        }
+
+        if (novaSenha.length() < 6) {
+            return ResponseEntity.badRequest().body(Map.of("erro", "A nova senha deve ter pelo menos 6 caracteres"));
+        }
+
+        Treinador treinador = treinadorRepository
+                .findByCredenciaisEmail(email)
+                .orElseThrow(() -> new RuntimeException("Treinador não encontrado"));
+
+        if (!passwordEncoder.matches(senhaAtual, treinador.getCredenciais().getSenha())) {
+            return ResponseEntity.status(401).body(Map.of("erro", "Senha atual incorreta"));
+        }
+
+        String novaSenhaCriptografada = passwordEncoder.encode(novaSenha);
+        treinador.setCredenciais(new CredenciaisUsuario(email, novaSenhaCriptografada));
+        treinadorRepository.save(treinador);
+
+        return ResponseEntity.ok(Map.of("mensagem", "Senha alterada com sucesso"));
+    }
+
+    // PUT /api/auth/update-nome
+    // Atualiza o nome do treinador autenticado.
+    
+    @Transactional
+    @PutMapping("/update-nome")
+    public ResponseEntity<?> updateNome(@RequestBody Map<String, String> body) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(401).body(Map.of("erro", "Não autenticado"));
+        }
+
+        String email = auth.getName();
+        String novoNome = body.get("nome");
+
+        if (novoNome == null || novoNome.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("erro", "Nome é obrigatório"));
+        }
+
+        Treinador treinador = treinadorRepository
+                .findByCredenciaisEmail(email)
+                .orElseThrow(() -> new RuntimeException("Treinador não encontrado"));
+
+        treinador.setNome(novoNome);
+        treinadorRepository.save(treinador);
+
+        return ResponseEntity.ok(Map.of("mensagem", "Nome atualizado com sucesso", "nome", novoNome));
     }
 }

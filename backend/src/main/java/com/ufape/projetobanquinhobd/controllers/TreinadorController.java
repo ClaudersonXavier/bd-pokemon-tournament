@@ -50,6 +50,29 @@ public class TreinadorController {
         return ResponseEntity.noContent().build();
     }
 
+    // PUT /api/treinadores/{id}/nome - Admin atualiza nome de um treinador
+    @PutMapping("/{id}/nome")
+    public ResponseEntity<Treinador> atualizarNomeTreinador(
+            @PathVariable("id") Long id,
+            @RequestBody java.util.Map<String, String> body) {
+        String novoNome = body.get("nome");
+        if (novoNome == null || novoNome.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            Optional<Treinador> treinadorOpt = fachada.getTreinadorService().buscarPorId(id);
+            if (treinadorOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            Treinador treinador = treinadorOpt.get();
+            treinador.setNome(novoNome);
+            Treinador salvo = fachada.getTreinadorService().salvar(treinador);
+            return ResponseEntity.ok(salvo);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     // Time endpoints
     @GetMapping("/times")
     public List<Time> listarTimes() {

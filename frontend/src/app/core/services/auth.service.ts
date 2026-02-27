@@ -62,6 +62,27 @@ export class AuthService {
       .pipe(tap(response => this.handleAuthResponse(response)));
   }
 
+  changePassword(senhaAtual: string, novaSenha: string): Observable<{ mensagem: string }> {
+    return this.http.put<{ mensagem: string }>(
+      `${environment.apiUrl}/auth/change-password`,
+      { senhaAtual, novaSenha }
+    );
+  }
+
+  updateNome(nome: string): Observable<{ mensagem: string; nome: string }> {
+    return this.http.put<{ mensagem: string; nome: string }>(
+      `${environment.apiUrl}/auth/update-nome`,
+      { nome }
+    ).pipe(
+      tap(response => {
+        const current = this.currentUserSignal();
+        if (current) {
+          this.currentUserSignal.set({ ...current, nome: response.nome });
+        }
+      })
+    );
+  }
+
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     this.isAuthenticatedSignal.set(false);

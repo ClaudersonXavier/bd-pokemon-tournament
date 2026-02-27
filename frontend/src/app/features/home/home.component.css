@@ -2609,3 +2609,63 @@ body, html {
     width: 100%;
   }
 }
+
+/* ─── States: loading, error, empty, success ─────────────────────────────── */
+.loading-state,
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #595959;
+  font-style: italic;
+}
+
+.error-state {
+  padding: 1rem;
+  background: #fff3f3;
+  border: 1px solid #e74c3c;
+  border-radius: 8px;
+  color: #c0392b;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-retry {
+  padding: 0.4rem 1rem;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.form-error-msg {
+  background: #fff3f3;
+  border: 1px solid #e74c3c;
+  color: #c0392b;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+}
+
+.form-success-msg {
+  background: #f0fff4;
+  border: 1px solid #27ae60;
+  color: #1e8449;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+}
+
+.status-closed {
+  background: #95a5a6;
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.78rem;
+}
+
