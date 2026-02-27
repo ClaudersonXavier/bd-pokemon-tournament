@@ -25,62 +25,58 @@ export class RegisterComponent {
     private router: Router
   ) {
     this.registerForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]]
-    }, { validators: this.passwordsMatchValidator });
+      senha: ['', [Validators.required, Validators.minLength(6)]],
+      confirmarSenha: ['', [Validators.required]]
+    }, { validators: this.senhasIguaisValidator });
   }
 
-  passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const password = control.get('password');
-    const confirmPassword = control.get('confirmPassword');
-
-    if (!password || !confirmPassword) {
-      return null;
-    }
-
-    return password.value === confirmPassword.value ? null : { passwordsMismatch: true };
+  senhasIguaisValidator(control: AbstractControl): ValidationErrors | null {
+    const senha = control.get('senha');
+    const confirmar = control.get('confirmarSenha');
+    if (!senha || !confirmar) return null;
+    return senha.value === confirmar.value ? null : { senhasDiferentes: true };
   }
 
-  get nameControl() { return this.registerForm.get('name'); }
-  get emailControl() { return this.registerForm.get('email'); }
-  get passwordControl() { return this.registerForm.get('password'); }
-  get confirmPasswordControl() { return this.registerForm.get('confirmPassword'); }
+  get nomeControl()          { return this.registerForm.get('nome'); }
+  get emailControl()         { return this.registerForm.get('email'); }
+  get senhaControl()         { return this.registerForm.get('senha'); }
+  get confirmarSenhaControl(){ return this.registerForm.get('confirmarSenha'); }
 
-  get togglePasswordLabel(): string {
-    return this.showPassword ? 'Ocultar senha' : 'Mostrar senha';
-  }
+  get togglePasswordLabel():        string { return this.showPassword        ? 'Ocultar senha'        : 'Mostrar senha'; }
+  get toggleConfirmPasswordLabel(): string { return this.showConfirmPassword ? 'Ocultar confirmação' : 'Mostrar confirmação'; }
 
-  get toggleConfirmPasswordLabel(): string {
-    return this.showConfirmPassword ? 'Ocultar confirmação' : 'Mostrar confirmação';
-  }
-
-  togglePassword(): void {
-    this.showPassword = !this.showPassword;
-  }
-
-  toggleConfirmPassword(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
-  }
+  togglePassword():        void { this.showPassword        = !this.showPassword; }
+  toggleConfirmPassword(): void { this.showConfirmPassword = !this.showConfirmPassword; }
 
   onSubmit(): void {
-    if (this.registerForm.valid) {
-      this.isLoading = true;
-      this.registerError = null;
-      this.registerSuccess = null;
-
-      // Simulate registration
-      setTimeout(() => {
-        this.isLoading = false;
-        this.registerSuccess = 'Cadastro realizado com sucesso! Redirecionando...';
-        setTimeout(() => {
-          this.router.navigate(['/login']);
-        }, 2000);
-      }, 1500);
-    } else {
+    if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       this.registerError = 'Por favor, preencha todos os campos corretamente.';
+      return;
     }
+
+    this.isLoading = true;
+    this.registerError = null;
+    this.registerSuccess = null;
+
+    const { nome, email, senha } = this.registerForm.value;
+
+    this.authService.registro({ nome, email, senha }).subscribe({
+      next: () => {
+        this.isLoading = false;
+        // O AuthService já armazenou o token; redireciona direto para home
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        if (err.status === 409) {
+          this.registerError = 'Este e-mail já está cadastrado.';
+        } else {
+          this.registerError = 'Erro ao cadastrar. Tente novamente.';
+        }
+      }
+    });
   }
 }

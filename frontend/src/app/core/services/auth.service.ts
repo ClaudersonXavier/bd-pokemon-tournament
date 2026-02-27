@@ -1,27 +1,42 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, catchError, delay } from 'rxjs';
+import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
-export interface LoginCredentials {
+export interface LoginRequest {
   email: string;
-  password: string;
+  senha: string;
+}
+
+export interface RegistroRequest {
+  nome: string;
+  email: string;
+  senha: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  tipo: string;
+  id: number;
+  nome: string;
+  email: string;
 }
 
 export interface User {
-  id: string;
+  id: number;
   email: string;
-  name: string;
+  nome: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly TOKEN_KEY = 'authToken';
+
   private isAuthenticatedSignal = signal(false);
   private currentUserSignal = signal<User | null>(null);
 
-  constructor(private router: Router) {
-    // Check if user is already logged in (e.g., from localStorage)
+  constructor(private http: HttpClient, private router: Router) {
     this.checkAuthStatus();
   }
 
@@ -33,44 +48,60 @@ export class AuthService {
     return this.currentUserSignal.asReadonly();
   }
 
-  login(credentials: LoginCredentials): Observable<User> {
-    // Simulate API call with delay
-    return of({
-      id: '1',
-      email: credentials.email,
-      name: 'Pokemon Trainer'
-    }).pipe(
-      delay(1500), // Simulate network delay
-      catchError(error => {
-        throw new Error('Login failed');
-      })
-    );
+  login(credentials: LoginRequest): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>(`${environment.apiUrl}/auth/login`, credentials)
+      .pipe(tap(response => this.handleAuthResponse(response)));
+  }
+
+  registro(data: RegistroRequest): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>(`${environment.apiUrl}/auth/registro`, data)
+      .pipe(tap(response => this.handleAuthResponse(response)));
   }
 
   logout(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
     this.isAuthenticatedSignal.set(false);
     this.currentUserSignal.set(null);
-    localStorage.removeItem('authToken');
     this.router.navigate(['/login']);
   }
 
-  private checkAuthStatus(): void {
-    // Check localStorage for existing auth token
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      // In a real app, you'd validate the token with the server
-      this.isAuthenticatedSignal.set(true);
-      this.currentUserSignal.set({
-        id: '1',
-        email: 'trainer@pokemon.com',
-        name: 'Pokemon Trainer'
-      });
-    }
+  getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  setAuthUser(user: User): void {
+  private handleAuthResponse(response: LoginResponse): void {
+    localStorage.setItem(this.TOKEN_KEY, response.token);
     this.isAuthenticatedSignal.set(true);
-    this.currentUserSignal.set(user);
-    localStorage.setItem('authToken', 'fake-jwt-token');
+    this.currentUserSignal.set({
+      id: response.id,
+      email: response.email,
+      nome: response.nome,
+    });
+  }
+
+  private checkAuthStatus(): void {
+    const token = localStorage.getItem(this.TOKEN_KEY);
+    if (!token) return;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expirado = payload.exp * 1000 < Date.now();
+
+      if (expirado) {
+        localStorage.removeItem(this.TOKEN_KEY);
+        return;
+      }
+
+      this.isAuthenticatedSignal.set(true);
+      this.currentUserSignal.set({
+        id: payload.id,
+        email: payload.sub,
+        nome: payload.nome,
+      });
+    } catch {
+      localStorage.removeItem(this.TOKEN_KEY);
+    }
   }
 }

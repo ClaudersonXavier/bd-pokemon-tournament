@@ -57,13 +57,13 @@
 
         <!-- Password Field -->
         <div class="field-group">
-          <label class="field-label" for="password">SECRET CODE</label>
-          <div class="input-wrapper" [class.error]="passwordControl?.invalid && passwordControl?.touched">
+          <label class="field-label" for="senha">SECRET CODE</label>
+          <div class="input-wrapper" [class.error]="senhaControl?.invalid && senhaControl?.touched">
             <span class="input-icon">🔒</span>
             <input
-              id="password"
+              id="senha"
               [type]="showPassword ? 'text' : 'password'"
-              formControlName="password"
+              formControlName="senha"
               class="field-input"
               placeholder="••••••••"
               autocomplete="current-password"
@@ -79,9 +79,9 @@
               {{ showPassword ? '👁' : '👁‍🗨' }}
             </button>
           </div>
-          <div class="error-msg" *ngIf="passwordControl?.invalid && passwordControl?.touched">
-            <span *ngIf="passwordControl?.errors?.['required']">⚠ Secret code required!</span>
-            <span *ngIf="passwordControl?.errors?.['minlength']">⚠ Min 6 characters!</span>
+          <div class="error-msg" *ngIf="senhaControl?.invalid && senhaControl?.touched">
+            <span *ngIf="senhaControl?.errors?.['required']">⚠ Secret code required!</span>
+            <span *ngIf="senhaControl?.errors?.['minlength']">⚠ Min 6 characters!</span>
           </div>
         </div>
 
