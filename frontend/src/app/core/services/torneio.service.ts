@@ -37,6 +37,10 @@ export class TorneioService {
     return this.http.get<Batalha[]>(`${this.apiUrl}/batalhas`);
   }
 
+  listarBatalhasPorTorneio(torneioId: number): Observable<Batalha[]> {
+    return this.http.get<Batalha[]>(`${this.apiUrl}/${torneioId}/batalhas`);
+  }
+
   buscarBatalha(id: number): Observable<Batalha> {
     return this.http.get<Batalha>(`${this.apiUrl}/batalhas/${id}`);
   }

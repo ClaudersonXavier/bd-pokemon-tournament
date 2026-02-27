@@ -24,7 +24,7 @@ public class CatalogoController {
     }
 
     @GetMapping("/especies/{nome}")
-    public ResponseEntity<Especie> buscarEspecie(@PathVariable String nome) {
+    public ResponseEntity<Especie> buscarEspecie(@PathVariable("nome") String nome) {
         Optional<Especie> especie = fachada.getEspecieService().buscarPorNome(nome);
         return especie.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -35,7 +35,7 @@ public class CatalogoController {
     }
 
     @DeleteMapping("/especies/{nome}")
-    public ResponseEntity<Void> deletarEspecie(@PathVariable String nome) {
+    public ResponseEntity<Void> deletarEspecie(@PathVariable("nome") String nome) {
         fachada.getEspecieService().deletarPorNome(nome);
         return ResponseEntity.noContent().build();
     }
@@ -47,7 +47,7 @@ public class CatalogoController {
     }
 
     @GetMapping("/tipos/{nome}")
-    public ResponseEntity<Tipo> buscarTipo(@PathVariable String nome) {
+    public ResponseEntity<Tipo> buscarTipo(@PathVariable("nome") String nome) {
         Optional<Tipo> tipo = fachada.getTipoService().buscarPorNome(nome);
         return tipo.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -58,7 +58,7 @@ public class CatalogoController {
     }
 
     @DeleteMapping("/tipos/{nome}")
-    public ResponseEntity<Void> deletarTipo(@PathVariable String nome) {
+    public ResponseEntity<Void> deletarTipo(@PathVariable("nome") String nome) {
         fachada.getTipoService().deletarPorNome(nome);
         return ResponseEntity.noContent().build();
     }
@@ -70,7 +70,7 @@ public class CatalogoController {
     }
 
     @GetMapping("/ataques/{nome}")
-    public ResponseEntity<Ataque> buscarAtaque(@PathVariable String nome) {
+    public ResponseEntity<Ataque> buscarAtaque(@PathVariable("nome") String nome) {
         Optional<Ataque> ataque = fachada.getAtaqueService().buscarPorNome(nome);
         return ataque.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -81,7 +81,7 @@ public class CatalogoController {
     }
 
     @DeleteMapping("/ataques/{nome}")
-    public ResponseEntity<Void> deletarAtaque(@PathVariable String nome) {
+    public ResponseEntity<Void> deletarAtaque(@PathVariable("nome") String nome) {
         fachada.getAtaqueService().deletarPorNome(nome);
         return ResponseEntity.noContent().build();
     }

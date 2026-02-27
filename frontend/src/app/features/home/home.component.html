@@ -49,7 +49,11 @@
             (click)="setActiveTab('profile')"
           >
             <span class="nav-icon">
-              <img src="/icons/profile.png" alt="Icon Profile" class="nav-icon-img" />
+              <img
+                src="/icons/profile.png"
+                alt="Icon Profile"
+                class="nav-icon-img"
+              />
             </span>
             <span class="nav-label">Meu Perfil</span>
           </button>
@@ -61,7 +65,11 @@
             (click)="setActiveTab('admin')"
           >
             <span class="nav-icon">
-              <img src="/icons/settings.png" alt="Settings" class="nav-icon-img" />
+              <img
+                src="/icons/settings.png"
+                alt="Settings"
+                class="nav-icon-img"
+              />
             </span>
             <span class="nav-label">Painel Admin</span>
           </button>
@@ -74,15 +82,220 @@
       <!-- Tournaments Tab -->
       <section class="tab-content" *ngIf="isTabActive('tournaments')">
         <div class="content-card">
-          <h2 class="content-title">
-            Torneios
-          </h2>
-          <p class="content-subtitle">Encontre e participe de torneios incríveis!</p>
-          
-          <div class="tournaments-grid">
-            <div class="tournament-placeholder">
+          <h2 class="content-title">Torneios</h2>
+          <p class="content-subtitle">
+            Encontre e participe de torneios incríveis!
+          </p>
+
+          <!-- Loading State -->
+          <div *ngIf="loadingTorneios" class="tournaments-loading">
+            <p>Carregando torneios...</p>
+          </div>
+
+          <!-- Error State -->
+          <div
+            *ngIf="errorTorneios && !loadingTorneios"
+            class="tournaments-error"
+          >
+            <p>❌ {{ errorTorneios }}</p>
+            <button class="btn-retry" (click)="loadTorneios()">
+              Tentar Novamente
+            </button>
+          </div>
+
+          <!-- Torneios Content -->
+          <div
+            *ngIf="!loadingTorneios && !errorTorneios"
+            class="tournaments-content"
+          >
+            <!-- Torneios Abertos (Inscrições) -->
+            <div class="tournament-section" *ngIf="torneiosAbertos.length > 0">
+              <h3 class="section-title">
+                <span class="status-badge status-open"
+                  >📝 Inscrições Abertas</span
+                >
+              </h3>
+              <div class="tournaments-grid">
+                <div
+                  class="tournament-card"
+                  *ngFor="let torneio of torneiosAbertos"
+                >
+                  <div class="tournament-header">
+                    <h4>{{ torneio.nome }}</h4>
+                    <span class="tournament-status status-open">Aberto</span>
+                  </div>
+                  <div class="tournament-info">
+                    <div class="info-row">
+                      <span class="info-label">📅 Início:</span>
+                      <span class="info-value">{{
+                        formatDate(torneio.dataInicio)
+                      }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">🏁 Término:</span>
+                      <span class="info-value">{{
+                        formatDate(torneio.dataFim)
+                      }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">👥 Participantes:</span>
+                      <span class="info-value"
+                        >{{ torneio.times?.length || 0 }}/{{
+                          torneio.maxParticipantes
+                        }}</span
+                      >
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">✉️ Inscrições até:</span>
+                      <span class="info-value">{{
+                        formatDate(torneio.dataEncerramentoInscricoes)
+                      }}</span>
+                    </div>
+                  </div>
+                  <div class="tournament-actions">
+                    <button
+                      class="btn-tournament btn-primary"
+                      (click)="inscreverNoTorneio(torneio)"
+                    >
+                      Inscrever-se
+                    </button>
+                    <button
+                      class="btn-tournament btn-secondary"
+                      (click)="verDetalhesTorneio(torneio)"
+                    >
+                      Ver Detalhes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Torneios Em Andamento -->
+            <div
+              class="tournament-section"
+              *ngIf="torneiosEmAndamento.length > 0"
+            >
+              <h3 class="section-title">
+                <span class="status-badge status-progress"
+                  >⚔️ Em Andamento</span
+                >
+              </h3>
+              <div class="tournaments-grid">
+                <div
+                  class="tournament-card"
+                  *ngFor="let torneio of torneiosEmAndamento"
+                >
+                  <div class="tournament-header">
+                    <h4>{{ torneio.nome }}</h4>
+                    <span class="tournament-status status-progress"
+                      >Em Andamento</span
+                    >
+                  </div>
+                  <div class="tournament-info">
+                    <div class="info-row">
+                      <span class="info-label">📅 Início:</span>
+                      <span class="info-value">{{
+                        formatDate(torneio.dataInicio)
+                      }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">🏁 Término:</span>
+                      <span class="info-value">{{
+                        formatDate(torneio.dataFim)
+                      }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">👥 Participantes:</span>
+                      <span class="info-value">{{
+                        torneio.times?.length || 0
+                      }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">⚔️ Batalhas:</span>
+                      <span class="info-value">{{
+                        torneio.batalhas?.length || 0
+                      }}</span>
+                    </div>
+                  </div>
+                  <div class="tournament-actions">
+                    <button
+                      class="btn-tournament btn-primary"
+                      (click)="verDetalhesTorneio(torneio)"
+                    >
+                      Acompanhar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Torneios Encerrados -->
+            <div
+              class="tournament-section"
+              *ngIf="torneiosEncerrados.length > 0"
+            >
+              <h3 class="section-title">
+                <span class="status-badge status-closed">🏆 Encerrados</span>
+              </h3>
+              <div class="tournaments-grid">
+                <div
+                  class="tournament-card"
+                  *ngFor="let torneio of torneiosEncerrados"
+                >
+                  <div class="tournament-header">
+                    <h4>{{ torneio.nome }}</h4>
+                    <span class="tournament-status status-closed"
+                      >Encerrado</span
+                    >
+                  </div>
+                  <div class="tournament-info">
+                    <div class="info-row">
+                      <span class="info-label">📅 Realizado:</span>
+                      <span class="info-value"
+                        >{{ formatDate(torneio.dataInicio) }} -
+                        {{ formatDate(torneio.dataFim) }}</span
+                      >
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">👥 Participantes:</span>
+                      <span class="info-value">{{
+                        torneio.times?.length || 0
+                      }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">⚔️ Batalhas:</span>
+                      <span class="info-value">{{
+                        torneio.batalhas?.length || 0
+                      }}</span>
+                    </div>
+                  </div>
+                  <div class="tournament-actions">
+                    <button
+                      class="btn-tournament btn-secondary"
+                      (click)="verDetalhesTorneio(torneio)"
+                    >
+                      Ver Resultados
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- No tournaments message -->
+            <div
+              class="tournament-placeholder"
+              *ngIf="
+                torneiosAbertos.length === 0 &&
+                torneiosEmAndamento.length === 0 &&
+                torneiosEncerrados.length === 0
+              "
+            >
               <div class="placeholder-icon">
-                <img src="/icons/trofeu.png" alt="Troféu" class="placeholder-icon-img" />
+                <img
+                  src="/icons/trofeu.png"
+                  alt="Troféu"
+                  class="placeholder-icon-img"
+                />
               </div>
               <p>Nenhum torneio disponível</p>
               <small>Novos torneios em breve...</small>
@@ -95,7 +308,7 @@
       <section class="tab-content" *ngIf="isTabActive('profile')">
         <div class="content-card">
           <h2 class="content-title">Meu Perfil</h2>
-          
+
           <div class="profile-container">
             <div class="profile-header">
               <div class="profile-avatar">
@@ -115,21 +328,33 @@
             <div class="profile-stats">
               <div class="stat-item">
                 <span class="stat-icon">
-                  <img src="/icons/poke-ball.png" alt="Torneios" class="stat-icon-img" />
+                  <img
+                    src="/icons/poke-ball.png"
+                    alt="Torneios"
+                    class="stat-icon-img"
+                  />
                 </span>
                 <span class="stat-value">0</span>
                 <span class="stat-label">Torneios</span>
               </div>
               <div class="stat-item">
                 <span class="stat-icon">
-                  <img src="/icons/trofeu.png" alt="Vitórias" class="stat-icon-img" />
+                  <img
+                    src="/icons/trofeu.png"
+                    alt="Vitórias"
+                    class="stat-icon-img"
+                  />
                 </span>
                 <span class="stat-value">0</span>
                 <span class="stat-label">Vitórias</span>
               </div>
               <div class="stat-item">
                 <span class="stat-icon">
-                  <img src="/icons/pixel-chart-removebg-preview.png" alt="Taxa" class="stat-icon-img" />
+                  <img
+                    src="/icons/pixel-chart-removebg-preview.png"
+                    alt="Taxa"
+                    class="stat-icon-img"
+                  />
                 </span>
                 <span class="stat-value">0</span>
                 <span class="stat-label">Taxa</span>
@@ -137,8 +362,15 @@
             </div>
 
             <div class="profile-actions">
-              <button class="btn-edit" (click)="goToEditProfile()">Editar Perfil</button>
-              <button class="btn-change-password" (click)="openChangePassword()">Alterar Senha</button>
+              <button class="btn-edit" (click)="goToEditProfile()">
+                Editar Perfil
+              </button>
+              <button
+                class="btn-change-password"
+                (click)="openChangePassword()"
+              >
+                Alterar Senha
+              </button>
             </div>
           </div>
         </div>
@@ -149,7 +381,7 @@
         <div class="content-card">
           <h2 class="content-title">Painel Administrativo</h2>
           <p class="content-subtitle">Gerencie torneios e usuários</p>
-          
+
           <div class="admin-actions">
             <button class="btn-admin" (click)="toggleCreateTournament()">
               <span class="admin-icon">
@@ -159,13 +391,21 @@
             </button>
             <button class="btn-admin" (click)="toggleUserManagement()">
               <span class="admin-icon">
-                <img src="/icons/user-account.png" alt="User Account" class="admin-icon-img" />
+                <img
+                  src="/icons/user-account.png"
+                  alt="User Account"
+                  class="admin-icon-img"
+                />
               </span>
               <span>Gerenciar Usuários</span>
             </button>
             <button class="btn-admin" (click)="toggleStatistics()">
               <span class="admin-icon">
-                <img src="/icons/combo-chart.png" alt="Combo Chart" class="admin-icon-img" />
+                <img
+                  src="/icons/combo-chart.png"
+                  alt="Combo Chart"
+                  class="admin-icon-img"
+                />
               </span>
               <span>Estatísticas</span>
             </button>
@@ -176,10 +416,16 @@
             <div class="statistics-container">
               <div class="statistics-header">
                 <h2 class="statistics-title">
-                  <img src="/icons/combo-chart.png" alt="Stats" class="title-icon" />
+                  <img
+                    src="/icons/combo-chart.png"
+                    alt="Stats"
+                    class="title-icon"
+                  />
                   Estatísticas do Sistema
                 </h2>
-                <button class="btn-close-stats" (click)="closeStatistics()">✕</button>
+                <button class="btn-close-stats" (click)="closeStatistics()">
+                  ✕
+                </button>
               </div>
 
               <div class="statistics-content">
@@ -192,8 +438,12 @@
                         <img src="/icons/user-account.png" alt="Users" />
                       </div>
                       <div class="stat-card-content">
-                        <span class="stat-card-value">{{ mockStats.overview.totalUsers }}</span>
-                        <span class="stat-card-label">Usuários Registrados</span>
+                        <span class="stat-card-value">{{
+                          mockStats.overview.totalUsers
+                        }}</span>
+                        <span class="stat-card-label"
+                          >Usuários Registrados</span
+                        >
                       </div>
                     </div>
                     <div class="stat-card">
@@ -201,7 +451,9 @@
                         <img src="/icons/trofeu.png" alt="Tournaments" />
                       </div>
                       <div class="stat-card-content">
-                        <span class="stat-card-value">{{ mockStats.overview.totalTournaments }}</span>
+                        <span class="stat-card-value">{{
+                          mockStats.overview.totalTournaments
+                        }}</span>
                         <span class="stat-card-label">Torneios Criados</span>
                       </div>
                     </div>
@@ -210,7 +462,9 @@
                         <img src="/icons/poke-ball.png" alt="Battles" />
                       </div>
                       <div class="stat-card-content">
-                        <span class="stat-card-value">{{ mockStats.overview.totalBattles }}</span>
+                        <span class="stat-card-value">{{
+                          mockStats.overview.totalBattles
+                        }}</span>
                         <span class="stat-card-label">Batalhas Realizadas</span>
                       </div>
                     </div>
@@ -219,7 +473,9 @@
                         <img src="/icons/combo-chart.png" alt="Average" />
                       </div>
                       <div class="stat-card-content">
-                        <span class="stat-card-value">{{ mockStats.overview.avgBattlesPerDay }}</span>
+                        <span class="stat-card-value">{{
+                          mockStats.overview.avgBattlesPerDay
+                        }}</span>
                         <span class="stat-card-label">Média Batalhas/Dia</span>
                       </div>
                     </div>
@@ -229,7 +485,9 @@
                 <!-- Top Trainers Table -->
                 <section class="stats-section">
                   <h3 class="section-title">Top 10 Treinadores</h3>
-                  <p class="section-subtitle">Query: SELECT com JOIN, GROUP BY e ORDER BY</p>
+                  <p class="section-subtitle">
+                    Query: SELECT com JOIN, GROUP BY e ORDER BY
+                  </p>
                   <div class="table-container">
                     <table class="stats-table">
                       <thead>
@@ -243,14 +501,24 @@
                       </thead>
                       <tbody>
                         <tr *ngFor="let trainer of mockStats.topTrainers">
-                          <td class="rank-badge" [class.top-3]="trainer.position <= 3">{{ trainer.position }}</td>
+                          <td
+                            class="rank-badge"
+                            [class.top-3]="trainer.position <= 3"
+                          >
+                            {{ trainer.position }}
+                          </td>
                           <td class="trainer-name">{{ trainer.name }}</td>
                           <td>{{ trainer.battles }}</td>
                           <td class="victories">{{ trainer.victories }}</td>
                           <td>
                             <div class="win-rate-bar">
-                              <div class="win-rate-fill" [style.width.%]="trainer.winRate"></div>
-                              <span class="win-rate-text">{{ trainer.winRate }}%</span>
+                              <div
+                                class="win-rate-fill"
+                                [style.width.%]="trainer.winRate"
+                              ></div>
+                              <span class="win-rate-text"
+                                >{{ trainer.winRate }}%</span
+                              >
                             </div>
                           </td>
                         </tr>
@@ -262,7 +530,9 @@
                 <!-- Popular Pokemons Table -->
                 <section class="stats-section">
                   <h3 class="section-title">Pokémons Mais Populares</h3>
-                  <p class="section-subtitle">Query: JOIN com tipos + GROUP BY + Agregação</p>
+                  <p class="section-subtitle">
+                    Query: JOIN com tipos + GROUP BY + Agregação
+                  </p>
                   <div class="table-container">
                     <table class="stats-table">
                       <thead>
@@ -282,8 +552,13 @@
                           <td>{{ pokemon.timesUsed }}</td>
                           <td>
                             <div class="win-rate-bar">
-                              <div class="win-rate-fill" [style.width.%]="pokemon.winRate"></div>
-                              <span class="win-rate-text">{{ pokemon.winRate }}%</span>
+                              <div
+                                class="win-rate-fill"
+                                [style.width.%]="pokemon.winRate"
+                              ></div>
+                              <span class="win-rate-text"
+                                >{{ pokemon.winRate }}%</span
+                              >
                             </div>
                           </td>
                         </tr>
@@ -295,7 +570,9 @@
                 <!-- Tournaments Analysis -->
                 <section class="stats-section">
                   <h3 class="section-title">Análise de Torneios</h3>
-                  <p class="section-subtitle">Query: Window Functions (RANK) + CTEs</p>
+                  <p class="section-subtitle">
+                    Query: Window Functions (RANK) + CTEs
+                  </p>
                   <div class="table-container">
                     <table class="stats-table">
                       <thead>
@@ -314,10 +591,18 @@
                           <td>{{ tournament.participants }}</td>
                           <td>{{ tournament.battles }}</td>
                           <td>
-                            <span class="status-badge" 
-                                  [class.status-active]="tournament.status === 'Em Andamento'"
-                                  [class.status-completed]="tournament.status === 'Finalizado'"
-                                  [class.status-scheduled]="tournament.status === 'Agendado'">
+                            <span
+                              class="status-badge"
+                              [class.status-active]="
+                                tournament.status === 'Em Andamento'
+                              "
+                              [class.status-completed]="
+                                tournament.status === 'Finalizado'
+                              "
+                              [class.status-scheduled]="
+                                tournament.status === 'Agendado'
+                              "
+                            >
                               {{ tournament.status }}
                             </span>
                           </td>
@@ -330,7 +615,9 @@
                 <!-- Monthly Growth Table -->
                 <section class="stats-section">
                   <h3 class="section-title">Evolução de Cadastros</h3>
-                  <p class="section-subtitle">Query: DATE_TRUNC + Agregação Temporal + Window Function</p>
+                  <p class="section-subtitle">
+                    Query: DATE_TRUNC + Agregação Temporal + Window Function
+                  </p>
                   <div class="table-container">
                     <table class="stats-table">
                       <thead>
@@ -342,14 +629,24 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let month of mockStats.monthlyGrowth; let i = index">
+                        <tr
+                          *ngFor="
+                            let month of mockStats.monthlyGrowth;
+                            let i = index
+                          "
+                        >
                           <td class="month-name">{{ month.month }}</td>
                           <td>{{ month.newUsers }}</td>
                           <td class="total-users">{{ month.total }}</td>
                           <td>
                             <div class="growth-bar">
-                              <div class="growth-fill" [style.width.%]="(month.newUsers / 102) * 100"></div>
-                              <span class="growth-text">+{{ month.newUsers }}</span>
+                              <div
+                                class="growth-fill"
+                                [style.width.%]="(month.newUsers / 102) * 100"
+                              ></div>
+                              <span class="growth-text"
+                                >+{{ month.newUsers }}</span
+                              >
                             </div>
                           </td>
                         </tr>
@@ -361,7 +658,9 @@
                 <!-- Type Matchups Table -->
                 <section class="stats-section">
                   <h3 class="section-title">Matchup Entre Tipos</h3>
-                  <p class="section-subtitle">Query: Self JOIN + Estatísticas Cruzadas + HAVING</p>
+                  <p class="section-subtitle">
+                    Query: Self JOIN + Estatísticas Cruzadas + HAVING
+                  </p>
                   <div class="table-container">
                     <table class="stats-table">
                       <thead>
@@ -377,18 +676,27 @@
                       <tbody>
                         <tr *ngFor="let matchup of mockStats.typeMatchups">
                           <td>
-                            <span class="type-badge type-left">{{ matchup.type1 }}</span>
+                            <span class="type-badge type-left">{{
+                              matchup.type1
+                            }}</span>
                           </td>
                           <td class="vs-label">⚔️</td>
                           <td>
-                            <span class="type-badge type-right">{{ matchup.type2 }}</span>
+                            <span class="type-badge type-right">{{
+                              matchup.type2
+                            }}</span>
                           </td>
                           <td>{{ matchup.battles }}</td>
                           <td>{{ matchup.type1Wins }}</td>
                           <td>
                             <div class="win-rate-bar">
-                              <div class="win-rate-fill" [style.width.%]="matchup.type1Percentage"></div>
-                              <span class="win-rate-text">{{ matchup.type1Percentage }}%</span>
+                              <div
+                                class="win-rate-fill"
+                                [style.width.%]="matchup.type1Percentage"
+                              ></div>
+                              <span class="win-rate-text"
+                                >{{ matchup.type1Percentage }}%</span
+                              >
                             </div>
                           </td>
                         </tr>
@@ -407,15 +715,21 @@
                     </div>
                     <div class="concept-card">
                       <span class="concept-icon">📊</span>
-                      <span class="concept-name">Agregações (COUNT, SUM, AVG)</span>
+                      <span class="concept-name"
+                        >Agregações (COUNT, SUM, AVG)</span
+                      >
                     </div>
                     <div class="concept-card">
                       <span class="concept-icon">📈</span>
-                      <span class="concept-name">Window Functions (RANK, ROW_NUMBER)</span>
+                      <span class="concept-name"
+                        >Window Functions (RANK, ROW_NUMBER)</span
+                      >
                     </div>
                     <div class="concept-card">
                       <span class="concept-icon">🗂️</span>
-                      <span class="concept-name">CTEs (Common Table Expressions)</span>
+                      <span class="concept-name"
+                        >CTEs (Common Table Expressions)</span
+                      >
                     </div>
                     <div class="concept-card">
                       <span class="concept-icon">📅</span>
@@ -427,7 +741,9 @@
                     </div>
                     <div class="concept-card">
                       <span class="concept-icon">🎯</span>
-                      <span class="concept-name">Subconsultas Correlacionadas</span>
+                      <span class="concept-name"
+                        >Subconsultas Correlacionadas</span
+                      >
                     </div>
                     <div class="concept-card">
                       <span class="concept-icon">⚡</span>
@@ -444,10 +760,16 @@
             <div class="users-container">
               <div class="users-header">
                 <h2 class="users-title">
-                  <img src="/icons/user-account.png" alt="Users" class="title-icon" />
+                  <img
+                    src="/icons/user-account.png"
+                    alt="Users"
+                    class="title-icon"
+                  />
                   Gerenciar Usuários
                 </h2>
-                <button class="btn-close-users" (click)="closeUserManagement()">✕</button>
+                <button class="btn-close-users" (click)="closeUserManagement()">
+                  ✕
+                </button>
               </div>
 
               <div class="users-content">
@@ -459,7 +781,9 @@
                         <img src="/icons/user-account.png" alt="Active" />
                       </div>
                       <div class="stat-card-content">
-                        <span class="stat-card-value">{{ userOverview.totalActive }}</span>
+                        <span class="stat-card-value">{{
+                          userOverview.totalActive
+                        }}</span>
                         <span class="stat-card-label">Usuários Ativos</span>
                       </div>
                     </div>
@@ -468,7 +792,9 @@
                         <img src="/icons/user-account.png" alt="Inactive" />
                       </div>
                       <div class="stat-card-content">
-                        <span class="stat-card-value">{{ userOverview.totalInactive }}</span>
+                        <span class="stat-card-value">{{
+                          userOverview.totalInactive
+                        }}</span>
                         <span class="stat-card-label">Usuários Inativos</span>
                       </div>
                     </div>
@@ -477,7 +803,9 @@
                         <img src="/icons/settings.png" alt="Admins" />
                       </div>
                       <div class="stat-card-content">
-                        <span class="stat-card-value">{{ userOverview.totalAdmins }}</span>
+                        <span class="stat-card-value">{{
+                          userOverview.totalAdmins
+                        }}</span>
                         <span class="stat-card-label">Administradores</span>
                       </div>
                     </div>
@@ -486,7 +814,9 @@
                         <img src="/icons/plus.png" alt="New" />
                       </div>
                       <div class="stat-card-content">
-                        <span class="stat-card-value">{{ userOverview.newThisWeek }}</span>
+                        <span class="stat-card-value">{{
+                          userOverview.newThisWeek
+                        }}</span>
                         <span class="stat-card-label">Novos (7 dias)</span>
                       </div>
                     </div>
@@ -496,39 +826,52 @@
                 <!-- Filters Section -->
                 <section class="users-section">
                   <h3 class="section-title">Filtros e Busca</h3>
-                  <p class="section-subtitle">Query: WHERE com múltiplos filtros + ILIKE para busca</p>
-                  
+                  <p class="section-subtitle">
+                    Query: WHERE com múltiplos filtros + ILIKE para busca
+                  </p>
+
                   <div class="filters-container">
                     <div class="filter-group">
                       <label class="filter-label">Buscar</label>
-                      <input 
-                        type="text" 
-                        class="filter-input" 
-                        placeholder="Nome ou email..." 
+                      <input
+                        type="text"
+                        class="filter-input"
+                        placeholder="Nome ou email..."
                         [(ngModel)]="searchTerm"
                       />
                     </div>
-                    
+
                     <div class="filter-group">
                       <label class="filter-label">Status</label>
-                      <select class="filter-select" [(ngModel)]="filterStatus" title="Filtrar usuários por status">
+                      <select
+                        class="filter-select"
+                        [(ngModel)]="filterStatus"
+                        title="Filtrar usuários por status"
+                      >
                         <option value="all">Todos</option>
                         <option value="active">Ativos</option>
                         <option value="inactive">Inativos</option>
                       </select>
                     </div>
-                    
+
                     <div class="filter-group">
                       <label class="filter-label">Role</label>
-                      <select class="filter-select" [(ngModel)]="filterRole" title="Filtrar usuários por permissão (role)">
+                      <select
+                        class="filter-select"
+                        [(ngModel)]="filterRole"
+                        title="Filtrar usuários por permissão (role)"
+                      >
                         <option value="all">Todos</option>
                         <option value="USER">Usuários</option>
                         <option value="ADMIN">Admins</option>
                       </select>
                     </div>
-                    
+
                     <div class="filter-actions">
-                      <button class="btn-clear-filters" (click)="clearFilters()">
+                      <button
+                        class="btn-clear-filters"
+                        (click)="clearFilters()"
+                      >
                         🔄 Limpar
                       </button>
                     </div>
@@ -537,9 +880,13 @@
 
                 <!-- Users Table -->
                 <section class="users-section">
-                  <h3 class="section-title">Lista de Usuários ({{ filteredUsers.length }} encontrados)</h3>
-                  <p class="section-subtitle">Query: SELECT com JOIN + GROUP BY + Paginação (LIMIT/OFFSET)</p>
-                  
+                  <h3 class="section-title">
+                    Lista de Usuários ({{ filteredUsers.length }} encontrados)
+                  </h3>
+                  <p class="section-subtitle">
+                    Query: SELECT com JOIN + GROUP BY + Paginação (LIMIT/OFFSET)
+                  </p>
+
                   <div class="table-container">
                     <table class="stats-table users-table">
                       <thead>
@@ -561,39 +908,58 @@
                           <td class="user-name">{{ user.name }}</td>
                           <td class="user-email">{{ user.email }}</td>
                           <td>
-                            <span class="role-badge" [class.role-admin]="user.role === 'ADMIN'">
+                            <span
+                              class="role-badge"
+                              [class.role-admin]="user.role === 'ADMIN'"
+                            >
                               {{ user.role }}
                             </span>
                           </td>
                           <td>
-                            <span class="status-badge" 
-                                  [class.status-active]="user.active"
-                                  [class.status-inactive]="!user.active">
-                              {{ user.active ? 'Ativo' : 'Inativo' }}
+                            <span
+                              class="status-badge"
+                              [class.status-active]="user.active"
+                              [class.status-inactive]="!user.active"
+                            >
+                              {{ user.active ? "Ativo" : "Inativo" }}
                             </span>
                           </td>
                           <td class="user-date">{{ user.createdAt }}</td>
                           <td>{{ user.battles }}</td>
                           <td>
-                            <span class="win-rate-simple">{{ user.winRate }}%</span>
+                            <span class="win-rate-simple"
+                              >{{ user.winRate }}%</span
+                            >
                           </td>
                           <td class="user-actions">
-                            <button class="btn-action btn-edit" (click)="editUser(user)" title="Editar">
+                            <button
+                              class="btn-action btn-edit"
+                              (click)="editUser(user)"
+                              title="Editar"
+                            >
                               ✏️
                             </button>
-                            <button class="btn-action btn-toggle" 
-                                    (click)="toggleUserStatus(user)" 
-                                    [title]="user.active ? 'Desativar' : 'Ativar'">
-                              {{ user.active ? '🔒' : '🔓' }}
+                            <button
+                              class="btn-action btn-toggle"
+                              (click)="toggleUserStatus(user)"
+                              [title]="user.active ? 'Desativar' : 'Ativar'"
+                            >
+                              {{ user.active ? "🔒" : "🔓" }}
                             </button>
-                            <button class="btn-action btn-promote" 
-                                    (click)="promoteUser(user)"
-                                    [title]="user.role === 'ADMIN' ? 'Rebaixar' : 'Promover'">
-                              {{ user.role === 'ADMIN' ? '⬇️' : '⬆️' }}
+                            <button
+                              class="btn-action btn-promote"
+                              (click)="promoteUser(user)"
+                              [title]="
+                                user.role === 'ADMIN' ? 'Rebaixar' : 'Promover'
+                              "
+                            >
+                              {{ user.role === "ADMIN" ? "⬇️" : "⬆️" }}
                             </button>
-                            <button class="btn-action btn-delete" 
-                                    (click)="confirmDelete(user)" 
-                                    title="Excluir">
+                            <button
+                              class="btn-action btn-delete"
+                              (click)="confirmDelete(user)"
+                              title="Excluir"
+                            >
                               🗑️
                             </button>
                           </td>
@@ -604,17 +970,21 @@
 
                   <!-- Pagination -->
                   <div class="pagination" *ngIf="totalPages > 1">
-                    <button class="btn-page" 
-                            [disabled]="currentPage === 1"
-                            (click)="goToPage(currentPage - 1)">
+                    <button
+                      class="btn-page"
+                      [disabled]="currentPage === 1"
+                      (click)="goToPage(currentPage - 1)"
+                    >
                       ◄ Anterior
                     </button>
                     <span class="page-info">
                       Página {{ currentPage }} de {{ totalPages }}
                     </span>
-                    <button class="btn-page" 
-                            [disabled]="currentPage === totalPages"
-                            (click)="goToPage(currentPage + 1)">
+                    <button
+                      class="btn-page"
+                      [disabled]="currentPage === totalPages"
+                      (click)="goToPage(currentPage + 1)"
+                    >
                       Próxima ►
                     </button>
                   </div>
@@ -634,7 +1004,9 @@
                     </div>
                     <div class="concept-card">
                       <span class="concept-icon">🔀</span>
-                      <span class="concept-name">Filtros Múltiplos (WHERE)</span>
+                      <span class="concept-name"
+                        >Filtros Múltiplos (WHERE)</span
+                      >
                     </div>
                     <div class="concept-card">
                       <span class="concept-icon">📄</span>
@@ -667,39 +1039,67 @@
             <div class="modal-container">
               <div class="modal-header">
                 <h3 class="modal-title">Editar Usuário</h3>
-                <button class="btn-close-modal" (click)="closeEditModal()">✕</button>
+                <button class="btn-close-modal" (click)="closeEditModal()">
+                  ✕
+                </button>
               </div>
               <div class="modal-content">
-                <p class="modal-subtitle">Query: UPDATE usuarios SET ... WHERE id = ?</p>
-                
+                <p class="modal-subtitle">
+                  Query: UPDATE usuarios SET ... WHERE id = ?
+                </p>
+
                 <div class="form-group">
                   <label class="form-label">Nome</label>
-                  <input type="text" class="form-input" [(ngModel)]="selectedUser.name" placeholder="Digite o nome do usuário" title="Nome do usuário" />
+                  <input
+                    type="text"
+                    class="form-input"
+                    [(ngModel)]="selectedUser.name"
+                    placeholder="Digite o nome do usuário"
+                    title="Nome do usuário"
+                  />
                 </div>
-                
+
                 <div class="form-group">
                   <label class="form-label">Email</label>
-                  <input type="email" class="form-input" [(ngModel)]="selectedUser.email" placeholder="Digite o email do usuário" title="Email do usuário" />
+                  <input
+                    type="email"
+                    class="form-input"
+                    [(ngModel)]="selectedUser.email"
+                    placeholder="Digite o email do usuário"
+                    title="Email do usuário"
+                  />
                 </div>
-                
+
                 <div class="form-group">
                   <label class="form-label">Role</label>
-                  <select class="form-select" [(ngModel)]="selectedUser.role" title="Selecione a função do usuário">
+                  <select
+                    class="form-select"
+                    [(ngModel)]="selectedUser.role"
+                    title="Selecione a função do usuário"
+                  >
                     <option value="USER">Usuário</option>
                     <option value="ADMIN">Administrador</option>
                   </select>
                 </div>
-                
+
                 <div class="form-group">
                   <label class="form-label">
-                    <input type="checkbox" class="form-checkbox" [(ngModel)]="selectedUser.active" />
+                    <input
+                      type="checkbox"
+                      class="form-checkbox"
+                      [(ngModel)]="selectedUser.active"
+                    />
                     Usuário Ativo
                   </label>
                 </div>
               </div>
               <div class="modal-footer">
-                <button class="btn-modal btn-cancel" (click)="closeEditModal()">Cancelar</button>
-                <button class="btn-modal btn-save" (click)="saveUser()">Salvar Alterações</button>
+                <button class="btn-modal btn-cancel" (click)="closeEditModal()">
+                  Cancelar
+                </button>
+                <button class="btn-modal btn-save" (click)="saveUser()">
+                  Salvar Alterações
+                </button>
               </div>
             </div>
           </div>
@@ -709,21 +1109,34 @@
             <div class="modal-container modal-confirm">
               <div class="modal-header">
                 <h3 class="modal-title">⚠️ Confirmar Exclusão</h3>
-                <button class="btn-close-modal" (click)="closeDeleteModal()">✕</button>
+                <button class="btn-close-modal" (click)="closeDeleteModal()">
+                  ✕
+                </button>
               </div>
               <div class="modal-content">
-                <p class="modal-subtitle">Query: UPDATE usuarios SET ativo = false WHERE id = ?</p>
+                <p class="modal-subtitle">
+                  Query: UPDATE usuarios SET ativo = false WHERE id = ?
+                </p>
                 <p class="confirm-message">
-                  Tem certeza que deseja <strong>desativar</strong> o usuário 
-                  <strong>{{ userToDelete?.name }}</strong>?
+                  Tem certeza que deseja <strong>desativar</strong> o usuário
+                  <strong>{{ userToDelete?.name }}</strong
+                  >?
                 </p>
                 <p class="confirm-warning">
-                  ⚠️ Esta ação utilizará soft delete, mantendo os dados no banco.
+                  ⚠️ Esta ação utilizará soft delete, mantendo os dados no
+                  banco.
                 </p>
               </div>
               <div class="modal-footer">
-                <button class="btn-modal btn-cancel" (click)="closeDeleteModal()">Cancelar</button>
-                <button class="btn-modal btn-delete" (click)="deleteUser()">Confirmar Desativação</button>
+                <button
+                  class="btn-modal btn-cancel"
+                  (click)="closeDeleteModal()"
+                >
+                  Cancelar
+                </button>
+                <button class="btn-modal btn-delete" (click)="deleteUser()">
+                  Confirmar Desativação
+                </button>
               </div>
             </div>
           </div>
@@ -747,25 +1160,30 @@
           <img src="/icons/plus.png" alt="Create" class="title-icon" />
           Criar Novo Torneio
         </h2>
-        <button class="btn-close-tournament" (click)="closeCreateTournament()">✕</button>
+        <button class="btn-close-tournament" (click)="closeCreateTournament()">
+          ✕
+        </button>
       </div>
 
       <div class="tournament-content">
         <p class="tournament-subtitle">
-          📋 Demonstração de INSERT INTO tournaments e relacionamento N:N com tipos permitidos
+          📋 Demonstração de INSERT INTO tournaments e relacionamento N:N com
+          tipos permitidos
         </p>
 
         <!-- Informações Básicas -->
         <section class="form-section">
           <h3 class="section-title">Informações Básicas</h3>
-          
+
           <div class="form-row">
             <div class="form-group full-width">
-              <label class="form-label" for="tournament-name">Nome do Torneio *</label>
-              <input 
-                type="text" 
+              <label class="form-label" for="tournament-name"
+                >Nome do Torneio *</label
+              >
+              <input
+                type="text"
                 id="tournament-name"
-                class="form-input" 
+                class="form-input"
                 [(ngModel)]="newTournament.name"
                 placeholder="Ex: Copa Kanto 2026"
                 maxlength="100"
@@ -775,10 +1193,12 @@
 
           <div class="form-row">
             <div class="form-group full-width">
-              <label class="form-label" for="tournament-description">Descrição *</label>
-              <textarea 
+              <label class="form-label" for="tournament-description"
+                >Descrição *</label
+              >
+              <textarea
                 id="tournament-description"
-                class="form-textarea" 
+                class="form-textarea"
                 [(ngModel)]="newTournament.description"
                 placeholder="Descreva o torneio, regras especiais, premiações, etc."
                 rows="4"
@@ -789,24 +1209,31 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label" for="tournament-organizer">Organizador (FK) *</label>
-              <select 
+              <label class="form-label" for="tournament-organizer"
+                >Organizador (FK) *</label
+              >
+              <select
                 id="tournament-organizer"
-                class="form-select" 
+                class="form-select"
                 [(ngModel)]="newTournament.organizerId"
               >
-                <option *ngFor="let org of availableOrganizers" [value]="org.id">
+                <option
+                  *ngFor="let org of availableOrganizers"
+                  [value]="org.id"
+                >
                   {{ org.name }} ({{ org.tournaments }} torneios)
                 </option>
               </select>
-              <small class="form-hint">SELECT id, name FROM users WHERE role = 'ADMIN'</small>
+              <small class="form-hint"
+                >SELECT id, name FROM users WHERE role = 'ADMIN'</small
+              >
             </div>
 
             <div class="form-group">
               <label class="form-label" for="tournament-status">Status *</label>
-              <select 
+              <select
                 id="tournament-status"
-                class="form-select" 
+                class="form-select"
                 [(ngModel)]="newTournament.status"
               >
                 <option value="SCHEDULED">Agendado</option>
@@ -821,34 +1248,38 @@
         <!-- Datas -->
         <section class="form-section">
           <h3 class="section-title">Cronograma</h3>
-          
+
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label" for="registration-deadline">Prazo de Inscrição *</label>
-              <input 
-                type="datetime-local" 
+              <label class="form-label" for="registration-deadline"
+                >Prazo de Inscrição *</label
+              >
+              <input
+                type="datetime-local"
                 id="registration-deadline"
-                class="form-input" 
+                class="form-input"
                 [(ngModel)]="newTournament.registrationDeadline"
               />
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="start-date">Data de Início *</label>
-              <input 
-                type="datetime-local" 
+              <label class="form-label" for="start-date"
+                >Data de Início *</label
+              >
+              <input
+                type="datetime-local"
                 id="start-date"
-                class="form-input" 
+                class="form-input"
                 [(ngModel)]="newTournament.startDate"
               />
             </div>
 
             <div class="form-group">
               <label class="form-label" for="end-date">Data de Término *</label>
-              <input 
-                type="datetime-local" 
+              <input
+                type="datetime-local"
                 id="end-date"
-                class="form-input" 
+                class="form-input"
                 [(ngModel)]="newTournament.endDate"
               />
             </div>
@@ -858,14 +1289,16 @@
         <!-- Configurações -->
         <section class="form-section">
           <h3 class="section-title">Configurações de Participação</h3>
-          
+
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label" for="max-participants">Máx. Participantes *</label>
-              <input 
-                type="number" 
+              <label class="form-label" for="max-participants"
+                >Máx. Participantes *</label
+              >
+              <input
+                type="number"
                 id="max-participants"
-                class="form-input" 
+                class="form-input"
                 [(ngModel)]="newTournament.maxParticipants"
                 min="4"
                 max="256"
@@ -874,10 +1307,10 @@
 
             <div class="form-group">
               <label class="form-label" for="min-level">Nível Mínimo *</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 id="min-level"
-                class="form-input" 
+                class="form-input"
                 [(ngModel)]="newTournament.minLevel"
                 min="1"
                 max="100"
@@ -886,10 +1319,10 @@
 
             <div class="form-group">
               <label class="form-label" for="max-level">Nível Máximo *</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 id="max-level"
-                class="form-input" 
+                class="form-input"
                 [(ngModel)]="newTournament.maxLevel"
                 min="1"
                 max="100"
@@ -898,10 +1331,10 @@
 
             <div class="form-group">
               <label class="form-label" for="prize-pool">Premiação (₽) *</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 id="prize-pool"
-                class="form-input" 
+                class="form-input"
                 [(ngModel)]="newTournament.prizePool"
                 min="0"
                 step="1000"
@@ -914,9 +1347,10 @@
         <section class="form-section">
           <h3 class="section-title">Tipos de Pokémon Permitidos</h3>
           <p class="form-hint">
-            Relação N:N - Cada tipo selecionado gera um INSERT em tournament_allowed_types
+            Relação N:N - Cada tipo selecionado gera um INSERT em
+            tournament_allowed_types
           </p>
-          
+
           <div class="types-grid">
             <button
               *ngFor="let type of pokemonTypes"
@@ -929,11 +1363,17 @@
             </button>
           </div>
 
-          <p class="selected-types-info" *ngIf="newTournament.allowedTypes.length > 0">
-            ✅ {{ newTournament.allowedTypes.length }} tipo(s) selecionado(s): 
-            {{ newTournament.allowedTypes.join(', ') }}
+          <p
+            class="selected-types-info"
+            *ngIf="newTournament.allowedTypes.length > 0"
+          >
+            ✅ {{ newTournament.allowedTypes.length }} tipo(s) selecionado(s):
+            {{ newTournament.allowedTypes.join(", ") }}
           </p>
-          <p class="selected-types-info no-types" *ngIf="newTournament.allowedTypes.length === 0">
+          <p
+            class="selected-types-info no-types"
+            *ngIf="newTournament.allowedTypes.length === 0"
+          >
             ℹ️ Nenhum tipo selecionado = Todos os tipos permitidos
           </p>
         </section>
@@ -942,43 +1382,61 @@
         <section class="form-section concepts-section">
           <h3 class="section-title">🗄️ Conceitos de Banco de Dados</h3>
           <p class="tournament-subtitle">
-            💡 Esta tela demonstra múltiplos conceitos de BD: INSERT, chaves estrangeiras, validações, tipos ENUM e timestamps automáticos
+            💡 Esta tela demonstra múltiplos conceitos de BD: INSERT, chaves
+            estrangeiras, validações, tipos ENUM e timestamps automáticos
           </p>
           <div class="concepts-grid">
             <div class="concept-card">
               <h4>INSERT</h4>
-              <p>Inserir novo registro na tabela tournaments com todos os campos</p>
+              <p>
+                Inserir novo registro na tabela tournaments com todos os campos
+              </p>
             </div>
             <div class="concept-card">
               <h4>Foreign Key</h4>
-              <p>organizer_id referencia users(id) - garante integridade referencial</p>
+              <p>
+                organizer_id referencia users(id) - garante integridade
+                referencial
+              </p>
             </div>
             <div class="concept-card">
               <h4>Relação N:N</h4>
-              <p>Tournament ↔ Types através da tabela tournament_allowed_types</p>
+              <p>
+                Tournament ↔ Types através da tabela tournament_allowed_types
+              </p>
             </div>
             <div class="concept-card">
               <h4>Validação</h4>
-              <p>Campos NOT NULL, CHECK constraints (min_level &lt; max_level)</p>
+              <p>
+                Campos NOT NULL, CHECK constraints (min_level &lt; max_level)
+              </p>
             </div>
             <div class="concept-card">
               <h4>Timestamps</h4>
-              <p>created_at TIMESTAMP DEFAULT NOW() registra momento da criação</p>
+              <p>
+                created_at TIMESTAMP DEFAULT NOW() registra momento da criação
+              </p>
             </div>
             <div class="concept-card">
               <h4>ENUM</h4>
-              <p>Status usa tipo ENUM('SCHEDULED', 'REGISTRATION', 'IN_PROGRESS', 'COMPLETED')</p>
+              <p>
+                Status usa tipo ENUM('SCHEDULED', 'REGISTRATION', 'IN_PROGRESS',
+                'COMPLETED')
+              </p>
             </div>
           </div>
         </section>
 
         <!-- Footer com Botões -->
         <div class="tournament-footer">
-          <button class="btn-modal btn-cancel" (click)="closeCreateTournament()">
+          <button
+            class="btn-modal btn-cancel"
+            (click)="closeCreateTournament()"
+          >
             Cancelar
           </button>
-          <button 
-            class="btn-modal btn-save" 
+          <button
+            class="btn-modal btn-save"
             [disabled]="!isTournamentFormValid"
             (click)="saveTournament()"
           >
@@ -993,10 +1451,10 @@
   <div class="password-overlay" *ngIf="showChangePassword">
     <div class="password-container">
       <div class="password-header">
-        <h2 class="password-title">
-          🔐 Alterar Senha
-        </h2>
-        <button class="btn-close-password" (click)="closeChangePassword()">✕</button>
+        <h2 class="password-title">🔐 Alterar Senha</h2>
+        <button class="btn-close-password" (click)="closeChangePassword()">
+          ✕
+        </button>
       </div>
 
       <div class="password-content">
@@ -1007,54 +1465,83 @@
         <!-- Formulário -->
         <section class="form-section">
           <h3 class="section-title">Digite suas Senhas</h3>
-          
+
           <div class="form-group">
-            <label class="form-label" for="current-password">Senha Atual *</label>
-            <input 
-              type="password" 
+            <label class="form-label" for="current-password"
+              >Senha Atual *</label
+            >
+            <input
+              type="password"
               id="current-password"
-              class="form-input" 
+              class="form-input"
               [(ngModel)]="passwordForm.currentPassword"
               placeholder="Digite sua senha atual"
               autocomplete="current-password"
             />
-            <small class="form-hint">Verificada via: WHERE password = PASSWORD_HASH(?)</small>
+            <small class="form-hint"
+              >Verificada via: WHERE password = PASSWORD_HASH(?)</small
+            >
           </div>
 
           <div class="form-group">
             <label class="form-label" for="new-password">Nova Senha *</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               id="new-password"
-              class="form-input" 
+              class="form-input"
               [(ngModel)]="passwordForm.newPassword"
               placeholder="Digite a nova senha (mín. 6 caracteres)"
               autocomplete="new-password"
             />
             <small class="form-hint">
-              Força: 
-              <span class="strength-indicator" [class]="'strength-' + passwordStrength">
-                {{ passwordStrength === 'none' ? '-' : passwordStrength === 'weak' ? 'Fraca' : passwordStrength === 'medium' ? 'Média' : 'Forte' }}
+              Força:
+              <span
+                class="strength-indicator"
+                [class]="'strength-' + passwordStrength"
+              >
+                {{
+                  passwordStrength === "none"
+                    ? "-"
+                    : passwordStrength === "weak"
+                      ? "Fraca"
+                      : passwordStrength === "medium"
+                        ? "Média"
+                        : "Forte"
+                }}
               </span>
             </small>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="confirm-password">Confirmar Nova Senha *</label>
-            <input 
-              type="password" 
+            <label class="form-label" for="confirm-password"
+              >Confirmar Nova Senha *</label
+            >
+            <input
+              type="password"
               id="confirm-password"
-              class="form-input" 
+              class="form-input"
               [(ngModel)]="passwordForm.confirmPassword"
               placeholder="Digite novamente a nova senha"
               autocomplete="new-password"
             />
-            <small class="form-hint" 
-                   [class.hint-error]="passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword"
-                   [class.hint-success]="passwordForm.confirmPassword && passwordForm.newPassword === passwordForm.confirmPassword">
-              {{ passwordForm.confirmPassword ? 
-                 (passwordForm.newPassword === passwordForm.confirmPassword ? '✓ Senhas coincidem' : '✗ Senhas não coincidem') : 
-                 'Validação client-side antes do UPDATE' }}
+            <small
+              class="form-hint"
+              [class.hint-error]="
+                passwordForm.confirmPassword &&
+                passwordForm.newPassword !== passwordForm.confirmPassword
+              "
+              [class.hint-success]="
+                passwordForm.confirmPassword &&
+                passwordForm.newPassword === passwordForm.confirmPassword
+              "
+            >
+              {{
+                passwordForm.confirmPassword
+                  ? passwordForm.newPassword === passwordForm.confirmPassword
+                    ? "✓ Senhas coincidem"
+                    : "✗ Senhas não coincidem"
+                  : "Validação client-side antes do UPDATE"
+              }}
             </small>
           </div>
         </section>
@@ -1066,10 +1553,20 @@
             <li [class.requirement-met]="passwordForm.newPassword.length >= 6">
               Mínimo de 6 caracteres
             </li>
-            <li [class.requirement-met]="passwordForm.newPassword !== passwordForm.currentPassword && passwordForm.newPassword.length > 0">
+            <li
+              [class.requirement-met]="
+                passwordForm.newPassword !== passwordForm.currentPassword &&
+                passwordForm.newPassword.length > 0
+              "
+            >
               Diferente da senha atual
             </li>
-            <li [class.requirement-met]="passwordForm.newPassword === passwordForm.confirmPassword && passwordForm.confirmPassword.length > 0">
+            <li
+              [class.requirement-met]="
+                passwordForm.newPassword === passwordForm.confirmPassword &&
+                passwordForm.confirmPassword.length > 0
+              "
+            >
               Confirmação correta
             </li>
           </ul>
@@ -1111,9 +1608,13 @@
           <button class="btn-modal btn-cancel" (click)="closeChangePassword()">
             Cancelar
           </button>
-          <button 
-            class="btn-modal btn-save" 
-            [disabled]="!isPasswordFormValid || passwordForm.newPassword !== passwordForm.confirmPassword || passwordForm.newPassword.length < 6"
+          <button
+            class="btn-modal btn-save"
+            [disabled]="
+              !isPasswordFormValid ||
+              passwordForm.newPassword !== passwordForm.confirmPassword ||
+              passwordForm.newPassword.length < 6
+            "
             (click)="saveNewPassword()"
           >
             Alterar Senha

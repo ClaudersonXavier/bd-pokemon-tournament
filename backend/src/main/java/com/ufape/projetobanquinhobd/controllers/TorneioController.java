@@ -23,7 +23,7 @@ public class TorneioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Torneio> buscarTorneio(@PathVariable Long id) {
+    public ResponseEntity<Torneio> buscarTorneio(@PathVariable("id") Long id) {
         Optional<Torneio> torneio = fachada.getTorneioService().buscarPorId(id);
         return torneio.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -34,7 +34,7 @@ public class TorneioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Torneio> atualizarTorneio(@PathVariable Long id, @RequestBody Torneio torneio) {
+    public ResponseEntity<Torneio> atualizarTorneio(@PathVariable("id") Long id, @RequestBody Torneio torneio) {
         try {
             Torneio torneioAtualizado = fachada.getTorneioService().atualizar(id, torneio);
             return ResponseEntity.ok(torneioAtualizado);
@@ -44,14 +44,14 @@ public class TorneioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarTorneio(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarTorneio(@PathVariable("id") Long id) {
         fachada.getTorneioService().deletarPorId(id);
         return ResponseEntity.noContent().build();
     }
 
     // Endpoint para listar batalhas de um torneio específico
     @GetMapping("/{id}/batalhas")
-    public ResponseEntity<List<Batalha>> listarBatalhasPorTorneio(@PathVariable Long id) {
+    public ResponseEntity<List<Batalha>> listarBatalhasPorTorneio(@PathVariable("id") Long id) {
         Optional<Torneio> torneio = fachada.getTorneioService().buscarPorId(id);
         if (torneio.isPresent()) {
             List<Batalha> batalhas = fachada.getBatalhaService().buscarPorTorneio(id);
@@ -67,7 +67,7 @@ public class TorneioController {
     }
 
     @GetMapping("/batalhas/{id}")
-    public ResponseEntity<Batalha> buscarBatalha(@PathVariable Long id) {
+    public ResponseEntity<Batalha> buscarBatalha(@PathVariable("id") Long id) {
         Optional<Batalha> batalha = fachada.getBatalhaService().buscarPorId(id);
         return batalha.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -78,7 +78,7 @@ public class TorneioController {
     }
 
     @PutMapping("/batalhas/{id}")
-    public ResponseEntity<Batalha> atualizarBatalha(@PathVariable Long id, @RequestBody Batalha batalha) {
+    public ResponseEntity<Batalha> atualizarBatalha(@PathVariable("id") Long id, @RequestBody Batalha batalha) {
         try {
             Batalha batalhaAtualizada = fachada.getBatalhaService().atualizar(id, batalha);
             return ResponseEntity.ok(batalhaAtualizada);
@@ -88,7 +88,7 @@ public class TorneioController {
     }
 
     @DeleteMapping("/batalhas/{id}")
-    public ResponseEntity<Void> deletarBatalha(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarBatalha(@PathVariable("id") Long id) {
         fachada.getBatalhaService().deletarPorId(id);
         return ResponseEntity.noContent().build();
     }

@@ -25,6 +25,12 @@ export const routes: Routes = [
         .then(m => m.HomeComponent)
   },
   {
+    path: 'tournament/:id',
+    loadComponent: () =>
+      import('./features/tournament-view/tournament-view.component')
+        .then(m => m.TournamentViewComponent)
+  },
+  {
     path: 'edit-profile',
     loadComponent: () =>
       import('./features/profile/edit-profile/edit-profile.component')

@@ -60,6 +60,7 @@ export interface Batalha {
 export interface Torneio {
   id: number;
   nome: string;
+  descricao?: string;
   maxParticipantes: number;
   dataAberturaInscricoes: string; // Date será string no JSON
   dataEncerramentoInscricoes: string;
