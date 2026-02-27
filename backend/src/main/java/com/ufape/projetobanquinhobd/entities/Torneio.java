@@ -43,11 +43,62 @@ public class Torneio {
 
     public Torneio(String nome, int maxParticipantes, Date dataAberturaInscricoes, 
                    Date dataEncerramentoInscricoes, Date dataInicio, Date dataFim) {
+        this.setNome(nome);
+        this.setMaxParticipantes(maxParticipantes);
+        this.setDataAberturaInscricoes(dataAberturaInscricoes);
+        this.setDataEncerramentoInscricoes(dataEncerramentoInscricoes);
+        this.setDataInicio(dataInicio);
+        this.setDataFim(dataFim);
+    }
+
+    public void setNome(String nome) {
+        if (nome == null || nome.isBlank()) {
+            throw new IllegalArgumentException("Nome do torneio é obrigatório");
+        }
         this.nome = nome;
+    }
+
+    public void setMaxParticipantes(int maxParticipantes) {
+        if (maxParticipantes <= 0) {
+            throw new IllegalArgumentException("Número máximo de participantes deve ser positivo");
+        }
         this.maxParticipantes = maxParticipantes;
+    }
+
+    public void setDataAberturaInscricoes(Date dataAberturaInscricoes) {
+        if (dataAberturaInscricoes == null) {
+            throw new IllegalArgumentException("Data de abertura de inscrições é obrigatória");
+        }
         this.dataAberturaInscricoes = dataAberturaInscricoes;
+    }
+
+    public void setDataEncerramentoInscricoes(Date dataEncerramentoInscricoes) {
+        if (dataEncerramentoInscricoes == null) {
+            throw new IllegalArgumentException("Data de encerramento de inscrições é obrigatória");
+        }
+        if (dataAberturaInscricoes != null && dataEncerramentoInscricoes.before(dataAberturaInscricoes)) {
+            throw new IllegalArgumentException("Data de encerramento deve ser após a abertura");
+        }
         this.dataEncerramentoInscricoes = dataEncerramentoInscricoes;
+    }
+
+    public void setDataInicio(Date dataInicio) {
+        if (dataInicio == null) {
+            throw new IllegalArgumentException("Data de início é obrigatória");
+        }
+        if (dataEncerramentoInscricoes != null && dataInicio.before(dataEncerramentoInscricoes)) {
+            throw new IllegalArgumentException("Data de início deve ser após o encerramento das inscrições");
+        }
         this.dataInicio = dataInicio;
+    }
+
+    public void setDataFim(Date dataFim) {
+        if (dataFim == null) {
+            throw new IllegalArgumentException("Data de fim é obrigatória");
+        }
+        if (dataInicio != null && dataFim.before(dataInicio)) {
+            throw new IllegalArgumentException("Data de fim deve ser após a data de início");
+        }
         this.dataFim = dataFim;
     }
 

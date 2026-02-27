@@ -34,6 +34,16 @@ public class TreinadorController {
         return fachada.getTreinadorService().salvar(treinador);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Treinador> atualizarTreinador(@PathVariable Long id, @RequestBody Treinador treinador) {
+        try {
+            Treinador treinadorAtualizado = fachada.getTreinadorService().atualizar(id, treinador);
+            return ResponseEntity.ok(treinadorAtualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarTreinador(@PathVariable Long id) {
         fachada.getTreinadorService().deletarPorId(id);
@@ -57,6 +67,16 @@ public class TreinadorController {
         return fachada.getTimeService().salvar(time);
     }
 
+    @PutMapping("/times/{id}")
+    public ResponseEntity<Time> atualizarTime(@PathVariable Long id, @RequestBody Time time) {
+        try {
+            Time timeAtualizado = fachada.getTimeService().atualizar(id, time);
+            return ResponseEntity.ok(timeAtualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deletarTime(@PathVariable Long id) {
         fachada.getTimeService().deletarPorId(id);
@@ -78,6 +98,16 @@ public class TreinadorController {
     @PostMapping("/pokemons")
     public Pokemon criarPokemon(@RequestBody Pokemon pokemon) {
         return fachada.getPokemonService().salvar(pokemon);
+    }
+
+    @PutMapping("/pokemons/{id}")
+    public ResponseEntity<Pokemon> atualizarPokemon(@PathVariable Long id, @RequestBody Pokemon pokemon) {
+        try {
+            Pokemon pokemonAtualizado = fachada.getPokemonService().atualizar(id, pokemon);
+            return ResponseEntity.ok(pokemonAtualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/pokemons/{id}")

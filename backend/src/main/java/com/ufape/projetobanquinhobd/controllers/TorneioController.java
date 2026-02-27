@@ -33,6 +33,16 @@ public class TorneioController {
         return fachada.getTorneioService().salvar(torneio);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Torneio> atualizarTorneio(@PathVariable Long id, @RequestBody Torneio torneio) {
+        try {
+            Torneio torneioAtualizado = fachada.getTorneioService().atualizar(id, torneio);
+            return ResponseEntity.ok(torneioAtualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarTorneio(@PathVariable Long id) {
         fachada.getTorneioService().deletarPorId(id);
@@ -54,6 +64,16 @@ public class TorneioController {
     @PostMapping("/batalhas")
     public Batalha criarBatalha(@RequestBody Batalha batalha) {
         return fachada.getBatalhaService().salvar(batalha);
+    }
+
+    @PutMapping("/batalhas/{id}")
+    public ResponseEntity<Batalha> atualizarBatalha(@PathVariable Long id, @RequestBody Batalha batalha) {
+        try {
+            Batalha batalhaAtualizada = fachada.getBatalhaService().atualizar(id, batalha);
+            return ResponseEntity.ok(batalhaAtualizada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/batalhas/{id}")
