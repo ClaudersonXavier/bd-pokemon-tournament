@@ -725,6 +725,12 @@ WHERE tipos LIKE '%Fire%';
 | `total_derrotas` | Número de derrotas sofridas |
 | `percentual_vitorias` | Taxa de vitórias em % |
 
+**Regra de cálculo:**
+
+- `total_batalhas` considera apenas batalhas do time dentro do torneio da linha.
+- `total_derrotas` conta somente batalhas finalizadas com vencedor diferente do time.
+- `percentual_vitorias` usa `vitorias / batalhas finalizadas`, com proteção para divisão por zero.
+
 **Exemplos de consulta:**
 
 ```sql
