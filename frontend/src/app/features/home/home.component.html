@@ -18,7 +18,7 @@
       </div>
 
       <div class="header-user">
-        <span class="user-name">{{ currentUser?.name }}</span>
+        <span class="user-name">{{ currentUser?.nome }}</span>
         <span class="user-email">{{ currentUser?.email }}</span>
         <button class="btn-logout" (click)="logout()">Sair</button>
       </div>
@@ -319,7 +319,7 @@
                 />
               </div>
               <div class="profile-info">
-                <h3>{{ currentUser?.name }}</h3>
+                <h3>{{ currentUser?.nome }}</h3>
                 <p>{{ currentUser?.email }}</p>
                 <span class="profile-id">ID: {{ currentUser?.id }}</span>
               </div>

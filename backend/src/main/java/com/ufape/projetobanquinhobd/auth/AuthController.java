@@ -14,12 +14,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AuthController {
 
     @Autowired
@@ -36,6 +38,12 @@ public class AuthController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    // GET /api/auth/test - Endpoint de teste
+    @GetMapping("/test")
+    public ResponseEntity<?> test() {
+        return ResponseEntity.ok(Map.of("message", "API funcionando", "timestamp", System.currentTimeMillis()));
+    }
 
 
     // POST /api/auth/login
@@ -73,6 +81,7 @@ public class AuthController {
     // POST /api/auth/registro
     // Cadastra um novo treinador e devolve um token JWT.
 
+    @Transactional
     @PostMapping("/registro")
     public ResponseEntity<?> registro(@Valid @RequestBody RegistroRequest request) {
         if (treinadorRepository.findByCredenciaisEmail(request.getEmail()).isPresent()) {

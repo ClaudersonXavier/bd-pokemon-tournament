@@ -51,7 +51,7 @@ export class EditProfileComponent implements OnInit {
     }
 
     this.profileForm.patchValue({
-      name: this.currentUser.name,
+      name: this.currentUser.nome,
       email: this.currentUser.email
     });
 
@@ -81,7 +81,7 @@ export class EditProfileComponent implements OnInit {
 
     const updatedUser: User = {
       id: this.currentUser.id,
-      name: this.profileForm.value.name || this.currentUser.name,
+      nome: this.profileForm.value.name || this.currentUser.nome,
       email: this.profileForm.value.email || this.currentUser.email
     };
 

@@ -5,7 +5,6 @@
   <!-- Register Card -->
   <div class="login-wrapper">
     <div class="login-card">
-
       <!-- Logo/Header -->
       <div class="card-header">
         <img
@@ -19,8 +18,13 @@
       </div>
 
       <!-- Form -->
-      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
-
+      <form
+        [formGroup]="registerForm"
+        (ngSubmit)="onSubmit()"
+        class="login-form"
+        novalidate
+        autocomplete="off"
+      >
         <!-- Success message -->
         <div class="success-msg global-success" *ngIf="registerSuccess">
           <span>✓ {{ registerSuccess }}</span>
@@ -34,7 +38,10 @@
         <!-- Nome Field -->
         <div class="field-group">
           <label class="field-label" for="nome">NOME DO TREINADOR</label>
-          <div class="input-wrapper" [class.error]="nomeControl?.invalid && nomeControl?.touched">
+          <div
+            class="input-wrapper"
+            [class.error]="nomeControl?.invalid && nomeControl?.touched"
+          >
             <span class="input-icon">👤</span>
             <input
               id="nome"
@@ -45,16 +52,26 @@
               autocomplete="name"
             />
           </div>
-          <div class="error-msg" *ngIf="nomeControl?.invalid && nomeControl?.touched">
-            <span *ngIf="nomeControl?.errors?.['required']">⚠ Nome é obrigatório!</span>
-            <span *ngIf="nomeControl?.errors?.['minlength']">⚠ Mínimo 3 caracteres!</span>
+          <div
+            class="error-msg"
+            *ngIf="nomeControl?.invalid && nomeControl?.touched"
+          >
+            <span *ngIf="nomeControl?.errors?.['required']"
+              >⚠ Nome é obrigatório!</span
+            >
+            <span *ngIf="nomeControl?.errors?.['minlength']"
+              >⚠ Mínimo 3 caracteres!</span
+            >
           </div>
         </div>
 
         <!-- Email Field -->
         <div class="field-group">
           <label class="field-label" for="email">TRAINER ID (EMAIL)</label>
-          <div class="input-wrapper" [class.error]="emailControl?.invalid && emailControl?.touched">
+          <div
+            class="input-wrapper"
+            [class.error]="emailControl?.invalid && emailControl?.touched"
+          >
             <span class="input-icon">✉</span>
             <input
               id="email"
@@ -65,16 +82,26 @@
               autocomplete="email"
             />
           </div>
-          <div class="error-msg" *ngIf="emailControl?.invalid && emailControl?.touched">
-            <span *ngIf="emailControl?.errors?.['required']">⚠ Email é obrigatório!</span>
-            <span *ngIf="emailControl?.errors?.['email']">⚠ Email inválido!</span>
+          <div
+            class="error-msg"
+            *ngIf="emailControl?.invalid && emailControl?.touched"
+          >
+            <span *ngIf="emailControl?.errors?.['required']"
+              >⚠ Email é obrigatório!</span
+            >
+            <span *ngIf="emailControl?.errors?.['email']"
+              >⚠ Email inválido!</span
+            >
           </div>
         </div>
 
         <!-- Senha Field -->
         <div class="field-group">
           <label class="field-label" for="senha">SECRET CODE</label>
-          <div class="input-wrapper" [class.error]="senhaControl?.invalid && senhaControl?.touched">
+          <div
+            class="input-wrapper"
+            [class.error]="senhaControl?.invalid && senhaControl?.touched"
+          >
             <span class="input-icon">🔒</span>
             <input
               id="senha"
@@ -92,19 +119,33 @@
               [attr.title]="togglePasswordLabel"
               [attr.aria-pressed]="showPassword"
             >
-              {{ showPassword ? '👁' : '👁‍🗨' }}
+              {{ showPassword ? "👁" : "👁‍🗨" }}
             </button>
           </div>
-          <div class="error-msg" *ngIf="senhaControl?.invalid && senhaControl?.touched">
-            <span *ngIf="senhaControl?.errors?.['required']">⚠ Senha obrigatória!</span>
-            <span *ngIf="senhaControl?.errors?.['minlength']">⚠ Mínimo 6 caracteres!</span>
+          <div
+            class="error-msg"
+            *ngIf="senhaControl?.invalid && senhaControl?.touched"
+          >
+            <span *ngIf="senhaControl?.errors?.['required']"
+              >⚠ Senha obrigatória!</span
+            >
+            <span *ngIf="senhaControl?.errors?.['minlength']"
+              >⚠ Mínimo 6 caracteres!</span
+            >
           </div>
         </div>
 
         <!-- Confirmar Senha Field -->
         <div class="field-group">
-          <label class="field-label" for="confirmarSenha">CONFIRMAR SENHA</label>
-          <div class="input-wrapper" [class.error]="confirmarSenhaControl?.invalid && confirmarSenhaControl?.touched">
+          <label class="field-label" for="confirmarSenha"
+            >CONFIRMAR SENHA</label
+          >
+          <div
+            class="input-wrapper"
+            [class.error]="
+              confirmarSenhaControl?.invalid && confirmarSenhaControl?.touched
+            "
+          >
             <span class="input-icon">🔐</span>
             <input
               id="confirmarSenha"
@@ -122,17 +163,33 @@
               [attr.title]="toggleConfirmPasswordLabel"
               [attr.aria-pressed]="showConfirmPassword"
             >
-              {{ showConfirmPassword ? '👁' : '👁‍🗨' }}
+              {{ showConfirmPassword ? "👁" : "👁‍🗨" }}
             </button>
           </div>
-          <div class="error-msg" *ngIf="(confirmarSenhaControl?.invalid || registerForm.errors?.['senhasDiferentes']) && confirmarSenhaControl?.touched">
-            <span *ngIf="confirmarSenhaControl?.errors?.['required']">⚠ Confirmação obrigatória!</span>
-            <span *ngIf="registerForm.errors?.['senhasDiferentes']">⚠ Senhas não conferem!</span>
+          <div
+            class="error-msg"
+            *ngIf="
+              (confirmarSenhaControl?.invalid ||
+                registerForm.errors?.['senhasDiferentes']) &&
+              confirmarSenhaControl?.touched
+            "
+          >
+            <span *ngIf="confirmarSenhaControl?.errors?.['required']"
+              >⚠ Confirmação obrigatória!</span
+            >
+            <span *ngIf="registerForm.errors?.['senhasDiferentes']"
+              >⚠ Senhas não conferem!</span
+            >
           </div>
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="btn-submit" [class.loading]="isLoading" [disabled]="isLoading">
+        <button
+          type="submit"
+          class="btn-submit"
+          [class.loading]="isLoading"
+          [disabled]="isLoading"
+        >
           <span *ngIf="!isLoading">✓ CADASTRAR</span>
           <span *ngIf="isLoading" class="loading-dots">
             <span class="dot"></span>
@@ -145,9 +202,7 @@
         <div class="card-footer-links">
           <a routerLink="/login" class="pixel-link">Voltar ao Login</a>
         </div>
-
       </form>
-
     </div>
 
     <!-- Version tag -->

@@ -71,6 +71,10 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
+  setAuthUser(user: User): void {
+    this.currentUserSignal.set(user);
+  }
+
   private handleAuthResponse(response: LoginResponse): void {
     localStorage.setItem(this.TOKEN_KEY, response.token);
     this.isAuthenticatedSignal.set(true);
