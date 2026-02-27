@@ -1,5 +1,6 @@
 package com.ufape.projetobanquinhobd.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,12 +28,15 @@ public class Batalha {
     private LocalDateTime horarioFim;
 
     @ManyToMany
+    @JsonIgnoreProperties({"torneios", "treinador", "pokemons"})
     private final Set<Time> timesParticipantes = new HashSet<>();
 
     @ManyToOne
+    @JsonIgnoreProperties({"batalhas", "times"})
     private Torneio torneio;
 
     @ManyToOne
+    @JsonIgnoreProperties({"torneios", "treinador", "pokemons"})
     private Time timeVencedor;
 
     private static final int MAX_TIMES_PARTICIPANTES = 2;

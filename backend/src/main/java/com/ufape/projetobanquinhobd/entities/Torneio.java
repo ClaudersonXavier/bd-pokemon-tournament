@@ -1,5 +1,6 @@
 package com.ufape.projetobanquinhobd.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,9 +37,11 @@ public class Torneio {
     private Date dataFim;
 
     @OneToMany(mappedBy = "torneio")
+    @JsonIgnoreProperties({"torneio", "time1", "time2"})
     private Set<Batalha> batalhas;
 
     @ManyToMany
+    @JsonIgnoreProperties({"torneios", "treinador", "pokemons"})
     private Set<Time> times = new HashSet<>();
 
     public Torneio(String nome, int maxParticipantes, Date dataAberturaInscricoes, 

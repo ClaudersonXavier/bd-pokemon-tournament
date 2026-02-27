@@ -1,5 +1,6 @@
 package com.ufape.projetobanquinhobd.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class Time {
     private final Set<Pokemon> pokemons = new HashSet<>();
 
     @ManyToMany(mappedBy = "times")
+    @JsonIgnore
     private final Set<Torneio> torneios = new HashSet<>();
 
     private static final int MAX_POKEMONS_IN_TEAM = 6;

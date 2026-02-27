@@ -1,5 +1,6 @@
 package com.ufape.projetobanquinhobd.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,9 +24,11 @@ public class Treinador {
     private CredenciaisUsuario credenciais;
 
     @OneToMany(mappedBy = "treinador")
+    @JsonIgnore
     private final Set<Time> times = new HashSet<>();
 
     @OneToMany(mappedBy = "treinador")
+    @JsonIgnore
     private final Set<Pokemon> pokemons = new HashSet<>();
 
     public Treinador(String nome, CredenciaisUsuario credenciais) {

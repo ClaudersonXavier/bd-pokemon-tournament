@@ -49,6 +49,17 @@ public class TorneioController {
         return ResponseEntity.noContent().build();
     }
 
+    // Endpoint para listar batalhas de um torneio específico
+    @GetMapping("/{id}/batalhas")
+    public ResponseEntity<List<Batalha>> listarBatalhasPorTorneio(@PathVariable Long id) {
+        Optional<Torneio> torneio = fachada.getTorneioService().buscarPorId(id);
+        if (torneio.isPresent()) {
+            List<Batalha> batalhas = fachada.getBatalhaService().buscarPorTorneio(id);
+            return ResponseEntity.ok(batalhas);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     // Batalha endpoints (exemplo básico)
     @GetMapping("/batalhas")
     public List<Batalha> listarBatalhas() {

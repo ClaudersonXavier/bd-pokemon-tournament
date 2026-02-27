@@ -43,4 +43,8 @@ public class BatalhaService {
     public void deletarPorId(Long id) {
         batalhaRepository.deleteById(id);
     }
+
+    public List<Batalha> buscarPorTorneio(Long torneioId) {
+        return batalhaRepository.findByTorneioId(torneioId);
+    }
 }
