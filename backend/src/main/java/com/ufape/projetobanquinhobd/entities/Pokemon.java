@@ -1,5 +1,7 @@
 package com.ufape.projetobanquinhobd.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,9 +28,11 @@ public class Pokemon {
     private final Set<Ataque> ataques = new HashSet<>();
 
     @ManyToOne
+    @JsonIgnoreProperties({"times", "pokemons", "credenciais"})
     private Treinador treinador;
 
     @ManyToMany
+    @JsonIgnore
     private final Set<Time> times = new HashSet<>();
 
     private static final int MAX_ATAQUES = 4;

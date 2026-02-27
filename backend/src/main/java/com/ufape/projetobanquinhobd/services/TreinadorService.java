@@ -41,6 +41,16 @@ public class TreinadorService {
         return treinadorRepository.findById(id);
     }
 
+    public Treinador atualizar(Long id, Treinador treinadorAtualizado) {
+        return treinadorRepository.findById(id)
+            .map(treinador -> {
+                treinador.setNome(treinadorAtualizado.getNome());
+                treinador.setCredenciais(treinadorAtualizado.getCredenciais());
+                return treinadorRepository.save(treinador);
+            })
+            .orElseThrow(() -> new RuntimeException("Treinador não encontrado com id: " + id));
+    }
+
     public void deletarPorId(Long id) {
         treinadorRepository.deleteById(id);
     }

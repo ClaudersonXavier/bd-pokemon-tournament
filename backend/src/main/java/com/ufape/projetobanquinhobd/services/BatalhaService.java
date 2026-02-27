@@ -25,7 +25,26 @@ public class BatalhaService {
         return batalhaRepository.findById(id);
     }
 
+    public Batalha atualizar(Long id, Batalha batalhaAtualizada) {
+        return batalhaRepository.findById(id)
+            .map(batalha -> {
+                batalha.setRodada(batalhaAtualizada.getRodada());
+                batalha.setHorarioInicio(batalhaAtualizada.getHorarioInicio());
+                batalha.setHorarioFim(batalhaAtualizada.getHorarioFim());
+                batalha.setTorneio(batalhaAtualizada.getTorneio());
+                if (batalhaAtualizada.getTimeVencedor() != null) {
+                    batalha.setTimeVencedor(batalhaAtualizada.getTimeVencedor());
+                }
+                return batalhaRepository.save(batalha);
+            })
+            .orElseThrow(() -> new RuntimeException("Batalha não encontrada com id: " + id));
+    }
+
     public void deletarPorId(Long id) {
         batalhaRepository.deleteById(id);
+    }
+
+    public List<Batalha> buscarPorTorneio(Long torneioId) {
+        return batalhaRepository.findByTorneioId(torneioId);
     }
 }

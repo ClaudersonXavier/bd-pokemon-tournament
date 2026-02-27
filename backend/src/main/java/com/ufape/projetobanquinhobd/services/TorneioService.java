@@ -25,6 +25,20 @@ public class TorneioService {
         return torneioRepository.findById(id);
     }
 
+    public Torneio atualizar(Long id, Torneio torneioAtualizado) {
+        return torneioRepository.findById(id)
+            .map(torneio -> {
+                torneio.setNome(torneioAtualizado.getNome());
+                torneio.setMaxParticipantes(torneioAtualizado.getMaxParticipantes());
+                torneio.setDataAberturaInscricoes(torneioAtualizado.getDataAberturaInscricoes());
+                torneio.setDataEncerramentoInscricoes(torneioAtualizado.getDataEncerramentoInscricoes());
+                torneio.setDataInicio(torneioAtualizado.getDataInicio());
+                torneio.setDataFim(torneioAtualizado.getDataFim());
+                return torneioRepository.save(torneio);
+            })
+            .orElseThrow(() -> new RuntimeException("Torneio não encontrado com id: " + id));
+    }
+
     public void deletarPorId(Long id) {
         torneioRepository.deleteById(id);
     }

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, User } from '../../core/services/auth.service';
+import { TorneioService } from '../../core/services/torneio.service';
+import { Torneio } from '../../core/models';
 
 type Tab = 'tournaments' | 'profile' | 'admin';
 
@@ -11,7 +13,7 @@ type Tab = 'tournaments' | 'profile' | 'admin';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
   currentUser: User | null = null;
@@ -32,11 +34,18 @@ export class HomeComponent implements OnInit {
   showDeleteModal = false;
   userToDelete: any = null;
 
+  // Torneios
+  torneiosAbertos: Torneio[] = [];
+  torneiosEmAndamento: Torneio[] = [];
+  torneiosEncerrados: Torneio[] = [];
+  loadingTorneios = true;
+  errorTorneios = '';
+
   // Alterar Senha
   passwordForm = {
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   };
 
   // Criar Torneio
@@ -52,7 +61,7 @@ export class HomeComponent implements OnInit {
     organizerId: 1,
     status: 'SCHEDULED',
     prizePool: 10000,
-    registrationDeadline: ''
+    registrationDeadline: '',
   };
 
   // Mock data para dropdowns (simulando SELECT queries)
@@ -60,14 +69,28 @@ export class HomeComponent implements OnInit {
     { id: 1, name: 'Admin Principal', tournaments: 12 },
     { id: 2, name: 'Ash Ketchum', tournaments: 8 },
     { id: 3, name: 'Professor Oak', tournaments: 15 },
-    { id: 4, name: 'Misty Waters', tournaments: 5 }
+    { id: 4, name: 'Misty Waters', tournaments: 5 },
   ];
 
   pokemonTypes = [
-    'Normal', 'Fogo', 'Água', 'Elétrico', 'Planta', 'Gelo',
-    'Lutador', 'Venenoso', 'Terrestre', 'Voador', 'Psíquico',
-    'Inseto', 'Pedra', 'Fantasma', 'Dragão', 'Sombrio',
-    'Metálico', 'Fada'
+    'Normal',
+    'Fogo',
+    'Água',
+    'Elétrico',
+    'Planta',
+    'Gelo',
+    'Lutador',
+    'Venenoso',
+    'Terrestre',
+    'Voador',
+    'Psíquico',
+    'Inseto',
+    'Pedra',
+    'Fantasma',
+    'Dragão',
+    'Sombrio',
+    'Metálico',
+    'Fada',
   ];
 
   // Mock data para demonstração das queries de BD
@@ -76,19 +99,79 @@ export class HomeComponent implements OnInit {
       totalUsers: 1247,
       totalTournaments: 38,
       totalBattles: 5621,
-      avgBattlesPerDay: 47
+      avgBattlesPerDay: 47,
     },
     topTrainers: [
-      { position: 1, name: 'Ash Ketchum', battles: 156, victories: 128, winRate: 82.05 },
-      { position: 2, name: 'Misty Waters', battles: 142, victories: 115, winRate: 80.99 },
-      { position: 3, name: 'Brock Stone', battles: 138, victories: 109, winRate: 78.99 },
-      { position: 4, name: 'Gary Oak', battles: 134, victories: 105, winRate: 78.36 },
-      { position: 5, name: 'May Haruka', battles: 129, victories: 98, winRate: 75.97 },
-      { position: 6, name: 'Dawn Hikari', battles: 125, victories: 94, winRate: 75.20 },
-      { position: 7, name: 'Serena Yvonne', battles: 121, victories: 89, winRate: 73.55 },
-      { position: 8, name: 'Cilan Dent', battles: 118, victories: 86, winRate: 72.88 },
-      { position: 9, name: 'Iris Dragon', battles: 115, victories: 83, winRate: 72.17 },
-      { position: 10, name: 'Clemont Citron', battles: 112, victories: 80, winRate: 71.43 }
+      {
+        position: 1,
+        name: 'Ash Ketchum',
+        battles: 156,
+        victories: 128,
+        winRate: 82.05,
+      },
+      {
+        position: 2,
+        name: 'Misty Waters',
+        battles: 142,
+        victories: 115,
+        winRate: 80.99,
+      },
+      {
+        position: 3,
+        name: 'Brock Stone',
+        battles: 138,
+        victories: 109,
+        winRate: 78.99,
+      },
+      {
+        position: 4,
+        name: 'Gary Oak',
+        battles: 134,
+        victories: 105,
+        winRate: 78.36,
+      },
+      {
+        position: 5,
+        name: 'May Haruka',
+        battles: 129,
+        victories: 98,
+        winRate: 75.97,
+      },
+      {
+        position: 6,
+        name: 'Dawn Hikari',
+        battles: 125,
+        victories: 94,
+        winRate: 75.2,
+      },
+      {
+        position: 7,
+        name: 'Serena Yvonne',
+        battles: 121,
+        victories: 89,
+        winRate: 73.55,
+      },
+      {
+        position: 8,
+        name: 'Cilan Dent',
+        battles: 118,
+        victories: 86,
+        winRate: 72.88,
+      },
+      {
+        position: 9,
+        name: 'Iris Dragon',
+        battles: 115,
+        victories: 83,
+        winRate: 72.17,
+      },
+      {
+        position: 10,
+        name: 'Clemont Citron',
+        battles: 112,
+        victories: 80,
+        winRate: 71.43,
+      },
     ],
     popularPokemons: [
       { name: 'Pikachu', type: 'Elétrico', timesUsed: 892, winRate: 68.5 },
@@ -98,13 +181,37 @@ export class HomeComponent implements OnInit {
       { name: 'Gengar', type: 'Fantasma', timesUsed: 587, winRate: 74.2 },
       { name: 'Dragonite', type: 'Dragão', timesUsed: 534, winRate: 76.5 },
       { name: 'Gyarados', type: 'Água', timesUsed: 512, winRate: 71.9 },
-      { name: 'Alakazam', type: 'Psíquico', timesUsed: 489, winRate: 73.1 }
+      { name: 'Alakazam', type: 'Psíquico', timesUsed: 489, winRate: 73.1 },
     ],
     tournaments: [
-      { name: 'Copa Kanto 2026', participants: 64, battles: 127, status: 'Em Andamento', rank: 1 },
-      { name: 'Liga Johto Classic', participants: 48, battles: 94, status: 'Finalizado', rank: 2 },
-      { name: 'Torneio Hoenn Masters', participants: 32, battles: 63, status: 'Em Andamento', rank: 3 },
-      { name: 'Desafio Sinnoh', participants: 24, battles: 47, status: 'Agendado', rank: 4 }
+      {
+        name: 'Copa Kanto 2026',
+        participants: 64,
+        battles: 127,
+        status: 'Em Andamento',
+        rank: 1,
+      },
+      {
+        name: 'Liga Johto Classic',
+        participants: 48,
+        battles: 94,
+        status: 'Finalizado',
+        rank: 2,
+      },
+      {
+        name: 'Torneio Hoenn Masters',
+        participants: 32,
+        battles: 63,
+        status: 'Em Andamento',
+        rank: 3,
+      },
+      {
+        name: 'Desafio Sinnoh',
+        participants: 24,
+        battles: 47,
+        status: 'Agendado',
+        rank: 4,
+      },
     ],
     monthlyGrowth: [
       { month: 'Fev/2026', newUsers: 87, total: 1247 },
@@ -112,36 +219,187 @@ export class HomeComponent implements OnInit {
       { month: 'Dez/2025', newUsers: 102, total: 1066 },
       { month: 'Nov/2025', newUsers: 78, total: 964 },
       { month: 'Out/2025', newUsers: 91, total: 886 },
-      { month: 'Set/2025', newUsers: 85, total: 795 }
+      { month: 'Set/2025', newUsers: 85, total: 795 },
     ],
     typeMatchups: [
-      { type1: 'Fogo', type2: 'Planta', battles: 234, type1Wins: 189, type1Percentage: 80.77 },
-      { type1: 'Água', type2: 'Fogo', battles: 218, type1Wins: 175, type1Percentage: 80.28 },
-      { type1: 'Elétrico', type2: 'Água', battles: 203, type1Wins: 162, type1Percentage: 79.80 },
-      { type1: 'Planta', type2: 'Água', battles: 197, type1Wins: 156, type1Percentage: 79.19 },
-      { type1: 'Dragão', type2: 'Dragão', battles: 145, type1Wins: 73, type1Percentage: 50.34 }
-    ]
+      {
+        type1: 'Fogo',
+        type2: 'Planta',
+        battles: 234,
+        type1Wins: 189,
+        type1Percentage: 80.77,
+      },
+      {
+        type1: 'Água',
+        type2: 'Fogo',
+        battles: 218,
+        type1Wins: 175,
+        type1Percentage: 80.28,
+      },
+      {
+        type1: 'Elétrico',
+        type2: 'Água',
+        battles: 203,
+        type1Wins: 162,
+        type1Percentage: 79.8,
+      },
+      {
+        type1: 'Planta',
+        type2: 'Água',
+        battles: 197,
+        type1Wins: 156,
+        type1Percentage: 79.19,
+      },
+      {
+        type1: 'Dragão',
+        type2: 'Dragão',
+        battles: 145,
+        type1Wins: 73,
+        type1Percentage: 50.34,
+      },
+    ],
   };
 
   // Mock data para gerenciar usuários
   mockUsers = [
-    { id: 1, name: 'Ash Ketchum', email: 'ash@pokemon.com', role: 'ADMIN', active: true, createdAt: '2025-01-15', battles: 156, victories: 128, winRate: 82.05 },
-    { id: 2, name: 'Misty Waters', email: 'misty@pokemon.com', role: 'USER', active: true, createdAt: '2025-02-10', battles: 142, victories: 115, winRate: 80.99 },
-    { id: 3, name: 'Brock Stone', email: 'brock@pokemon.com', role: 'USER', active: true, createdAt: '2025-01-20', battles: 138, victories: 109, winRate: 78.99 },
-    { id: 4, name: 'Gary Oak', email: 'gary@pokemon.com', role: 'USER', active: true, createdAt: '2025-03-05', battles: 134, victories: 105, winRate: 78.36 },
-    { id: 5, name: 'May Haruka', email: 'may@pokemon.com', role: 'USER', active: false, createdAt: '2024-12-01', battles: 129, victories: 98, winRate: 75.97 },
-    { id: 6, name: 'Dawn Hikari', email: 'dawn@pokemon.com', role: 'USER', active: true, createdAt: '2025-02-14', battles: 125, victories: 94, winRate: 75.20 },
-    { id: 7, name: 'Serena Yvonne', email: 'serena@pokemon.com', role: 'USER', active: true, createdAt: '2025-01-28', battles: 121, victories: 89, winRate: 73.55 },
-    { id: 8, name: 'Cilan Dent', email: 'cilan@pokemon.com', role: 'ADMIN', active: true, createdAt: '2025-02-01', battles: 118, victories: 86, winRate: 72.88 },
-    { id: 9, name: 'Iris Dragon', email: 'iris@pokemon.com', role: 'USER', active: false, createdAt: '2024-11-15', battles: 115, victories: 83, winRate: 72.17 },
-    { id: 10, name: 'Clemont Citron', email: 'clemont@pokemon.com', role: 'USER', active: true, createdAt: '2025-02-20', battles: 112, victories: 80, winRate: 71.43 },
-    { id: 11, name: 'Bonnie Eureka', email: 'bonnie@pokemon.com', role: 'USER', active: true, createdAt: '2025-03-01', battles: 85, victories: 58, winRate: 68.24 },
-    { id: 12, name: 'Tracey Sketch', email: 'tracey@pokemon.com', role: 'USER', active: true, createdAt: '2025-01-10', battles: 92, victories: 61, winRate: 66.30 }
+    {
+      id: 1,
+      name: 'Ash Ketchum',
+      email: 'ash@pokemon.com',
+      role: 'ADMIN',
+      active: true,
+      createdAt: '2025-01-15',
+      battles: 156,
+      victories: 128,
+      winRate: 82.05,
+    },
+    {
+      id: 2,
+      name: 'Misty Waters',
+      email: 'misty@pokemon.com',
+      role: 'USER',
+      active: true,
+      createdAt: '2025-02-10',
+      battles: 142,
+      victories: 115,
+      winRate: 80.99,
+    },
+    {
+      id: 3,
+      name: 'Brock Stone',
+      email: 'brock@pokemon.com',
+      role: 'USER',
+      active: true,
+      createdAt: '2025-01-20',
+      battles: 138,
+      victories: 109,
+      winRate: 78.99,
+    },
+    {
+      id: 4,
+      name: 'Gary Oak',
+      email: 'gary@pokemon.com',
+      role: 'USER',
+      active: true,
+      createdAt: '2025-03-05',
+      battles: 134,
+      victories: 105,
+      winRate: 78.36,
+    },
+    {
+      id: 5,
+      name: 'May Haruka',
+      email: 'may@pokemon.com',
+      role: 'USER',
+      active: false,
+      createdAt: '2024-12-01',
+      battles: 129,
+      victories: 98,
+      winRate: 75.97,
+    },
+    {
+      id: 6,
+      name: 'Dawn Hikari',
+      email: 'dawn@pokemon.com',
+      role: 'USER',
+      active: true,
+      createdAt: '2025-02-14',
+      battles: 125,
+      victories: 94,
+      winRate: 75.2,
+    },
+    {
+      id: 7,
+      name: 'Serena Yvonne',
+      email: 'serena@pokemon.com',
+      role: 'USER',
+      active: true,
+      createdAt: '2025-01-28',
+      battles: 121,
+      victories: 89,
+      winRate: 73.55,
+    },
+    {
+      id: 8,
+      name: 'Cilan Dent',
+      email: 'cilan@pokemon.com',
+      role: 'ADMIN',
+      active: true,
+      createdAt: '2025-02-01',
+      battles: 118,
+      victories: 86,
+      winRate: 72.88,
+    },
+    {
+      id: 9,
+      name: 'Iris Dragon',
+      email: 'iris@pokemon.com',
+      role: 'USER',
+      active: false,
+      createdAt: '2024-11-15',
+      battles: 115,
+      victories: 83,
+      winRate: 72.17,
+    },
+    {
+      id: 10,
+      name: 'Clemont Citron',
+      email: 'clemont@pokemon.com',
+      role: 'USER',
+      active: true,
+      createdAt: '2025-02-20',
+      battles: 112,
+      victories: 80,
+      winRate: 71.43,
+    },
+    {
+      id: 11,
+      name: 'Bonnie Eureka',
+      email: 'bonnie@pokemon.com',
+      role: 'USER',
+      active: true,
+      createdAt: '2025-03-01',
+      battles: 85,
+      victories: 58,
+      winRate: 68.24,
+    },
+    {
+      id: 12,
+      name: 'Tracey Sketch',
+      email: 'tracey@pokemon.com',
+      role: 'USER',
+      active: true,
+      createdAt: '2025-01-10',
+      battles: 92,
+      victories: 61,
+      winRate: 66.3,
+    },
   ];
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private torneioService: TorneioService,
   ) {}
 
   ngOnInit(): void {
@@ -157,6 +415,66 @@ export class HomeComponent implements OnInit {
     // Check if user is admin (mock - in real app, would come from backend)
     this.isAdmin = this.currentUser.email?.includes('admin') || false;
     this.loadSelectedTrainer();
+    this.loadTorneios();
+  }
+
+  loadTorneios(): void {
+    this.loadingTorneios = true;
+    this.errorTorneios = '';
+
+    this.torneioService.listarTorneios().subscribe({
+      next: (torneios: Torneio[]) => {
+        this.classificarTorneios(torneios);
+        this.loadingTorneios = false;
+      },
+      error: (error) => {
+        console.error('Erro ao buscar torneios:', error);
+        this.errorTorneios =
+          'Não foi possível carregar os torneios. Tente novamente mais tarde.';
+        this.loadingTorneios = false;
+      },
+    });
+  }
+
+  classificarTorneios(torneios: Torneio[]): void {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0); // Zerar horas para comparação apenas de datas
+
+    this.torneiosAbertos = [];
+    this.torneiosEmAndamento = [];
+    this.torneiosEncerrados = [];
+
+    torneios.forEach((torneio) => {
+      const dataInicio = new Date(torneio.dataInicio);
+      const dataFim = new Date(torneio.dataFim);
+
+      dataInicio.setHours(0, 0, 0, 0);
+      dataFim.setHours(0, 0, 0, 0);
+
+      if (dataFim < hoje) {
+        // Encerrado: data de fim já passou
+        this.torneiosEncerrados.push(torneio);
+      } else if (dataInicio > hoje) {
+        // Aberto: ainda não começou (inscrições abertas)
+        this.torneiosAbertos.push(torneio);
+      } else {
+        // Em andamento: entre data de início e data de fim
+        this.torneiosEmAndamento.push(torneio);
+      }
+    });
+
+    // Ordenar por data
+    this.torneiosAbertos.sort(
+      (a, b) =>
+        new Date(a.dataInicio).getTime() - new Date(b.dataInicio).getTime(),
+    );
+    this.torneiosEmAndamento.sort(
+      (a, b) =>
+        new Date(a.dataInicio).getTime() - new Date(b.dataInicio).getTime(),
+    );
+    this.torneiosEncerrados.sort(
+      (a, b) => new Date(b.dataFim).getTime() - new Date(a.dataFim).getTime(),
+    );
   }
 
   setActiveTab(tab: Tab): void {
@@ -165,6 +483,10 @@ export class HomeComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  viewTournament(torneioId: number): void {
+    this.router.navigate(['/tournament', torneioId]);
   }
 
   isTabActive(tab: Tab): boolean {
@@ -184,14 +506,17 @@ export class HomeComponent implements OnInit {
   }
 
   get filteredUsers() {
-    return this.mockUsers.filter(user => {
-      const matchesSearch = user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                          user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchesStatus = this.filterStatus === 'all' || 
-                          (this.filterStatus === 'active' && user.active) ||
-                          (this.filterStatus === 'inactive' && !user.active);
-      const matchesRole = this.filterRole === 'all' || user.role === this.filterRole;
-      
+    return this.mockUsers.filter((user) => {
+      const matchesSearch =
+        user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchesStatus =
+        this.filterStatus === 'all' ||
+        (this.filterStatus === 'active' && user.active) ||
+        (this.filterStatus === 'inactive' && !user.active);
+      const matchesRole =
+        this.filterRole === 'all' || user.role === this.filterRole;
+
       return matchesSearch && matchesStatus && matchesRole;
     });
   }
@@ -207,10 +532,14 @@ export class HomeComponent implements OnInit {
 
   get userOverview() {
     return {
-      totalActive: this.mockUsers.filter(u => u.active).length,
-      totalInactive: this.mockUsers.filter(u => !u.active).length,
-      totalAdmins: this.mockUsers.filter(u => u.role === 'ADMIN').length,
-      newThisWeek: this.mockUsers.filter(u => new Date(u.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length
+      totalActive: this.mockUsers.filter((u) => u.active).length,
+      totalInactive: this.mockUsers.filter((u) => !u.active).length,
+      totalAdmins: this.mockUsers.filter((u) => u.role === 'ADMIN').length,
+      newThisWeek: this.mockUsers.filter(
+        (u) =>
+          new Date(u.createdAt) >
+          new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      ).length,
     };
   }
 
@@ -220,7 +549,9 @@ export class HomeComponent implements OnInit {
   }
 
   saveUser(): void {
-    const index = this.mockUsers.findIndex(u => u.id === this.selectedUser.id);
+    const index = this.mockUsers.findIndex(
+      (u) => u.id === this.selectedUser.id,
+    );
     if (index !== -1) {
       this.mockUsers[index] = { ...this.selectedUser };
     }
@@ -238,7 +569,9 @@ export class HomeComponent implements OnInit {
   }
 
   deleteUser(): void {
-    const index = this.mockUsers.findIndex(u => u.id === this.userToDelete.id);
+    const index = this.mockUsers.findIndex(
+      (u) => u.id === this.userToDelete.id,
+    );
     if (index !== -1) {
       this.mockUsers[index].active = false;
     }
@@ -297,7 +630,7 @@ export class HomeComponent implements OnInit {
       organizerId: 1,
       status: 'SCHEDULED',
       prizePool: 10000,
-      registrationDeadline: ''
+      registrationDeadline: '',
     };
   }
 
@@ -317,7 +650,9 @@ export class HomeComponent implements OnInit {
   saveTournament(): void {
     // Simulação de INSERT INTO tournaments
     // Na versão real, isso seria uma chamada HTTP POST para o backend
-    console.log('🗄️ SQL Simulado:', `
+    console.log(
+      '🗄️ SQL Simulado:',
+      `
       INSERT INTO tournaments (
         name, description, start_date, end_date, max_participants,
         min_level, max_level, organizer_id, status, prize_pool,
@@ -336,21 +671,44 @@ export class HomeComponent implements OnInit {
         '${this.newTournament.registrationDeadline}',
         NOW()
       );
-    `);
+    `,
+    );
 
     // Simular INSERT INTO tournament_allowed_types (relação N:N)
     if (this.newTournament.allowedTypes.length > 0) {
-      console.log('🗄️ SQL Simulado (Tipos Permitidos):', `
+      console.log(
+        '🗄️ SQL Simulado (Tipos Permitidos):',
+        `
         INSERT INTO tournament_allowed_types (tournament_id, type_name)
         VALUES
-        ${this.newTournament.allowedTypes.map(type => 
-          `(LAST_INSERT_ID(), '${type}')`
-        ).join(',\n        ')};
-      `);
+        ${this.newTournament.allowedTypes
+          .map((type) => `(LAST_INSERT_ID(), '${type}')`)
+          .join(',\n        ')};
+      `,
+      );
     }
 
-    alert(`✅ Torneio "${this.newTournament.name}" criado com sucesso!\n\nDados salvos no banco de dados (simulação).`);
-    this.closeCreateTournament();
+    // Na versão real, enviar para o backend
+    const torneioParaSalvar: any = {
+      nome: this.newTournament.name,
+      maxParticipantes: this.newTournament.maxParticipants,
+      dataAberturaInscricoes: this.newTournament.registrationDeadline,
+      dataEncerramentoInscricoes: this.newTournament.registrationDeadline,
+      dataInicio: this.newTournament.startDate,
+      dataFim: this.newTournament.endDate,
+    };
+
+    this.torneioService.criarTorneio(torneioParaSalvar).subscribe({
+      next: (torneio) => {
+        alert(`✅ Torneio "${torneio.nome}" criado com sucesso!`);
+        this.loadTorneios(); // Recarregar lista de torneios
+        this.closeCreateTournament();
+      },
+      error: (error) => {
+        console.error('Erro ao criar torneio:', error);
+        alert('❌ Erro ao criar torneio. Tente novamente.');
+      },
+    });
   }
 
   get isTournamentFormValid(): boolean {
@@ -398,7 +756,7 @@ export class HomeComponent implements OnInit {
     this.passwordForm = {
       currentPassword: '',
       newPassword: '',
-      confirmPassword: ''
+      confirmPassword: '',
     };
   }
 
@@ -420,7 +778,9 @@ export class HomeComponent implements OnInit {
     }
 
     // Simulação de UPDATE no banco de dados
-    console.log('🗄️ SQL Simulado:', `
+    console.log(
+      '🗄️ SQL Simulado:',
+      `
       UPDATE users 
       SET password = PASSWORD_HASH('${this.passwordForm.newPassword}'),
           updated_at = NOW()
@@ -430,9 +790,12 @@ export class HomeComponent implements OnInit {
       -- Verifica se a senha atual está correta
       -- Se rows_affected = 0, senha atual incorreta
       -- Se rows_affected = 1, senha alterada com sucesso
-    `);
+    `,
+    );
 
-    alert(`✅ Senha alterada com sucesso!\n\nConcepts demonstrados:\n- UPDATE com WHERE multiple conditions\n- PASSWORD_HASH para segurança\n- Timestamp automático (updated_at)\n- Verificação de senha antiga`);
+    alert(
+      `✅ Senha alterada com sucesso!\n\nConcepts demonstrados:\n- UPDATE com WHERE multiple conditions\n- PASSWORD_HASH para segurança\n- Timestamp automático (updated_at)\n- Verificação de senha antiga`,
+    );
     this.closeChangePassword();
   }
 
@@ -462,5 +825,23 @@ export class HomeComponent implements OnInit {
   private getTrainerStorageKey(): string {
     const userId = this.currentUser?.id || this.currentUser?.email || 'default';
     return `trainer-avatar-${userId}`;
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  }
+
+  inscreverNoTorneio(torneio: Torneio): void {
+    // TODO: Implementar lógica de inscrição quando houver o endpoint
+    alert(`Você se inscreveu no torneio: ${torneio.nome}`);
+  }
+
+  verDetalhesTorneio(torneio: Torneio): void {
+    this.router.navigate(['/tournament', torneio.id]);
   }
 }

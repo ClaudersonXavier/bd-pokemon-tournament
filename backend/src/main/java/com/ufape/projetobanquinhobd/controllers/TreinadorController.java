@@ -24,7 +24,7 @@ public class TreinadorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Treinador> buscarTreinador(@PathVariable Long id) {
+    public ResponseEntity<Treinador> buscarTreinador(@PathVariable("id") Long id) {
         Optional<Treinador> treinador = fachada.getTreinadorService().buscarPorId(id);
         return treinador.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -34,8 +34,18 @@ public class TreinadorController {
         return fachada.getTreinadorService().salvar(treinador);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Treinador> atualizarTreinador(@PathVariable("id") Long id, @RequestBody Treinador treinador) {
+        try {
+            Treinador treinadorAtualizado = fachada.getTreinadorService().atualizar(id, treinador);
+            return ResponseEntity.ok(treinadorAtualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarTreinador(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarTreinador(@PathVariable("id") Long id) {
         fachada.getTreinadorService().deletarPorId(id);
         return ResponseEntity.noContent().build();
     }
@@ -47,7 +57,7 @@ public class TreinadorController {
     }
 
     @GetMapping("/times/{id}")
-    public ResponseEntity<Time> buscarTime(@PathVariable Long id) {
+    public ResponseEntity<Time> buscarTime(@PathVariable("id") Long id) {
         Optional<Time> time = fachada.getTimeService().buscarPorId(id);
         return time.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -57,8 +67,18 @@ public class TreinadorController {
         return fachada.getTimeService().salvar(time);
     }
 
+    @PutMapping("/times/{id}")
+    public ResponseEntity<Time> atualizarTime(@PathVariable("id") Long id, @RequestBody Time time) {
+        try {
+            Time timeAtualizado = fachada.getTimeService().atualizar(id, time);
+            return ResponseEntity.ok(timeAtualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> deletarTime(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarTime(@PathVariable("id") Long id) {
         fachada.getTimeService().deletarPorId(id);
         return ResponseEntity.noContent().build();
     }
@@ -70,7 +90,7 @@ public class TreinadorController {
     }
 
     @GetMapping("/pokemons/{id}")
-    public ResponseEntity<Pokemon> buscarPokemon(@PathVariable Long id) {
+    public ResponseEntity<Pokemon> buscarPokemon(@PathVariable("id") Long id) {
         Optional<Pokemon> pokemon = fachada.getPokemonService().buscarPorId(id);
         return pokemon.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -80,8 +100,18 @@ public class TreinadorController {
         return fachada.getPokemonService().salvar(pokemon);
     }
 
+    @PutMapping("/pokemons/{id}")
+    public ResponseEntity<Pokemon> atualizarPokemon(@PathVariable("id") Long id, @RequestBody Pokemon pokemon) {
+        try {
+            Pokemon pokemonAtualizado = fachada.getPokemonService().atualizar(id, pokemon);
+            return ResponseEntity.ok(pokemonAtualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/pokemons/{id}")
-    public ResponseEntity<Void> deletarPokemon(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarPokemon(@PathVariable("id") Long id) {
         fachada.getPokemonService().deletarPorId(id);
         return ResponseEntity.noContent().build();
     }

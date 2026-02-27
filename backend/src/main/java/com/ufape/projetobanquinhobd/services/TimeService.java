@@ -25,6 +25,16 @@ public class TimeService {
         return timeRepository.findById(id);
     }
 
+    public Time atualizar(Long id, Time timeAtualizado) {
+        return timeRepository.findById(id)
+            .map(time -> {
+                time.setNome(timeAtualizado.getNome());
+                time.setTreinador(timeAtualizado.getTreinador());
+                return timeRepository.save(time);
+            })
+            .orElseThrow(() -> new RuntimeException("Time não encontrado com id: " + id));
+    }
+
     public void deletarPorId(Long id) {
         timeRepository.deleteById(id);
     }

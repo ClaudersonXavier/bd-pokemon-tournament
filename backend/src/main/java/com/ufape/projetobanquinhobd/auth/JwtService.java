@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +17,7 @@ import java.util.function.Function;
 public class JwtService {
 
     @Value("${jwt.secret}")
-    private String secretBase64;
+    private String secret;
 
     @Value("${jwt.expiration-ms}")
     private long expirationMs;
@@ -67,7 +66,13 @@ public class JwtService {
     }
 
     private SecretKey getChaveSecreta() {
-        byte[] keyBytes = Base64.getDecoder().decode(secretBase64);
+        byte[] keyBytes = secret.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        // Garantir que a chave tenha pelo menos 256 bits (32 bytes)
+        if (keyBytes.length < 32) {
+            byte[] paddedKey = new byte[32];
+            System.arraycopy(keyBytes, 0, paddedKey, 0, keyBytes.length);
+            keyBytes = paddedKey;
+        }
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
