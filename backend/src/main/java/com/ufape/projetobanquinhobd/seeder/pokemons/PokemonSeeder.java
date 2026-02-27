@@ -1,5 +1,6 @@
 package com.ufape.projetobanquinhobd.seeder.pokemons;
 
+import com.ufape.projetobanquinhobd.auth.TreinadorUserDetailsService;
 import com.ufape.projetobanquinhobd.entities.Ataque;
 import com.ufape.projetobanquinhobd.entities.Especie;
 import com.ufape.projetobanquinhobd.entities.Pokemon;
@@ -43,7 +44,10 @@ public class PokemonSeeder {
         System.out.println("=== Iniciando seed de Pokémons ===");
         
         // Buscar dados necessários
-        List<Treinador> treinadores = treinadorService.listarTodos();
+        List<Treinador> treinadores = treinadorService.listarTodos().stream()
+                .filter(treinador -> !TreinadorUserDetailsService.ADMIN_EMAIL
+                        .equalsIgnoreCase(treinador.getCredenciais().getEmail()))
+                .collect(Collectors.toList());
         List<Especie> especies = especieService.listarTodos();
         List<Ataque> ataques = ataqueService.listarTodos();
         

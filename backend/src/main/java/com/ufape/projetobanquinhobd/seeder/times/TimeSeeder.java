@@ -1,5 +1,6 @@
 package com.ufape.projetobanquinhobd.seeder.times;
 
+import com.ufape.projetobanquinhobd.auth.TreinadorUserDetailsService;
 import com.ufape.projetobanquinhobd.entities.Pokemon;
 import com.ufape.projetobanquinhobd.entities.Time;
 import com.ufape.projetobanquinhobd.entities.Treinador;
@@ -33,7 +34,10 @@ public class TimeSeeder {
         System.out.println("=== Iniciando seed de Times ===");
         
         // Buscar treinadores
-        List<Treinador> treinadores = treinadorService.listarTodos();
+        List<Treinador> treinadores = treinadorService.listarTodos().stream()
+                .filter(treinador -> !TreinadorUserDetailsService.ADMIN_EMAIL
+                        .equalsIgnoreCase(treinador.getCredenciais().getEmail()))
+                .toList();
         
         if (treinadores.isEmpty()) {
             System.err.println("✗ Nenhum treinador encontrado! Execute o seed de treinadores primeiro.");

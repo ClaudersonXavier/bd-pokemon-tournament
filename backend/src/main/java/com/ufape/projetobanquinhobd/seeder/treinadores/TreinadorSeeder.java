@@ -2,6 +2,7 @@ package com.ufape.projetobanquinhobd.seeder.treinadores;
 
 import com.ufape.projetobanquinhobd.entities.CredenciaisUsuario;
 import com.ufape.projetobanquinhobd.entities.Treinador;
+import com.ufape.projetobanquinhobd.repositories.TreinadorRepository;
 import com.ufape.projetobanquinhobd.services.TreinadorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,9 +15,13 @@ public class TreinadorSeeder {
     
     @Autowired
     private TreinadorService treinadorService;
+
+    @Autowired
+    private TreinadorRepository treinadorRepository;
     
     // Treinadores icônicos do universo Pokémon
     private static final List<TreinadorSeedData> TREINADORES = Arrays.asList(
+        new TreinadorSeedData("Admin", "admin@pokemon.com", "123456"),
         new TreinadorSeedData("Ash Ketchum", "ash@pokemon.com", "ash123"),
         new TreinadorSeedData("Misty", "misty@pokemon.com", "misty123"),
         new TreinadorSeedData("Brock", "brock@pokemon.com", "brock123"),
@@ -35,14 +40,24 @@ public class TreinadorSeeder {
                 count++;
                 System.out.println("[" + count + "/" + TREINADORES.size() + "] Processando: " + treinadorSeedData.nome);
                 
-                // Verificar se já existe (por enquanto cria sempre, mas pode adicionar validação)
-                Treinador treinador = new Treinador(
-                    treinadorSeedData.nome,
-                    new CredenciaisUsuario(
-                        treinadorSeedData.email,
-                        treinadorSeedData.senha
-                    )
-                );
+                Treinador treinador = treinadorRepository
+                        .findByCredenciaisEmail(treinadorSeedData.email)
+                        .map(existente -> {
+                            existente.setNome(treinadorSeedData.nome);
+                            existente.setCredenciais(new CredenciaisUsuario(
+                                    treinadorSeedData.email,
+                                    treinadorSeedData.senha
+                            ));
+                            return existente;
+                        })
+                        .orElseGet(() -> new Treinador(
+                                treinadorSeedData.nome,
+                                new CredenciaisUsuario(
+                                        treinadorSeedData.email,
+                                        treinadorSeedData.senha
+                                )
+                        ));
+
                 treinadorService.salvar(treinador);
                 salvos++;
                 System.out.println("  ✓ Salvo com sucesso!");

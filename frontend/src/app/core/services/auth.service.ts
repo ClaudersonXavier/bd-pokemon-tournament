@@ -21,12 +21,14 @@ export interface LoginResponse {
   id: number;
   nome: string;
   email: string;
+  admin: boolean;
 }
 
 export interface User {
   id: number;
   email: string;
   nome: string;
+  admin: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -82,6 +84,7 @@ export class AuthService {
       id: response.id,
       email: response.email,
       nome: response.nome,
+      admin: response.admin,
     });
   }
 
@@ -103,6 +106,7 @@ export class AuthService {
         id: payload.id,
         email: payload.sub,
         nome: payload.nome,
+        admin: payload.admin === true,
       });
     } catch {
       localStorage.removeItem(this.TOKEN_KEY);

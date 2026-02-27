@@ -43,6 +43,13 @@ consumidas pelo `docker-compose.yml` da raiz e por
    Frontend: http://localhost:4200
    ```
 
+### Acesso administrativo (ambiente local)
+
+- Conta admin unica: `admin@pokemon.com`
+- Senha: `123456`
+- O painel admin no frontend so e exibido para usuarios com claim `admin=true` no JWT (definida pelo backend), sem heuristica por substring no e-mail.
+- Em ambiente academico/local essa credencial e fixa para facilitar demonstracao. Nao reutilize essa senha fora deste contexto.
+
 #### Observacoes
 
 - O compose da raiz inclui banco, migrate, seeder, backend e frontend.

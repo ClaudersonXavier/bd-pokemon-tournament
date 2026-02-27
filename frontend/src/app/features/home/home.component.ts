@@ -412,8 +412,7 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    // Check if user is admin (mock - in real app, would come from backend)
-    this.isAdmin = this.currentUser.email?.includes('admin') || false;
+    this.isAdmin = this.currentUser.admin;
     this.loadSelectedTrainer();
     this.loadTorneios();
   }

@@ -15,6 +15,8 @@ import java.util.List;
 @Service
 public class TreinadorUserDetailsService implements UserDetailsService {
 
+    public static final String ADMIN_EMAIL = "admin@pokemon.com";
+
     @Autowired
     private TreinadorRepository treinadorRepository;
 
@@ -25,10 +27,17 @@ public class TreinadorUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "Treinador não encontrado com e-mail: " + email));
 
+        List<SimpleGrantedAuthority> authorities = ADMIN_EMAIL.equalsIgnoreCase(treinador.getCredenciais().getEmail())
+                ? List.of(
+                        new SimpleGrantedAuthority("ROLE_ADMIN"),
+                        new SimpleGrantedAuthority("ROLE_TREINADOR")
+                )
+                : List.of(new SimpleGrantedAuthority("ROLE_TREINADOR"));
+
         return new User(
                 treinador.getCredenciais().getEmail(),
                 treinador.getCredenciais().getSenha(),
-                List.of(new SimpleGrantedAuthority("ROLE_TREINADOR"))
+                authorities
         );
     }
 }
