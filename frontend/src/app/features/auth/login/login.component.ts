@@ -24,37 +24,38 @@ export class LoginComponent {
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      senha: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
   get emailControl() { return this.loginForm.get('email'); }
-  get passwordControl() { return this.loginForm.get('password'); }
+  get senhaControl()  { return this.loginForm.get('senha'); }
+
   get togglePasswordLabel(): string {
     return this.showPassword ? 'Ocultar senha' : 'Mostrar senha';
   }
 
   onSubmit(): void {
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      this.loginError = null;
-      
-      this.authService.login(this.loginForm.value).subscribe({
-        next: (user) => {
-          this.authService.setAuthUser(user);
-          this.isLoading = false;
-          console.log('Login successful:', user);
-          this.router.navigate(['/home']);
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.loginError = 'Invalid credentials. Please try again.';
-          console.error('Login error:', error);
-        }
-      });
-    } else {
+    if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      return;
     }
+
+    this.isLoading = true;
+    this.loginError = null;
+
+    this.authService.login(this.loginForm.value).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.loginError = err.status === 401
+          ? 'E-mail ou senha incorretos.'
+          : 'Erro ao fazer login. Tente novamente.';
+      }
+    });
   }
 
   togglePassword(): void {
