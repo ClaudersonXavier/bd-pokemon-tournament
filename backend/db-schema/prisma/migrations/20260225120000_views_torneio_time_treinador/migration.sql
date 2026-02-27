@@ -58,19 +58,26 @@ SELECT
     tn.nome                                                           AS torneio_nome,
     tm.id                                                             AS time_id,
     tm.nome                                                           AS time_nome,
-    COUNT(DISTINCT btp.batalha_id)                                    AS total_batalhas,
+    COUNT(DISTINCT b.id)                                              AS total_batalhas,
     COUNT(DISTINCT CASE
         WHEN b.time_vencedor_id = tm.id THEN b.id
     END)                                                              AS total_vitorias,
-    COUNT(DISTINCT btp.batalha_id)
-        - COUNT(DISTINCT CASE
-            WHEN b.time_vencedor_id = tm.id THEN b.id
-          END)                                                         AS total_derrotas,
+    COUNT(DISTINCT CASE
+        WHEN b.time_vencedor_id IS NOT NULL
+         AND b.time_vencedor_id <> tm.id THEN b.id
+    END)                                                              AS total_derrotas,
     ROUND(
-        COUNT(DISTINCT CASE
-            WHEN b.time_vencedor_id = tm.id THEN b.id
-        END)::NUMERIC
-        / NULLIF(COUNT(DISTINCT btp.batalha_id), 0) * 100,
+        (
+            COUNT(DISTINCT CASE
+                WHEN b.time_vencedor_id = tm.id THEN b.id
+            END)::NUMERIC
+            / NULLIF(
+                COUNT(DISTINCT CASE
+                    WHEN b.time_vencedor_id IS NOT NULL THEN b.id
+                END),
+                0
+            )
+        ) * 100,
         2
     )                                                                 AS percentual_vitorias
 FROM treinador tr
