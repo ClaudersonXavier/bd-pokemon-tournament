@@ -526,6 +526,14 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/edit-profile']);
   }
 
+  goToPokemons(): void {
+    this.router.navigate(['/pokemons']);
+  }
+
+  goToTimes(): void {
+    this.router.navigate(['/times']);
+  }
+
   // ─── Torneio Actions ─────────────────────────────────────────────────────────
 
   inscreverNoTorneio(torneio: Torneio): void {
