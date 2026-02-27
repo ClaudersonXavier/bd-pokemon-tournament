@@ -82,7 +82,8 @@ export class EditProfileComponent implements OnInit {
     const updatedUser: User = {
       id: this.currentUser.id,
       nome: this.profileForm.value.name || this.currentUser.nome,
-      email: this.profileForm.value.email || this.currentUser.email
+      email: this.profileForm.value.email || this.currentUser.email,
+      admin: this.currentUser.admin,
     };
 
     this.authService.setAuthUser(updatedUser);

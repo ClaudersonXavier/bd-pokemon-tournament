@@ -63,10 +63,13 @@ public class AuthController {
         Treinador treinador = treinadorRepository
                 .findByCredenciaisEmail(request.getEmail())
                 .orElseThrow();
+        boolean isAdmin = TreinadorUserDetailsService.ADMIN_EMAIL
+                .equalsIgnoreCase(treinador.getCredenciais().getEmail());
 
         Map<String, Object> claimsExtras = Map.of(
                 "id", treinador.getId(),
-                "nome", treinador.getNome()
+                "nome", treinador.getNome(),
+                "admin", isAdmin
         );
 
         String token = jwtService.gerarToken(claimsExtras, userDetails);
@@ -74,7 +77,8 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(
                 token, "Bearer",
                 treinador.getId(), treinador.getNome(),
-                treinador.getCredenciais().getEmail()
+                treinador.getCredenciais().getEmail(),
+                isAdmin
         ));
     }
 
@@ -84,6 +88,11 @@ public class AuthController {
     @Transactional
     @PostMapping("/registro")
     public ResponseEntity<?> registro(@Valid @RequestBody RegistroRequest request) {
+        if (TreinadorUserDetailsService.ADMIN_EMAIL.equalsIgnoreCase(request.getEmail())) {
+            return ResponseEntity.status(403)
+                    .body(Map.of("erro", "Este e-mail é reservado para a conta administrativa"));
+        }
+
         if (treinadorRepository.findByCredenciaisEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.status(409)
                     .body(Map.of("erro", "E-mail já cadastrado"));
@@ -97,7 +106,8 @@ public class AuthController {
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         Map<String, Object> claimsExtras = Map.of(
                 "id", treinador.getId(),
-                "nome", treinador.getNome()
+                "nome", treinador.getNome(),
+                "admin", false
         );
 
         String token = jwtService.gerarToken(claimsExtras, userDetails);
@@ -105,7 +115,8 @@ public class AuthController {
         return ResponseEntity.status(201).body(new LoginResponse(
                 token, "Bearer",
                 treinador.getId(), treinador.getNome(),
-                treinador.getCredenciais().getEmail()
+                treinador.getCredenciais().getEmail(),
+                false
         ));
     }
 }
