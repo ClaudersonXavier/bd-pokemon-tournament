@@ -562,6 +562,25 @@ body, html {
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
+.btn-tournament.btn-register {
+  background: linear-gradient(145deg, #2f8f46, #3fbf5a);
+  border-color: #1f6a33;
+}
+
+.btn-tournament.btn-register:hover:not(:disabled) {
+  background: linear-gradient(145deg, #3fbf5a, #57d977);
+}
+
+.btn-tournament.btn-register:disabled,
+.btn-tournament.btn-register:disabled:hover {
+  background: linear-gradient(145deg, #6a6a6a, #8a8a8a);
+  border-color: #555;
+  color: #e8e8e8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
 .btn-tournament.btn-secondary {
   background: linear-gradient(145deg, #1a5fb4, #1976d2);
   color: white;
@@ -2274,59 +2293,6 @@ body, html {
   font-style: italic;
 }
 
-/* Tipos de Pokémon */
-.types-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.type-badge {
-  padding: 10px 16px;
-  border: 3px solid #1a1a1a;
-  border-radius: 6px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 8px;
-  background: linear-gradient(145deg, #e0e0e0, #bdbdbd);
-  color: #1a1a1a;
-  cursor: pointer;
-  box-shadow: 2px 2px 0 #1a1a1a;
-  transition: all 0.2s ease;
-  text-align: center;
-}
-
-.type-badge:hover {
-  transform: translateY(-2px);
-  box-shadow: 3px 3px 0 #1a1a1a;
-}
-
-.type-badge.type-selected {
-  background: linear-gradient(145deg, #4daf50, #339933);
-  color: #ffffff;
-  border-color: #4daf50;
-  box-shadow: 3px 3px 0 #1a1a1a;
-}
-
-.selected-types-info {
-  font-family: 'Nunito', sans-serif;
-  font-size: 12px;
-  color: #4daf50;
-  margin: 12px 0 0;
-  padding: 12px;
-  background: rgba(77, 175, 80, 0.1);
-  border: 2px solid #4daf50;
-  border-radius: 6px;
-  font-weight: 600;
-}
-
-.selected-types-info.no-types {
-  color: #666;
-  background: rgba(0, 0, 0, 0.05);
-  border-color: #999;
-  font-weight: normal;
-}
-
 /* Conceitos de BD na página de criar */
 .concepts-section {
   background: linear-gradient(145deg, #e3f2fd, #bbdefb);
@@ -2412,15 +2378,6 @@ body, html {
 
   .form-row {
     grid-template-columns: 1fr;
-  }
-
-  .types-grid {
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  }
-
-  .type-badge {
-    font-size: 7px;
-    padding: 8px 12px;
   }
 
   .concepts-grid {

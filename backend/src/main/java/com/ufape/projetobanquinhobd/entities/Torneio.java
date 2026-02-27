@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -79,7 +80,7 @@ public class Torneio {
         if (dataEncerramentoInscricoes == null) {
             throw new IllegalArgumentException("Data de encerramento de inscrições é obrigatória");
         }
-        if (dataAberturaInscricoes != null && dataEncerramentoInscricoes.before(dataAberturaInscricoes)) {
+        if (dataAberturaInscricoes != null && normalizeToDay(dataEncerramentoInscricoes).before(normalizeToDay(dataAberturaInscricoes))) {
             throw new IllegalArgumentException("Data de encerramento deve ser após a abertura");
         }
         this.dataEncerramentoInscricoes = dataEncerramentoInscricoes;
@@ -89,7 +90,7 @@ public class Torneio {
         if (dataInicio == null) {
             throw new IllegalArgumentException("Data de início é obrigatória");
         }
-        if (dataEncerramentoInscricoes != null && dataInicio.before(dataEncerramentoInscricoes)) {
+        if (dataEncerramentoInscricoes != null && normalizeToDay(dataInicio).before(normalizeToDay(dataEncerramentoInscricoes))) {
             throw new IllegalArgumentException("Data de início deve ser após o encerramento das inscrições");
         }
         this.dataInicio = dataInicio;
@@ -99,7 +100,7 @@ public class Torneio {
         if (dataFim == null) {
             throw new IllegalArgumentException("Data de fim é obrigatória");
         }
-        if (dataInicio != null && dataFim.before(dataInicio)) {
+        if (dataInicio != null && normalizeToDay(dataFim).before(normalizeToDay(dataInicio))) {
             throw new IllegalArgumentException("Data de fim deve ser após a data de início");
         }
         this.dataFim = dataFim;
@@ -107,6 +108,45 @@ public class Torneio {
 
     public Set<Time> getTimes() {
         return times;
+    }
+
+    @Transient
+    public String getStatusAtual() {
+        Date hoje = normalizeToDay(new Date());
+        Date fim = dataFim == null ? null : normalizeToDay(dataFim);
+        Date inicio = dataInicio == null ? null : normalizeToDay(dataInicio);
+
+        if (fim != null && hoje.after(fim)) {
+            return "ENCERRADO";
+        }
+
+        if (inicio != null && !hoje.before(inicio)) {
+            return "EM_ANDAMENTO";
+        }
+
+        return "ABERTO";
+    }
+
+    @Transient
+    public boolean isInscricoesAbertas() {
+        if (dataAberturaInscricoes == null || dataEncerramentoInscricoes == null) {
+            return false;
+        }
+
+        Date hoje = normalizeToDay(new Date());
+        Date abertura = normalizeToDay(dataAberturaInscricoes);
+        Date encerramento = normalizeToDay(dataEncerramentoInscricoes);
+        return !hoje.before(abertura) && !hoje.after(encerramento);
+    }
+
+    private Date normalizeToDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
     }
 
 }
