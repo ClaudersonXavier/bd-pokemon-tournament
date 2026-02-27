@@ -81,239 +81,308 @@
     <div class="content-area">
       <!-- Tournaments Tab -->
       <section class="tab-content" *ngIf="isTabActive('tournaments')">
-        <div class="content-card">
-          <div class="content-header-row">
-            <div>
-              <h2 class="content-title">Torneios</h2>
-              <p class="content-subtitle">
-                Encontre e participe de torneios incríveis!
-              </p>
-            </div>
-            <button class="btn-manage-pokemons" (click)="goToPokemons()">
-              <img src="/icons/poke-ball.png" alt="Pokemons" />
-              Meus Pokemons
-            </button>
-            <button class="btn-manage-times" (click)="goToTimes()">
-              <img src="/icons/poke-ball.png" alt="Times" />
-              Meus Times
-            </button>
-          </div>
+        <!-- Header Fixo -->
+        <div class="content-header-fixed">
+          <h2 class="content-title">Torneios</h2>
+          <p class="content-subtitle">
+            Encontre e participe de torneios incríveis!
+          </p>
+        </div>
 
-          <!-- Loading State -->
-          <div *ngIf="loadingTorneios" class="tournaments-loading">
-            <p>Carregando torneios...</p>
-          </div>
-
-          <!-- Error State -->
-          <div
-            *ngIf="errorTorneios && !loadingTorneios"
-            class="tournaments-error"
-          >
-            <p>❌ {{ errorTorneios }}</p>
-            <button class="btn-retry" (click)="loadTorneios()">
-              Tentar Novamente
-            </button>
-          </div>
-
-          <!-- Torneios Content -->
-          <div
-            *ngIf="!loadingTorneios && !errorTorneios"
-            class="tournaments-content"
-          >
-            <!-- Torneios Abertos (Inscrições) -->
-            <div class="tournament-section" *ngIf="torneiosAbertos.length > 0">
-              <h3 class="section-title">
-                <span class="status-badge status-open">📝 Abertos</span>
-              </h3>
-              <div class="tournaments-grid">
-                <div
-                  class="tournament-card"
-                  *ngFor="let torneio of torneiosAbertos"
-                >
-                  <div class="tournament-header">
-                    <h4>{{ torneio.nome }}</h4>
-                    <span class="tournament-status status-open">Aberto</span>
-                  </div>
-                  <div class="tournament-info">
-                    <div class="info-row">
-                      <span class="info-label">📅 Início:</span>
-                      <span class="info-value">{{
-                        formatDate(torneio.dataInicio)
-                      }}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">🏁 Término:</span>
-                      <span class="info-value">{{
-                        formatDate(torneio.dataFim)
-                      }}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">👥 Participantes:</span>
-                      <span class="info-value"
-                        >{{ torneio.times?.length || 0 }}/{{
-                          torneio.maxParticipantes
-                        }}</span
-                      >
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">✉️ Inscrições até:</span>
-                      <span class="info-value">{{
-                        formatDate(torneio.dataEncerramentoInscricoes)
-                      }}</span>
-                    </div>
-                  </div>
-                  <div class="tournament-actions">
-                    <button
-                      class="btn-tournament btn-primary btn-register"
-                      [disabled]="!isInscricaoAberta(torneio)"
-                      (click)="inscreverNoTorneio(torneio)"
-                    >
-                      {{
-                        isInscricaoAberta(torneio)
-                          ? 'Inscrever-se'
-                          : 'Inscrições Encerradas'
-                      }}
-                    </button>
-                    <button
-                      class="btn-tournament btn-secondary"
-                      (click)="verDetalhesTorneio(torneio)"
-                    >
-                      Ver Detalhes
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Torneios Em Andamento -->
+        <!-- Área de Conteúdo Rolável -->
+        <div class="content-scrollable">
+          <div class="content-card">
+            <!-- Filtros de Torneios -->
             <div
-              class="tournament-section"
-              *ngIf="torneiosEmAndamento.length > 0"
+              class="tournaments-filters"
+              *ngIf="!loadingTorneios && !errorTorneios"
             >
-              <h3 class="section-title">
-                <span class="status-badge status-progress"
-                  >⚔️ Em Andamento</span
-                >
-              </h3>
-              <div class="tournaments-grid">
-                <div
-                  class="tournament-card"
-                  *ngFor="let torneio of torneiosEmAndamento"
-                >
-                  <div class="tournament-header">
-                    <h4>{{ torneio.nome }}</h4>
-                    <span class="tournament-status status-progress"
-                      >Em Andamento</span
-                    >
-                  </div>
-                  <div class="tournament-info">
-                    <div class="info-row">
-                      <span class="info-label">📅 Início:</span>
-                      <span class="info-value">{{
-                        formatDate(torneio.dataInicio)
-                      }}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">🏁 Término:</span>
-                      <span class="info-value">{{
-                        formatDate(torneio.dataFim)
-                      }}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">👥 Participantes:</span>
-                      <span class="info-value">{{
-                        torneio.times?.length || 0
-                      }}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">⚔️ Batalhas:</span>
-                      <span class="info-value">{{
-                        torneio.batalhas?.length || 0
-                      }}</span>
-                    </div>
-                  </div>
-                  <div class="tournament-actions">
-                    <button
-                      class="btn-tournament btn-primary"
-                      (click)="verDetalhesTorneio(torneio)"
-                    >
-                      Acompanhar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Torneios Encerrados -->
-            <div
-              class="tournament-section"
-              *ngIf="torneiosEncerrados.length > 0"
-            >
-              <h3 class="section-title">
-                <span class="status-badge status-closed">🏆 Encerrados</span>
-              </h3>
-              <div class="tournaments-grid">
-                <div
-                  class="tournament-card"
-                  *ngFor="let torneio of torneiosEncerrados"
-                >
-                  <div class="tournament-header">
-                    <h4>{{ torneio.nome }}</h4>
-                    <span class="tournament-status status-closed"
-                      >Encerrado</span
-                    >
-                  </div>
-                  <div class="tournament-info">
-                    <div class="info-row">
-                      <span class="info-label">📅 Realizado:</span>
-                      <span class="info-value"
-                        >{{ formatDate(torneio.dataInicio) }} -
-                        {{ formatDate(torneio.dataFim) }}</span
-                      >
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">👥 Participantes:</span>
-                      <span class="info-value">{{
-                        torneio.times?.length || 0
-                      }}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">⚔️ Batalhas:</span>
-                      <span class="info-value">{{
-                        torneio.batalhas?.length || 0
-                      }}</span>
-                    </div>
-                  </div>
-                  <div class="tournament-actions">
-                    <button
-                      class="btn-tournament btn-secondary"
-                      (click)="verDetalhesTorneio(torneio)"
-                    >
-                      Ver Resultados
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- No tournaments message -->
-            <div
-              class="tournament-placeholder"
-              *ngIf="
-                torneiosAbertos.length === 0 &&
-                torneiosEmAndamento.length === 0 &&
-                torneiosEncerrados.length === 0
-              "
-            >
-              <div class="placeholder-icon">
-                <img
-                  src="/icons/trofeu.png"
-                  alt="Troféu"
-                  class="placeholder-icon-img"
+              <!-- Barra de Pesquisa -->
+              <div class="filter-search">
+                <span class="search-icon">🔍</span>
+                <input
+                  type="text"
+                  class="search-input"
+                  [(ngModel)]="searchTorneio"
+                  placeholder="Buscar torneio por nome..."
                 />
+                <button
+                  class="btn-clear-search"
+                  *ngIf="searchTorneio"
+                  (click)="searchTorneio = ''"
+                >
+                  ✕
+                </button>
               </div>
-              <p>Nenhum torneio disponível</p>
-              <small>Novos torneios em breve...</small>
+
+              <!-- Filtros de Status -->
+              <div class="filter-status">
+                <button
+                  class="status-filter-btn"
+                  [class.active]="filterStatus === 'ALL'"
+                  (click)="setFilterStatus('ALL')"
+                >
+                  🌟 Todos
+                </button>
+                <button
+                  class="status-filter-btn"
+                  [class.active]="filterStatus === 'ABERTO'"
+                  (click)="setFilterStatus('ABERTO')"
+                >
+                  📝 Abertos
+                </button>
+                <button
+                  class="status-filter-btn"
+                  [class.active]="filterStatus === 'EM_ANDAMENTO'"
+                  (click)="setFilterStatus('EM_ANDAMENTO')"
+                >
+                  ⚔️ Em Andamento
+                </button>
+                <button
+                  class="status-filter-btn"
+                  [class.active]="filterStatus === 'ENCERRADO'"
+                  (click)="setFilterStatus('ENCERRADO')"
+                >
+                  🏆 Encerrados
+                </button>
+              </div>
+            </div>
+
+            <!-- Loading State -->
+            <div *ngIf="loadingTorneios" class="tournaments-loading">
+              <p>Carregando torneios...</p>
+            </div>
+
+            <!-- Error State -->
+            <div
+              *ngIf="errorTorneios && !loadingTorneios"
+              class="tournaments-error"
+            >
+              <p>❌ {{ errorTorneios }}</p>
+              <button class="btn-retry" (click)="loadTorneios()">
+                Tentar Novamente
+              </button>
+            </div>
+
+            <!-- Torneios Content -->
+            <div
+              *ngIf="!loadingTorneios && !errorTorneios"
+              class="tournaments-content"
+            >
+              <!-- Torneios Abertos (Inscrições) -->
+              <div
+                class="tournament-section"
+                *ngIf="
+                  torneiosAbertosFiltered.length > 0 &&
+                  (filterStatus === 'ALL' || filterStatus === 'ABERTO')
+                "
+              >
+                <h3 class="section-title">
+                  <span class="status-badge status-open">📝 Abertos</span>
+                </h3>
+                <div class="tournaments-grid">
+                  <div
+                    class="tournament-card"
+                    *ngFor="let torneio of torneiosAbertosFiltered"
+                  >
+                    <div class="tournament-header">
+                      <h4>{{ torneio.nome }}</h4>
+                      <span class="tournament-status status-open">Aberto</span>
+                    </div>
+                    <div class="tournament-info">
+                      <div class="info-row">
+                        <span class="info-label">📅 Início:</span>
+                        <span class="info-value">{{
+                          formatDate(torneio.dataInicio)
+                        }}</span>
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">🏁 Término:</span>
+                        <span class="info-value">{{
+                          formatDate(torneio.dataFim)
+                        }}</span>
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">👥 Participantes:</span>
+                        <span class="info-value"
+                          >{{ torneio.times?.length || 0 }}/{{
+                            torneio.maxParticipantes
+                          }}</span
+                        >
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">✉️ Inscrições até:</span>
+                        <span class="info-value">{{
+                          formatDate(torneio.dataEncerramentoInscricoes)
+                        }}</span>
+                      </div>
+                    </div>
+                    <div class="tournament-actions">
+                      <button
+                        class="btn-tournament btn-primary btn-register"
+                        [disabled]="!isInscricaoAberta(torneio)"
+                        (click)="inscreverNoTorneio(torneio)"
+                      >
+                        {{
+                          isInscricaoAberta(torneio)
+                            ? "Inscrever-se"
+                            : "Inscrições Encerradas"
+                        }}
+                      </button>
+                      <button
+                        class="btn-tournament btn-secondary"
+                        (click)="verDetalhesTorneio(torneio)"
+                      >
+                        Ver Detalhes
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Torneios Em Andamento -->
+              <div
+                class="tournament-section"
+                *ngIf="
+                  torneiosEmAndamentoFiltered.length > 0 &&
+                  (filterStatus === 'ALL' || filterStatus === 'EM_ANDAMENTO')
+                "
+              >
+                <h3 class="section-title">
+                  <span class="status-badge status-progress"
+                    >⚔️ Em Andamento</span
+                  >
+                </h3>
+                <div class="tournaments-grid">
+                  <div
+                    class="tournament-card"
+                    *ngFor="let torneio of torneiosEmAndamentoFiltered"
+                  >
+                    <div class="tournament-header">
+                      <h4>{{ torneio.nome }}</h4>
+                      <span class="tournament-status status-progress"
+                        >Em Andamento</span
+                      >
+                    </div>
+                    <div class="tournament-info">
+                      <div class="info-row">
+                        <span class="info-label">📅 Início:</span>
+                        <span class="info-value">{{
+                          formatDate(torneio.dataInicio)
+                        }}</span>
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">🏁 Término:</span>
+                        <span class="info-value">{{
+                          formatDate(torneio.dataFim)
+                        }}</span>
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">👥 Participantes:</span>
+                        <span class="info-value">{{
+                          torneio.times?.length || 0
+                        }}</span>
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">⚔️ Batalhas:</span>
+                        <span class="info-value">{{
+                          torneio.batalhas?.length || 0
+                        }}</span>
+                      </div>
+                    </div>
+                    <div class="tournament-actions">
+                      <button
+                        class="btn-tournament btn-primary"
+                        (click)="verDetalhesTorneio(torneio)"
+                      >
+                        Acompanhar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Torneios Encerrados -->
+              <div
+                class="tournament-section"
+                *ngIf="
+                  torneiosEncerradosFiltered.length > 0 &&
+                  (filterStatus === 'ALL' || filterStatus === 'ENCERRADO')
+                "
+              >
+                <h3 class="section-title">
+                  <span class="status-badge status-closed">🏆 Encerrados</span>
+                </h3>
+                <div class="tournaments-grid">
+                  <div
+                    class="tournament-card"
+                    *ngFor="let torneio of torneiosEncerradosFiltered"
+                  >
+                    <div class="tournament-header">
+                      <h4>{{ torneio.nome }}</h4>
+                      <span class="tournament-status status-closed"
+                        >Encerrado</span
+                      >
+                    </div>
+                    <div class="tournament-info">
+                      <div class="info-row">
+                        <span class="info-label">📅 Realizado:</span>
+                        <span class="info-value"
+                          >{{ formatDate(torneio.dataInicio) }} -
+                          {{ formatDate(torneio.dataFim) }}</span
+                        >
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">👥 Participantes:</span>
+                        <span class="info-value">{{
+                          torneio.times?.length || 0
+                        }}</span>
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">⚔️ Batalhas:</span>
+                        <span class="info-value">{{
+                          torneio.batalhas?.length || 0
+                        }}</span>
+                      </div>
+                    </div>
+                    <div class="tournament-actions">
+                      <button
+                        class="btn-tournament btn-secondary"
+                        (click)="verDetalhesTorneio(torneio)"
+                      >
+                        Ver Resultados
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- No tournaments message -->
+              <div
+                class="tournament-placeholder"
+                *ngIf="
+                  (filterStatus === 'ALL' &&
+                    torneiosAbertos.length === 0 &&
+                    torneiosEmAndamento.length === 0 &&
+                    torneiosEncerrados.length === 0) ||
+                  (filterStatus === 'ABERTO' &&
+                    torneiosAbertosFiltered.length === 0) ||
+                  (filterStatus === 'EM_ANDAMENTO' &&
+                    torneiosEmAndamentoFiltered.length === 0) ||
+                  (filterStatus === 'ENCERRADO' &&
+                    torneiosEncerradosFiltered.length === 0)
+                "
+              >
+                <div class="placeholder-icon">
+                  <img
+                    src="/icons/trofeu.png"
+                    alt="Troféu"
+                    class="placeholder-icon-img"
+                  />
+                </div>
+                <p>Nenhum torneio disponível</p>
+                <small>Novos torneios em breve...</small>
+              </div>
             </div>
           </div>
         </div>
@@ -385,6 +454,14 @@
                 (click)="openChangePassword()"
               >
                 Alterar Senha
+              </button>
+              <button class="btn-manage-pokemons" (click)="goToPokemons()">
+                <img src="/icons/poke-ball.png" alt="Pokemons" />
+                Meus Pokemons
+              </button>
+              <button class="btn-manage-times" (click)="goToTimes()">
+                <img src="/icons/poke-ball.png" alt="Times" />
+                Meus Times
               </button>
             </div>
           </div>
@@ -465,7 +542,9 @@
                           <span class="stat-card-value">{{
                             statsGerais.totalTreinadores
                           }}</span>
-                          <span class="stat-card-label">Treinadores Registrados</span>
+                          <span class="stat-card-label"
+                            >Treinadores Registrados</span
+                          >
                         </div>
                       </div>
                       <div class="stat-card">
@@ -487,7 +566,9 @@
                           <span class="stat-card-value">{{
                             statsGerais.totalBatalhas
                           }}</span>
-                          <span class="stat-card-label">Batalhas Realizadas</span>
+                          <span class="stat-card-label"
+                            >Batalhas Realizadas</span
+                          >
                         </div>
                       </div>
                     </div>
@@ -497,12 +578,19 @@
                   <section class="stats-section">
                     <h3 class="section-title">Top Treinadores</h3>
                     <p class="section-subtitle">
-                      Query: GROUP BY treinador + SUM(vitórias) — view v_treinador_desempenho_torneio
+                      Query: GROUP BY treinador + SUM(vitórias) — view
+                      v_treinador_desempenho_torneio
                     </p>
-                    <div *ngIf="topTreinadores.length === 0" class="empty-state">
+                    <div
+                      *ngIf="topTreinadores.length === 0"
+                      class="empty-state"
+                    >
                       <p>Nenhum dado de desempenho encontrado ainda.</p>
                     </div>
-                    <div class="table-container" *ngIf="topTreinadores.length > 0">
+                    <div
+                      class="table-container"
+                      *ngIf="topTreinadores.length > 0"
+                    >
                       <table class="stats-table">
                         <thead>
                           <tr>
@@ -514,16 +602,22 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr *ngFor="let trainer of topTreinadores; let i = index">
-                            <td
-                              class="rank-badge"
-                              [class.top-3]="i < 3"
-                            >
+                          <tr
+                            *ngFor="
+                              let trainer of topTreinadores;
+                              let i = index
+                            "
+                          >
+                            <td class="rank-badge" [class.top-3]="i < 3">
                               {{ i + 1 }}
                             </td>
-                            <td class="trainer-name">{{ trainer.treinador_nome }}</td>
+                            <td class="trainer-name">
+                              {{ trainer.treinador_nome }}
+                            </td>
                             <td>{{ trainer.total_batalhas }}</td>
-                            <td class="victories">{{ trainer.total_vitorias }}</td>
+                            <td class="victories">
+                              {{ trainer.total_vitorias }}
+                            </td>
                             <td>
                               <div class="win-rate-bar">
                                 <div
@@ -547,10 +641,16 @@
                     <p class="section-subtitle">
                       Query: GROUP BY torneio + COUNT(times) + COUNT(batalhas)
                     </p>
-                    <div *ngIf="resumoTorneios.length === 0" class="empty-state">
+                    <div
+                      *ngIf="resumoTorneios.length === 0"
+                      class="empty-state"
+                    >
                       <p>Nenhum torneio com dados suficientes ainda.</p>
                     </div>
-                    <div class="table-container" *ngIf="resumoTorneios.length > 0">
+                    <div
+                      class="table-container"
+                      *ngIf="resumoTorneios.length > 0"
+                    >
                       <table class="stats-table">
                         <thead>
                           <tr>
@@ -564,7 +664,9 @@
                         <tbody>
                           <tr *ngFor="let t of resumoTorneios; let i = index">
                             <td class="rank-badge">{{ i + 1 }}</td>
-                            <td class="tournament-name">{{ t.torneio_nome }}</td>
+                            <td class="tournament-name">
+                              {{ t.torneio_nome }}
+                            </td>
                             <td>{{ t.total_participantes }}</td>
                             <td>{{ t.total_batalhas }}</td>
                             <td>{{ formatDate(t.data_inicio) }}</td>
@@ -584,15 +686,21 @@
                       </div>
                       <div class="concept-card">
                         <span class="concept-icon">📊</span>
-                        <span class="concept-name">Agregações (COUNT, SUM)</span>
+                        <span class="concept-name"
+                          >Agregações (COUNT, SUM)</span
+                        >
                       </div>
                       <div class="concept-card">
                         <span class="concept-icon">📈</span>
-                        <span class="concept-name">Window Functions (RANK)</span>
+                        <span class="concept-name"
+                          >Window Functions (RANK)</span
+                        >
                       </div>
                       <div class="concept-card">
                         <span class="concept-icon">🗂️</span>
-                        <span class="concept-name">Views (v_treinador_desempenho)</span>
+                        <span class="concept-name"
+                          >Views (v_treinador_desempenho)</span
+                        >
                       </div>
                       <div class="concept-card">
                         <span class="concept-icon">🔍</span>
@@ -631,13 +739,21 @@
                 <div *ngIf="loadingTreinadores" class="loading-state">
                   <p>⏳ Carregando treinadores...</p>
                 </div>
-                <div *ngIf="errorTreinadores && !loadingTreinadores" class="error-state">
+                <div
+                  *ngIf="errorTreinadores && !loadingTreinadores"
+                  class="error-state"
+                >
                   <p>❌ {{ errorTreinadores }}</p>
-                  <button class="btn-retry" (click)="loadTreinadores()">Tentar Novamente</button>
+                  <button class="btn-retry" (click)="loadTreinadores()">
+                    Tentar Novamente
+                  </button>
                 </div>
 
                 <!-- Overview Cards -->
-                <section class="users-section" *ngIf="!loadingTreinadores && !errorTreinadores">
+                <section
+                  class="users-section"
+                  *ngIf="!loadingTreinadores && !errorTreinadores"
+                >
                   <div class="overview-grid">
                     <div class="stat-card">
                       <div class="stat-card-icon">
@@ -647,7 +763,9 @@
                         <span class="stat-card-value">{{
                           userOverview.totalTreinadores
                         }}</span>
-                        <span class="stat-card-label">Total de Treinadores</span>
+                        <span class="stat-card-label"
+                          >Total de Treinadores</span
+                        >
                       </div>
                     </div>
                     <div class="stat-card admin">
@@ -665,7 +783,10 @@
                 </section>
 
                 <!-- Filters Section -->
-                <section class="users-section" *ngIf="!loadingTreinadores && !errorTreinadores">
+                <section
+                  class="users-section"
+                  *ngIf="!loadingTreinadores && !errorTreinadores"
+                >
                   <h3 class="section-title">Filtros e Busca</h3>
                   <p class="section-subtitle">
                     Query: SELECT treinador WHERE nome ILIKE ? OR email ILIKE ?
@@ -707,15 +828,22 @@
                 </section>
 
                 <!-- Users Table -->
-                <section class="users-section" *ngIf="!loadingTreinadores && !errorTreinadores">
+                <section
+                  class="users-section"
+                  *ngIf="!loadingTreinadores && !errorTreinadores"
+                >
                   <h3 class="section-title">
-                    Lista de Treinadores ({{ filteredUsers.length }} encontrados)
+                    Lista de Treinadores ({{ filteredUsers.length }}
+                    encontrados)
                   </h3>
                   <p class="section-subtitle">
                     Query: SELECT * FROM treinador — paginação com LIMIT/OFFSET
                   </p>
 
-                  <div *ngIf="filteredUsers.length === 0 && !loadingTreinadores" class="empty-state">
+                  <div
+                    *ngIf="filteredUsers.length === 0 && !loadingTreinadores"
+                    class="empty-state"
+                  >
                     <p>Nenhum treinador encontrado com os filtros atuais.</p>
                   </div>
 
@@ -897,11 +1025,14 @@
                   Query: DELETE FROM treinador WHERE id = ?
                 </p>
                 <p class="confirm-message">
-                  Tem certeza que deseja <strong>excluir permanentemente</strong> o treinador
-                  <strong>{{ userToDelete?.nome }}</strong>?
+                  Tem certeza que deseja
+                  <strong>excluir permanentemente</strong> o treinador
+                  <strong>{{ userToDelete?.nome }}</strong
+                  >?
                 </p>
                 <p class="confirm-warning">
-                  ⚠️ Esta ação é irreversível. Todos os dados associados serão removidos.
+                  ⚠️ Esta ação é irreversível. Todos os dados associados serão
+                  removidos.
                 </p>
               </div>
               <div class="modal-footer">
@@ -925,11 +1056,34 @@
           <!-- Torneios Gerenciados pelo Admin -->
           <div class="admin-section">
             <h3>Torneios Cadastrados</h3>
-            <div *ngIf="loadingTorneios" class="loading-state"><p>Carregando...</p></div>
-            <div *ngIf="!loadingTorneios && (torneiosAbertos.length + torneiosEmAndamento.length + torneiosEncerrados.length) === 0" class="admin-placeholder">
-              <p>Nenhum torneio cadastrado ainda. Clique em "Criar Novo Torneio" para começar.</p>
+            <div *ngIf="loadingTorneios" class="loading-state">
+              <p>Carregando...</p>
             </div>
-            <div *ngIf="!loadingTorneios && (torneiosAbertos.length + torneiosEmAndamento.length + torneiosEncerrados.length) > 0" class="table-container">
+            <div
+              *ngIf="
+                !loadingTorneios &&
+                torneiosAbertos.length +
+                  torneiosEmAndamento.length +
+                  torneiosEncerrados.length ===
+                  0
+              "
+              class="admin-placeholder"
+            >
+              <p>
+                Nenhum torneio cadastrado ainda. Clique em "Criar Novo Torneio"
+                para começar.
+              </p>
+            </div>
+            <div
+              *ngIf="
+                !loadingTorneios &&
+                torneiosAbertos.length +
+                  torneiosEmAndamento.length +
+                  torneiosEncerrados.length >
+                  0
+              "
+              class="table-container"
+            >
               <table class="stats-table">
                 <thead>
                   <tr>
@@ -944,27 +1098,59 @@
                 <tbody>
                   <tr *ngFor="let t of torneiosAbertos">
                     <td>{{ t.nome }}</td>
-                    <td><span class="status-badge status-open">Aberto</span></td>
+                    <td>
+                      <span class="status-badge status-open">Aberto</span>
+                    </td>
                     <td>{{ t.times?.length || 0 }}/{{ t.maxParticipantes }}</td>
                     <td>{{ formatDate(t.dataInicio) }}</td>
                     <td>{{ formatDate(t.dataFim) }}</td>
-                    <td><button class="btn-action btn-edit" (click)="verDetalhesTorneio(t)" title="Ver detalhes">👁️</button></td>
+                    <td>
+                      <button
+                        class="btn-action btn-edit"
+                        (click)="verDetalhesTorneio(t)"
+                        title="Ver detalhes"
+                      >
+                        👁️
+                      </button>
+                    </td>
                   </tr>
                   <tr *ngFor="let t of torneiosEmAndamento">
                     <td>{{ t.nome }}</td>
-                    <td><span class="status-badge status-progress">Em Andamento</span></td>
+                    <td>
+                      <span class="status-badge status-progress"
+                        >Em Andamento</span
+                      >
+                    </td>
                     <td>{{ t.times?.length || 0 }}/{{ t.maxParticipantes }}</td>
                     <td>{{ formatDate(t.dataInicio) }}</td>
                     <td>{{ formatDate(t.dataFim) }}</td>
-                    <td><button class="btn-action btn-edit" (click)="verDetalhesTorneio(t)" title="Ver detalhes">👁️</button></td>
+                    <td>
+                      <button
+                        class="btn-action btn-edit"
+                        (click)="verDetalhesTorneio(t)"
+                        title="Ver detalhes"
+                      >
+                        👁️
+                      </button>
+                    </td>
                   </tr>
                   <tr *ngFor="let t of torneiosEncerrados">
                     <td>{{ t.nome }}</td>
-                    <td><span class="status-badge status-closed">Encerrado</span></td>
+                    <td>
+                      <span class="status-badge status-closed">Encerrado</span>
+                    </td>
                     <td>{{ t.times?.length || 0 }}/{{ t.maxParticipantes }}</td>
                     <td>{{ formatDate(t.dataInicio) }}</td>
                     <td>{{ formatDate(t.dataFim) }}</td>
-                    <td><button class="btn-action btn-edit" (click)="verDetalhesTorneio(t)" title="Ver detalhes">👁️</button></td>
+                    <td>
+                      <button
+                        class="btn-action btn-edit"
+                        (click)="verDetalhesTorneio(t)"
+                        title="Ver detalhes"
+                      >
+                        👁️
+                      </button>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -1013,7 +1199,6 @@
               />
             </div>
           </div>
-
         </section>
 
         <!-- Datas -->
@@ -1087,7 +1272,6 @@
                 max="256"
               />
             </div>
-
           </div>
         </section>
 
@@ -1107,9 +1291,7 @@
             </div>
             <div class="concept-card">
               <h4>Validação</h4>
-              <p>
-                Campos obrigatórios e regras de datas do torneio/inscrição
-              </p>
+              <p>Campos obrigatórios e regras de datas do torneio/inscrição</p>
             </div>
             <div class="concept-card">
               <h4>Timestamps</h4>

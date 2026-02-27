@@ -54,6 +54,8 @@ export class HomeComponent implements OnInit {
   torneiosEncerrados: Torneio[] = [];
   loadingTorneios = true;
   errorTorneios = '';
+  searchTorneio = '';
+  filterStatus: 'ALL' | 'ABERTO' | 'EM_ANDAMENTO' | 'ENCERRADO' = 'ALL';
 
   // Treinadores (user management)
   treinadores: TreinadorUserDTO[] = [];
@@ -157,6 +159,35 @@ export class HomeComponent implements OnInit {
     this.torneiosEncerrados.sort(
       (a, b) => new Date(b.dataFim).getTime() - new Date(a.dataFim).getTime(),
     );
+  }
+
+  get torneiosAbertosFiltered(): Torneio[] {
+    return this.filterTorneios(this.torneiosAbertos);
+  }
+
+  get torneiosEmAndamentoFiltered(): Torneio[] {
+    return this.filterTorneios(this.torneiosEmAndamento);
+  }
+
+  get torneiosEncerradosFiltered(): Torneio[] {
+    return this.filterTorneios(this.torneiosEncerrados);
+  }
+
+  private filterTorneios(torneios: Torneio[]): Torneio[] {
+    return torneios.filter(torneio => {
+      const matchesSearch = this.searchTorneio.trim() === '' || 
+        torneio.nome.toLowerCase().includes(this.searchTorneio.toLowerCase());
+      return matchesSearch;
+    });
+  }
+
+  setFilterStatus(status: 'ALL' | 'ABERTO' | 'EM_ANDAMENTO' | 'ENCERRADO'): void {
+    this.filterStatus = status;
+  }
+
+  clearTorneioFilters(): void {
+    this.searchTorneio = '';
+    this.filterStatus = 'ALL';
   }
 
   // ─── User Management ─────────────────────────────────────────────────────────

@@ -4,15 +4,14 @@ import com.ufape.projetobanquinhobd.entities.Batalha;
 import com.ufape.projetobanquinhobd.entities.Time;
 import com.ufape.projetobanquinhobd.entities.Torneio;
 import com.ufape.projetobanquinhobd.services.BatalhaService;
-import com.ufape.projetobanquinhobd.services.TimeService;
 import com.ufape.projetobanquinhobd.services.TorneioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.ZoneId;
+import java.util.*;
 
 @Component
 public class BatalhaSeeder {
@@ -23,8 +22,7 @@ public class BatalhaSeeder {
     @Autowired
     private TorneioService torneioService;
 
-    @Autowired
-    private TimeService timeService;
+    private final Random random = new Random();
 
     @Transactional
     public void seed() {
@@ -36,145 +34,148 @@ public class BatalhaSeeder {
             return;
         }
 
-        List<Time> todosOsTimes = timeService.listarTodos();
-        if (todosOsTimes.size() < 4) {
-            System.out.println("⚠️ Necessários 4 times. Encontrados: " + todosOsTimes.size());
-            return;
-        }
+        System.out.println("✓ Encontrados " + torneios.size() + " torneios");
+        System.out.println();
 
-        System.out.println("✓ Encontrados " + torneios.size() + " torneios e " + todosOsTimes.size() + " times");
+        Date hoje = new Date();
+        int totalBatalhasCriadas = 0;
+        int torneiosProcessados = 0;
 
-        // Organizar times por treinador (ordem alfabética para previsibilidade)
-        List<Time> timesOrdenados = new ArrayList<>(todosOsTimes);
-        timesOrdenados.sort((t1, t2) -> t1.getNome().compareTo(t2.getNome()));
-
-        // Assumindo ordem: Time Campeão de Ash, Time Cascata de Misty, Time Elite de Gary, Time Pedra de Brock
-        Time timeAsh = timesOrdenados.get(0);
-        Time timeMisty = timesOrdenados.get(1);
-        Time timeGary = timesOrdenados.get(2);
-        Time timeBrock = timesOrdenados.get(3);
-
-        int batalhasCriadas = 0;
-
-        // Criar batalhas para cada torneio
         for (Torneio torneio : torneios) {
-            System.out.println("\n>>> Criando batalhas para: " + torneio.getNome());
+            torneiosProcessados++;
+            
+            // Determinar estado do torneio
+            String estado = determinarEstado(torneio, hoje);
+            int numTimes = torneio.getTimes().size();
+            
+            System.out.print("[" + torneiosProcessados + "/" + torneios.size() + "] " + 
+                           torneio.getNome() + " (" + estado + ", " + numTimes + " times)... ");
 
-            if (torneio.getNome().contains("Liga Kanto")) {
-                batalhasCriadas += criarBatalhasLigaKanto(torneio, timeAsh, timeMisty, timeGary, timeBrock);
-            } else if (torneio.getNome().contains("Copa dos Mestres")) {
-                batalhasCriadas += criarBatalhasCopaDosMestres(torneio, timeAsh, timeMisty, timeGary, timeBrock);
+            if (estado.equals("ABERTO")) {
+                System.out.println("⊘ Sem batalhas (aberto para inscrição)");
+                continue;
+            }
+
+            if (numTimes < 2) {
+                System.out.println("⚠ Times insuficientes");
+                continue;
+            }
+
+            try {
+                int batalhasCriadas = 0;
+                
+                if (estado.equals("ENCERRADO")) {
+                    // Criar TODAS as batalhas
+                    batalhasCriadas = criarBatalhasCompletas(torneio);
+                } else if (estado.equals("EM_ANDAMENTO")) {
+                    // Criar METADE das batalhas
+                    batalhasCriadas = criarBatalhasParciais(torneio);
+                }
+                
+                totalBatalhasCriadas += batalhasCriadas;
+                System.out.println("✓ " + batalhasCriadas + " batalhas");
+                
+            } catch (Exception e) {
+                System.out.println("✗ Erro: " + e.getMessage());
             }
         }
 
-        System.out.println("\n✓ " + batalhasCriadas + " batalhas criadas com sucesso!");
+        System.out.println();
+        System.out.println("✓ Total: " + totalBatalhasCriadas + " batalhas criadas!");
+        System.out.println("  - Torneios encerrados: todas as rodadas completas");
+        System.out.println("  - Torneios em andamento: apenas primeira rodada");
+        System.out.println("  - Torneios abertos: sem batalhas");
     }
 
-    private int criarBatalhasLigaKanto(Torneio torneio, Time timeAsh, Time timeMisty, 
-                                        Time timeGary, Time timeBrock) {
-        int count = 0;
-
-        // Rodada 1 - Semifinais (15/01/2026)
-        // Batalha 1: Ash vs Misty
-        Batalha semi1 = new Batalha(
-                1,
-                LocalDateTime.of(2026, 1, 15, 11, 0),
-                LocalDateTime.of(2026, 1, 15, 10, 0),
-                torneio
-        );
-        semi1.addTimeParticipante(timeAsh);
-        semi1.addTimeParticipante(timeMisty);
-        semi1.setTimeVencedor(timeAsh); // Ash vence
-        batalhaService.salvar(semi1);
-        count++;
-        System.out.println("  ✓ Rodada 1, Batalha 1: " + timeAsh.getNome() + " vs " + 
-                         timeMisty.getNome() + " → Vencedor: " + timeAsh.getNome());
-
-        // Batalha 2: Brock vs Gary
-        Batalha semi2 = new Batalha(
-                1,
-                LocalDateTime.of(2026, 1, 15, 15, 0),
-                LocalDateTime.of(2026, 1, 15, 14, 0),
-                torneio
-        );
-        semi2.addTimeParticipante(timeBrock);
-        semi2.addTimeParticipante(timeGary);
-        semi2.setTimeVencedor(timeGary); // Gary vence
-        batalhaService.salvar(semi2);
-        count++;
-        System.out.println("  ✓ Rodada 1, Batalha 2: " + timeBrock.getNome() + " vs " + 
-                         timeGary.getNome() + " → Vencedor: " + timeGary.getNome());
-
-        // Rodada 2 - Final (20/01/2026)
-        // Batalha 3: Ash vs Gary
-        Batalha finalBatalha = new Batalha(
-                2,
-                LocalDateTime.of(2026, 1, 20, 17, 0),
-                LocalDateTime.of(2026, 1, 20, 16, 0),
-                torneio
-        );
-        finalBatalha.addTimeParticipante(timeAsh);
-        finalBatalha.addTimeParticipante(timeGary);
-        finalBatalha.setTimeVencedor(timeAsh); // Ash vence o torneio
-        batalhaService.salvar(finalBatalha);
-        count++;
-        System.out.println("  ✓ Rodada 2 (FINAL): " + timeAsh.getNome() + " vs " + 
-                         timeGary.getNome() + " → CAMPEÃO: " + timeAsh.getNome());
-
-        return count;
+    private String determinarEstado(Torneio torneio, Date hoje) {
+        if (hoje.before(torneio.getDataEncerramentoInscricoes())) {
+            return "ABERTO";
+        } else if (hoje.after(torneio.getDataFim())) {
+            return "ENCERRADO";
+        } else {
+            return "EM_ANDAMENTO";
+        }
     }
 
-    private int criarBatalhasCopaDosMestres(Torneio torneio, Time timeAsh, Time timeMisty, 
-                                             Time timeGary, Time timeBrock) {
-        int count = 0;
+    private int criarBatalhasCompletas(Torneio torneio) {
+        List<Time> times = new ArrayList<>(torneio.getTimes());
+        Collections.shuffle(times);
+        
+        int numTimes = times.size();
+        int batalhasCriadas = 0;
+        
+        // Calcular número de rodadas (log2)
+        int numRodadas = (int) (Math.log(numTimes) / Math.log(2));
+        
+        LocalDateTime dataBase = torneio.getDataInicio().toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDateTime();
+        
+        List<Time> timesAtivos = new ArrayList<>(times);
+        
+        for (int rodada = 1; rodada <= numRodadas; rodada++) {
+            List<Time> vencedores = new ArrayList<>();
+            int batalhasPorRodada = timesAtivos.size() / 2;
+            
+            for (int i = 0; i < batalhasPorRodada; i++) {
+                Time time1 = timesAtivos.get(i * 2);
+                Time time2 = timesAtivos.get(i * 2 + 1);
+                
+                // Escolher vencedor aleatório
+                Time vencedor = random.nextBoolean() ? time1 : time2;
+                vencedores.add(vencedor);
+                
+                // Criar batalha
+                LocalDateTime horaBatalha = dataBase.plusDays(rodada * 2).plusHours(i * 2);
+                Batalha batalha = new Batalha(
+                        rodada,
+                        horaBatalha,
+                        horaBatalha.minusHours(1),
+                        torneio
+                );
+                batalha.addTimeParticipante(time1);
+                batalha.addTimeParticipante(time2);
+                batalha.setTimeVencedor(vencedor);
+                
+                batalhaService.salvar(batalha);
+                batalhasCriadas++;
+            }
+            
+            timesAtivos = vencedores;
+        }
+        
+        return batalhasCriadas;
+    }
 
-        // Rodada 1 - Semifinais (10/02/2026)
-        // Batalha 1: Ash vs Brock
-        Batalha semi1 = new Batalha(
-                1,
-                LocalDateTime.of(2026, 2, 10, 11, 0),
-                LocalDateTime.of(2026, 2, 10, 10, 0),
-                torneio
-        );
-        semi1.addTimeParticipante(timeAsh);
-        semi1.addTimeParticipante(timeBrock);
-        semi1.setTimeVencedor(timeBrock); // Brock vence
-        batalhaService.salvar(semi1);
-        count++;
-        System.out.println("  ✓ Rodada 1, Batalha 1: " + timeAsh.getNome() + " vs " + 
-                         timeBrock.getNome() + " → Vencedor: " + timeBrock.getNome());
-
-        // Batalha 2: Misty vs Gary
-        Batalha semi2 = new Batalha(
-                1,
-                LocalDateTime.of(2026, 2, 10, 15, 0),
-                LocalDateTime.of(2026, 2, 10, 14, 0),
-                torneio
-        );
-        semi2.addTimeParticipante(timeMisty);
-        semi2.addTimeParticipante(timeGary);
-        semi2.setTimeVencedor(timeMisty); // Misty vence
-        batalhaService.salvar(semi2);
-        count++;
-        System.out.println("  ✓ Rodada 1, Batalha 2: " + timeMisty.getNome() + " vs " + 
-                         timeGary.getNome() + " → Vencedor: " + timeMisty.getNome());
-
-        // Rodada 2 - Final (15/02/2026)
-        // Batalha 3: Brock vs Misty
-        Batalha finalBatalha = new Batalha(
-                2,
-                LocalDateTime.of(2026, 2, 15, 17, 0),
-                LocalDateTime.of(2026, 2, 15, 16, 0),
-                torneio
-        );
-        finalBatalha.addTimeParticipante(timeBrock);
-        finalBatalha.addTimeParticipante(timeMisty);
-        finalBatalha.setTimeVencedor(timeMisty); // Misty vence o torneio
-        batalhaService.salvar(finalBatalha);
-        count++;
-        System.out.println("  ✓ Rodada 2 (FINAL): " + timeBrock.getNome() + " vs " + 
-                         timeMisty.getNome() + " → CAMPEÃ: " + timeMisty.getNome());
-
-        return count;
+    private int criarBatalhasParciais(Torneio torneio) {
+        // Criar apenas a primeira rodada (metade das batalhas)
+        List<Time> times = new ArrayList<>(torneio.getTimes());
+        Collections.shuffle(times);
+        
+        int batalhasCriadas = 0;
+        int batalhasPorRodada = times.size() / 2;
+        
+        LocalDateTime dataBase = torneio.getDataInicio().toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDateTime();
+        
+        for (int i = 0; i < batalhasPorRodada; i++) {
+            Time time1 = times.get(i * 2);
+            Time time2 = times.get(i * 2 + 1);
+            
+            LocalDateTime horaBatalha = dataBase.plusHours(i * 2);
+            Batalha batalha = new Batalha(
+                    1, // Rodada 1
+                    horaBatalha,
+                    horaBatalha.minusHours(1),
+                    torneio
+            );
+            batalha.addTimeParticipante(time1);
+            batalha.addTimeParticipante(time2);
+            // Não definir vencedor ainda (batalha em andamento)
+            
+            batalhaService.salvar(batalha);
+            batalhasCriadas++;
+        }
+        
+        return batalhasCriadas;
     }
 }

@@ -1,9 +1,10 @@
 package com.ufape.projetobanquinhobd.seeder.ataques;
 
-import com.ufape.projetobanquinhobd.seeder.SeedConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
+
+import com.ufape.projetobanquinhobd.seeder.SeedConfiguration;
 
 public class SeedAtaqueRunner {
     
@@ -14,7 +15,7 @@ public class SeedAtaqueRunner {
         try (ConfigurableApplicationContext context = app.run(args)) {
             AtaqueSeeder seeder = context.getBean(AtaqueSeeder.class);
             
-            int limit = 50;
+            int limit = 151;
             
             System.out.println("\n╔══════════════════════════════════════╗");
             System.out.println("║   SEED DE ATAQUES - PokeAPI         ║");

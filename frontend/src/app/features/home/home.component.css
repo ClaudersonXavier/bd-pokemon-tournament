@@ -6,7 +6,8 @@
   box-sizing: border-box;
 }
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -18,7 +19,7 @@ body, html {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  font-family: 'Nunito', 'Segoe UI', sans-serif;
+  font-family: "Nunito", "Segoe UI", sans-serif;
   overflow: hidden;
 }
 
@@ -28,7 +29,7 @@ body, html {
   inset: 0;
   background-image:
     linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.06) 100%),
-    url('/images/city-pk.png');
+    url("/images/city-pk.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -39,7 +40,7 @@ body, html {
 .home-header {
   background: linear-gradient(135deg, #f8f8f3 0%, #f0f0eb 100%);
   border-bottom: 4px solid #1a1a1a;
-  box-shadow: 
+  box-shadow:
     0 8px 16px rgba(0, 0, 0, 0.25),
     0 4px 8px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
@@ -75,10 +76,10 @@ body, html {
 }
 
 .logo-text h1 {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 18px;
   color: #cc2200;
-  text-shadow: 
+  text-shadow:
     2px 2px 0 #9a1800,
     3px 3px 0 rgba(0, 0, 0, 0.2);
   margin: 0;
@@ -86,7 +87,7 @@ body, html {
 }
 
 .logo-text p {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 9px;
   color: #1a5fb4;
   margin: 2px 0 0;
@@ -101,20 +102,20 @@ body, html {
   background: linear-gradient(145deg, #ffffff, #f5f5f5);
   border: 3px solid #1a1a1a;
   border-radius: 8px;
-  box-shadow: 
+  box-shadow:
     4px 4px 0 #1a1a1a,
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .user-name {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 10px;
   color: #1a1a1a;
   letter-spacing: 0.5px;
 }
 
 .user-email {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 12px;
   color: #777;
   border-left: 2px solid #1a1a1a;
@@ -127,7 +128,7 @@ body, html {
   border: 2px solid #1a1a1a;
   border-radius: 6px;
   padding: 8px 12px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   letter-spacing: 1px;
   cursor: pointer;
@@ -157,6 +158,7 @@ body, html {
   margin: 0 auto;
   width: 100%;
   align-items: flex-start;
+  min-height: 0;
 }
 
 /* ---- SIDEBAR ---- */
@@ -168,7 +170,7 @@ body, html {
   border: 4px solid #1a1a1a;
   border-radius: 12px;
   padding: 16px 0;
-  box-shadow: 
+  box-shadow:
     6px 6px 0 #1a1a1a,
     0 12px 24px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
@@ -201,7 +203,7 @@ body, html {
   gap: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 10px;
   color: #1a1a1a;
   letter-spacing: 0.5px;
@@ -254,17 +256,48 @@ body, html {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
   border-radius: 12px;
+  padding: 8px 16px 16px 16px;
+  min-height: 0;
+  height: calc(100vh - 190px);
 }
 
 .tab-content {
   animation: fadeIn 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.tab-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.tab-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+}
+
+.tab-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(145deg, #cc2200, #ff4436);
+  border-radius: 5px;
+  border: 2px solid #9a1800;
+}
+
+.tab-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(145deg, #ff4436, #ff6b5e);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideUp {
@@ -279,7 +312,8 @@ body, html {
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -288,7 +322,8 @@ body, html {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -299,10 +334,9 @@ body, html {
 .content-card {
   background: linear-gradient(145deg, #f8f8f3, #f0f0eb);
   border: 4px solid #1a1a1a;
-  border-top: 6px solid #cc2200;
   border-radius: 12px;
   padding: 32px;
-  box-shadow: 
+  box-shadow:
     12px 12px 0 #1a1a1a,
     0 20px 48px rgba(0, 0, 0, 0.25),
     0 8px 16px rgba(0, 0, 0, 0.15),
@@ -310,6 +344,30 @@ body, html {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  height: fit-content;
+  max-height: none;
+}
+
+.content-header-fixed {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(145deg, #f8f8f3, #f0f0eb);
+  padding: 20px 20px 16px 20px;
+  margin: 0 0 16px 0;
+  border: 4px solid #1a1a1a;
+  border-top: 6px solid #cc2200;
+  border-radius: 12px;
+  box-shadow:
+    12px 12px 0 #1a1a1a,
+    0 8px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.content-scrollable {
+  flex: 1;
+  min-height: 0;
 }
 
 .content-header-row {
@@ -321,10 +379,10 @@ body, html {
 }
 
 .content-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 24px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 20px;
   color: #cc2200;
-  text-shadow: 
+  text-shadow:
     2px 2px 0 #9a1800,
     4px 4px 0 rgba(0, 0, 0, 0.2);
   margin: 0;
@@ -342,11 +400,11 @@ body, html {
 }
 
 .content-subtitle {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 9px;
   color: #777;
   letter-spacing: 0.5px;
-  margin: 8px 0 0;
+  margin: 6px 0 0;
 }
 
 .btn-manage-pokemons {
@@ -358,11 +416,13 @@ body, html {
   border: 3px solid #1a1a1a;
   border-radius: 12px;
   padding: 12px 16px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 11px;
   cursor: pointer;
   box-shadow: 0 6px 0 #1a1a1a;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease;
 }
 
 .btn-manage-pokemons img {
@@ -385,11 +445,13 @@ body, html {
   border: 3px solid #1a1a1a;
   border-radius: 12px;
   padding: 12px 16px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 11px;
   cursor: pointer;
   box-shadow: 0 6px 0 #1a1a1a;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease;
 }
 
 .btn-manage-times img {
@@ -415,7 +477,7 @@ body, html {
 .tournaments-error {
   text-align: center;
   padding: 40px 20px;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 16px;
   color: #666;
 }
@@ -431,18 +493,18 @@ body, html {
   border: 2px solid #0d47a1;
   border-radius: 8px;
   padding: 12px 24px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 
+  box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .btn-retry:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 6px 12px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
@@ -453,6 +515,120 @@ body, html {
   gap: 32px;
 }
 
+/* ---- FILTROS DE TORNEIOS ---- */
+.tournaments-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: linear-gradient(145deg, #ffffff, #f8f8f3);
+  border: 3px solid #1a1a1a;
+  border-radius: 12px;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.filter-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: white;
+  border: 3px solid #1a1a1a;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-icon {
+  font-size: 20px;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: "Nunito", sans-serif;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: transparent;
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.btn-clear-search {
+  background: #ff4436;
+  color: white;
+  border: 2px solid #cc2200;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.btn-clear-search:hover {
+  background: #cc2200;
+  transform: scale(1.1);
+}
+
+.filter-status {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.status-filter-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 16px;
+  background: linear-gradient(145deg, #ffffff, #f5f5f5);
+  border: 3px solid #1a1a1a;
+  border-radius: 8px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 9px;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.status-filter-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 5px 10px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.status-filter-btn.active {
+  background: linear-gradient(145deg, #1a5fb4, #1565c0);
+  color: white;
+  border-color: #0d47a1;
+  box-shadow:
+    0 5px 10px rgba(26, 95, 180, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.status-filter-btn.active:hover {
+  background: linear-gradient(145deg, #1565c0, #1976d2);
+}
+
 .tournament-section {
   display: flex;
   flex-direction: column;
@@ -460,7 +636,7 @@ body, html {
 }
 
 .tournament-section .section-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 14px;
   color: #1a1a1a;
   margin: 0;
@@ -475,11 +651,11 @@ body, html {
   gap: 8px;
   padding: 8px 16px;
   border-radius: 20px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 10px;
   font-weight: bold;
   letter-spacing: 0.5px;
-  box-shadow: 
+  box-shadow:
     0 3px 6px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
@@ -507,18 +683,20 @@ body, html {
   border: 3px solid #1a1a1a;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 
+  box-shadow:
     0 8px 16px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  position: relative;
+  z-index: 1;
 }
 
 .tournament-card:hover {
   transform: translateY(-4px);
-  box-shadow: 
+  box-shadow:
     0 12px 24px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
@@ -533,7 +711,7 @@ body, html {
 }
 
 .tournament-header h4 {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 12px;
   color: #1a1a1a;
   margin: 0;
@@ -544,7 +722,7 @@ body, html {
 .tournament-status {
   padding: 4px 12px;
   border-radius: 12px;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 11px;
   font-weight: bold;
   white-space: nowrap;
@@ -576,7 +754,7 @@ body, html {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 13px;
 }
 
@@ -601,11 +779,11 @@ body, html {
   padding: 10px 16px;
   border: 2px solid #1a1a1a;
   border-radius: 8px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 9px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 
+  box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
@@ -619,7 +797,7 @@ body, html {
 .btn-tournament.btn-primary:hover {
   background: linear-gradient(145deg, #e63900, #ff4500);
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 6px 12px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
@@ -652,7 +830,7 @@ body, html {
 .btn-tournament.btn-secondary:hover {
   background: linear-gradient(145deg, #1976d2, #2196f3);
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 6px 12px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
@@ -670,7 +848,7 @@ body, html {
   gap: 12px;
   min-height: 200px;
   justify-content: center;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 4px rgba(26, 95, 180, 0.1),
     0 4px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
@@ -681,7 +859,7 @@ body, html {
 .admin-placeholder:hover {
   background: linear-gradient(145deg, #f0f5ff, #e8f0fe);
   border-color: #cc2200;
-  box-shadow: 
+  box-shadow:
     inset 0 2px 4px rgba(204, 34, 0, 0.1),
     0 6px 12px rgba(0, 0, 0, 0.12);
 }
@@ -703,7 +881,7 @@ body, html {
 }
 
 .tournament-placeholder p {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 12px;
   color: #1a1a1a;
   margin: 0;
@@ -711,7 +889,7 @@ body, html {
 }
 
 .tournament-placeholder small {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 11px;
   color: #999;
 }
@@ -732,7 +910,7 @@ body, html {
   border: 3px solid #1a5fb4;
   border-top: 5px solid #cc2200;
   border-radius: 8px;
-  box-shadow: 
+  box-shadow:
     4px 4px 0 #1a5fb4,
     0 8px 16px rgba(0, 0, 0, 0.12);
   animation: slideUp 0.5s ease;
@@ -747,7 +925,7 @@ body, html {
   background: linear-gradient(145deg, #e3f2fd, #bbdefb);
   border: 3px solid #1a5fb4;
   border-radius: 8px;
-  box-shadow: 
+  box-shadow:
     2px 2px 0 #1a5fb4,
     0 4px 8px rgba(0, 0, 0, 0.1);
   animation: slideUp 0.6s ease 0.1s backwards;
@@ -779,7 +957,7 @@ body, html {
 
 .trainer-picker-title {
   margin: 0 0 12px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 10px;
   color: #1a1a1a;
   letter-spacing: 0.6px;
@@ -836,7 +1014,7 @@ body, html {
 }
 
 .profile-info h3 {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 16px;
   color: #1a1a1a;
   margin: 0;
@@ -844,14 +1022,14 @@ body, html {
 }
 
 .profile-info p {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 14px;
   color: #777;
   margin: 0;
 }
 
 .profile-id {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   color: #999;
   letter-spacing: 1px;
@@ -873,16 +1051,22 @@ body, html {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 
+  box-shadow:
     4px 4px 0 #cc2200,
     0 8px 16px rgba(0, 0, 0, 0.1);
   animation: slideUp 0.5s ease forwards;
   opacity: 0;
 }
 
-.stat-item:nth-child(1) { animation-delay: 0.1s; }
-.stat-item:nth-child(2) { animation-delay: 0.2s; }
-.stat-item:nth-child(3) { animation-delay: 0.3s; }
+.stat-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.stat-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.stat-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
 
 .stat-icon {
   font-size: 56px;
@@ -896,19 +1080,25 @@ body, html {
   image-rendering: pixelated;
 }
 
-.stat-item:nth-child(1) .stat-icon { animation-delay: 0.1s; }
-.stat-item:nth-child(2) .stat-icon { animation-delay: 0.2s; }
-.stat-item:nth-child(3) .stat-icon { animation-delay: 0.3s; }
+.stat-item:nth-child(1) .stat-icon {
+  animation-delay: 0.1s;
+}
+.stat-item:nth-child(2) .stat-icon {
+  animation-delay: 0.2s;
+}
+.stat-item:nth-child(3) .stat-icon {
+  animation-delay: 0.3s;
+}
 
 .stat-value {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 28px;
   color: #cc2200;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .stat-label {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 9px;
   color: #1a1a1a;
   letter-spacing: 0.5px;
@@ -916,7 +1106,8 @@ body, html {
 }
 
 .profile-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
@@ -927,12 +1118,12 @@ body, html {
   color: #fff;
   border: 3px solid #1a1a1a;
   border-radius: 8px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 9px;
   letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 
+  box-shadow:
     3px 3px 0 #1a1a1a,
     0 6px 12px rgba(0, 0, 0, 0.15);
   position: relative;
@@ -946,12 +1137,12 @@ body, html {
   color: #fff;
   border: 3px solid #1a1a1a;
   border-radius: 8px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 9px;
   letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 
+  box-shadow:
     3px 3px 0 #1a1a1a,
     0 6px 12px rgba(0, 0, 0, 0.15);
   position: relative;
@@ -960,7 +1151,7 @@ body, html {
 
 .btn-edit:hover {
   background: linear-gradient(145deg, #ffa726, #fb8c00, #ef6c00);
-  box-shadow: 
+  box-shadow:
     5px 5px 0 #1a1a1a,
     0 8px 16px rgba(0, 0, 0, 0.2);
   transform: scale(1.05) translateY(-2px);
@@ -968,7 +1159,7 @@ body, html {
 
 .btn-change-password:hover {
   background: linear-gradient(145deg, #42a5f5, #1e88e5, #1565c0);
-  box-shadow: 
+  box-shadow:
     5px 5px 0 #1a1a1a,
     0 8px 16px rgba(0, 0, 0, 0.2);
   transform: scale(1.05) translateY(-2px);
@@ -994,12 +1185,12 @@ body, html {
   color: #fff;
   border: 3px solid #1a1a1a;
   border-radius: 8px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 10px;
   letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 
+  box-shadow:
     4px 4px 0 #900000,
     0 8px 16px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -1011,7 +1202,7 @@ body, html {
 
 .btn-admin:hover {
   background: linear-gradient(145deg, #ff9999, #ee3333);
-  box-shadow: 
+  box-shadow:
     6px 6px 0 #cc0000,
     0 10px 20px rgba(0, 0, 0, 0.25);
   transform: scale(1.08) translateY(-3px);
@@ -1040,7 +1231,7 @@ body, html {
 }
 
 .admin-section h3 {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 12px;
   color: #1a1a1a;
   margin: 0 0 16px;
@@ -1060,7 +1251,7 @@ body, html {
 }
 
 .admin-placeholder p {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 11px;
   color: #999;
   margin: 0;
@@ -1074,7 +1265,7 @@ body, html {
   padding: 16px 24px;
   text-align: center;
   border-top: 4px solid #1a1a1a;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   letter-spacing: 1px;
 }
@@ -1197,7 +1388,9 @@ body, html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation: none !important;
     transition-duration: 0.01ms !important;
   }
@@ -1228,10 +1421,29 @@ body, html {
   max-width: 1400px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 
+  box-shadow:
     12px 12px 0 #1a1a1a,
     0 20px 48px rgba(0, 0, 0, 0.4);
   animation: slideUp 0.4s ease;
+}
+
+.statistics-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.statistics-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+}
+
+.statistics-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(145deg, #cc2200, #ff4436);
+  border-radius: 5px;
+  border: 2px solid #9a1800;
+}
+
+.statistics-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(145deg, #ff4436, #ff6b5e);
 }
 
 .statistics-header {
@@ -1247,7 +1459,7 @@ body, html {
 }
 
 .statistics-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 18px;
   color: #ffffff;
   margin: 0;
@@ -1300,7 +1512,7 @@ body, html {
 }
 
 .section-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 14px;
   color: #cc2200;
   margin: 0 0 8px;
@@ -1308,7 +1520,7 @@ body, html {
 }
 
 .section-subtitle {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 11px;
   color: #1a5fb4;
   margin: 0 0 20px;
@@ -1361,14 +1573,14 @@ body, html {
 }
 
 .stat-card-value {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 24px;
   color: #1a1a1a;
   line-height: 1;
 }
 
 .stat-card-label {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   color: #666;
   letter-spacing: 0.5px;
@@ -1385,7 +1597,7 @@ body, html {
 .stats-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 13px;
 }
 
@@ -1397,7 +1609,7 @@ body, html {
 .stats-table th {
   padding: 12px 16px;
   text-align: left;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 9px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
@@ -1424,7 +1636,7 @@ body, html {
 
 /* Table Specific Styles */
 .rank-badge {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 12px;
   color: #1a5fb4;
   font-weight: bold;
@@ -1477,7 +1689,7 @@ body, html {
 .win-rate-text {
   position: relative;
   z-index: 1;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   color: #1a1a1a;
   display: flex;
@@ -1510,7 +1722,7 @@ body, html {
 .growth-text {
   position: relative;
   z-index: 1;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   color: #1a1a1a;
   display: flex;
@@ -1526,7 +1738,7 @@ body, html {
   padding: 4px 12px;
   border: 2px solid #1a1a1a;
   border-radius: 4px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   background: linear-gradient(145deg, #ffd700, #ffa500);
   box-shadow: 1px 1px 0 #1a1a1a;
@@ -1553,7 +1765,7 @@ body, html {
   padding: 4px 12px;
   border: 2px solid #1a1a1a;
   border-radius: 4px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   box-shadow: 1px 1px 0 #1a1a1a;
 }
@@ -1602,7 +1814,7 @@ body, html {
 }
 
 .concept-name {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   color: #1a1a1a;
   letter-spacing: 0.5px;
@@ -1670,10 +1882,29 @@ body, html {
   max-width: 1400px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 
+  box-shadow:
     12px 12px 0 #1a1a1a,
     0 20px 48px rgba(0, 0, 0, 0.4);
   animation: slideUp 0.4s ease;
+}
+
+.users-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.users-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+}
+
+.users-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(145deg, #1a5fb4, #1565c0);
+  border-radius: 5px;
+  border: 2px solid #0d47a1;
+}
+
+.users-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(145deg, #1565c0, #1976d2);
 }
 
 .users-header {
@@ -1689,7 +1920,7 @@ body, html {
 }
 
 .users-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 18px;
   color: #ffffff;
   margin: 0;
@@ -1771,7 +2002,7 @@ body, html {
 }
 
 .filter-label {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   color: #1a1a1a;
   letter-spacing: 0.5px;
@@ -1783,7 +2014,7 @@ body, html {
   padding: 10px 12px;
   border: 3px solid #1a1a1a;
   border-radius: 6px;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 14px;
   background: #ffffff;
   box-shadow: 2px 2px 0 #1a1a1a;
@@ -1803,7 +2034,7 @@ body, html {
   background: linear-gradient(145deg, #ffd700, #ffa500);
   border: 3px solid #1a1a1a;
   border-radius: 6px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   cursor: pointer;
   box-shadow: 2px 2px 0 #1a1a1a;
@@ -1824,7 +2055,7 @@ body, html {
 
 /* Users Table Specific */
 .users-table .user-id {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 10px;
   color: #1a5fb4;
   font-weight: bold;
@@ -1850,7 +2081,7 @@ body, html {
   padding: 4px 12px;
   border: 2px solid #1a1a1a;
   border-radius: 4px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   background: linear-gradient(145deg, #e3f2fd, #bbdefb);
   color: #1a5fb4;
@@ -1868,7 +2099,7 @@ body, html {
 }
 
 .win-rate-simple {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 10px;
   color: #4daf50;
   font-weight: bold;
@@ -1943,7 +2174,7 @@ body, html {
   color: #ffffff;
   border: 3px solid #1a1a1a;
   border-radius: 6px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   cursor: pointer;
   box-shadow: 2px 2px 0 #1a1a1a;
@@ -1963,7 +2194,7 @@ body, html {
 }
 
 .page-info {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 10px;
   color: #1a1a1a;
   letter-spacing: 0.5px;
@@ -1988,7 +2219,7 @@ body, html {
   border-radius: 12px;
   width: 100%;
   max-width: 600px;
-  box-shadow: 
+  box-shadow:
     8px 8px 0 #1a1a1a,
     0 12px 24px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease;
@@ -2008,7 +2239,7 @@ body, html {
 }
 
 .modal-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 14px;
   color: #ffffff;
   margin: 0;
@@ -2039,7 +2270,7 @@ body, html {
 }
 
 .modal-subtitle {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 11px;
   color: #1a5fb4;
   margin: 0 0 20px;
@@ -2052,7 +2283,7 @@ body, html {
 
 .form-label {
   display: block;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   color: #1a1a1a;
   margin-bottom: 8px;
@@ -2066,7 +2297,7 @@ body, html {
   padding: 10px 12px;
   border: 3px solid #1a1a1a;
   border-radius: 6px;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 14px;
   background: #ffffff;
   box-shadow: 2px 2px 0 #1a1a1a;
@@ -2088,7 +2319,7 @@ body, html {
 }
 
 .confirm-message {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 14px;
   color: #1a1a1a;
   margin: 0 0 16px;
@@ -2096,7 +2327,7 @@ body, html {
 }
 
 .confirm-warning {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 9px;
   color: #cc2200;
   background: rgba(204, 34, 0, 0.1);
@@ -2119,7 +2350,7 @@ body, html {
   padding: 10px 20px;
   border: 3px solid #1a1a1a;
   border-radius: 6px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   cursor: pointer;
   box-shadow: 2px 2px 0 #1a1a1a;
@@ -2219,10 +2450,29 @@ body, html {
   max-width: 1200px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 
+  box-shadow:
     12px 12px 0 #1a1a1a,
     0 20px 48px rgba(0, 0, 0, 0.4);
   animation: slideUp 0.4s ease;
+}
+
+.tournament-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.tournament-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+}
+
+.tournament-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(145deg, #4daf50, #339933);
+  border-radius: 5px;
+  border: 2px solid #2e7d32;
+}
+
+.tournament-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(145deg, #66bb6a, #4daf50);
 }
 
 .tournament-header {
@@ -2238,7 +2488,7 @@ body, html {
 }
 
 .tournament-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 18px;
   color: #ffffff;
   margin: 0;
@@ -2282,7 +2532,7 @@ body, html {
 }
 
 .tournament-subtitle {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 11px;
   color: #4daf50;
   margin: 0;
@@ -2303,7 +2553,7 @@ body, html {
 }
 
 .section-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 12px;
   color: #1a1a1a;
   margin: 0 0 20px;
@@ -2331,7 +2581,7 @@ body, html {
   padding: 10px 12px;
   border: 3px solid #1a1a1a;
   border-radius: 6px;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 14px;
   background: #ffffff;
   box-shadow: 2px 2px 0 #1a1a1a;
@@ -2348,7 +2598,7 @@ body, html {
 
 .form-hint {
   display: block;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 10px;
   color: #666;
   margin-top: 4px;
@@ -2375,7 +2625,7 @@ body, html {
 }
 
 .concept-card h4 {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 9px;
   color: #1a5fb4;
   margin: 0 0 8px;
@@ -2383,7 +2633,7 @@ body, html {
 }
 
 .concept-card p {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   color: #1a1a1a;
   margin: 0;
@@ -2472,10 +2722,29 @@ body, html {
   max-width: 700px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 
+  box-shadow:
     12px 12px 0 #1a1a1a,
     0 20px 48px rgba(0, 0, 0, 0.4);
   animation: slideUp 0.4s ease;
+}
+
+.password-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.password-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+}
+
+.password-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(145deg, #2196f3, #1976d2);
+  border-radius: 5px;
+  border: 2px solid #0d47a1;
+}
+
+.password-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(145deg, #42a5f5, #2196f3);
 }
 
 .password-header {
@@ -2491,7 +2760,7 @@ body, html {
 }
 
 .password-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 16px;
   color: #ffffff;
   margin: 0;
@@ -2526,7 +2795,7 @@ body, html {
 }
 
 .password-subtitle {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 11px;
   color: #2196f3;
   margin: 0;
@@ -2540,7 +2809,7 @@ body, html {
 
 /* Strength Indicator */
 .strength-indicator {
-  font-family: 'Press Start 2P', monospace;
+  font-family: "Press Start 2P", monospace;
   font-size: 8px;
   padding: 2px 8px;
   border-radius: 4px;
@@ -2597,7 +2866,7 @@ body, html {
 }
 
 .security-list li {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 13px;
   color: #666;
   padding: 10px 12px;
@@ -2610,7 +2879,7 @@ body, html {
 }
 
 .security-list li::before {
-  content: '○';
+  content: "○";
   position: absolute;
   left: 12px;
   font-size: 16px;
@@ -2626,7 +2895,7 @@ body, html {
 }
 
 .security-list li.requirement-met::before {
-  content: '✓';
+  content: "✓";
   color: #4daf50;
   font-weight: bold;
 }
