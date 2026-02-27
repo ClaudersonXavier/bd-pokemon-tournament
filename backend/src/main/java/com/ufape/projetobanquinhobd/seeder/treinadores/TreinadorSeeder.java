@@ -1,14 +1,16 @@
 package com.ufape.projetobanquinhobd.seeder.treinadores;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.ufape.projetobanquinhobd.entities.CredenciaisUsuario;
 import com.ufape.projetobanquinhobd.entities.Treinador;
 import com.ufape.projetobanquinhobd.repositories.TreinadorRepository;
 import com.ufape.projetobanquinhobd.services.TreinadorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Component
 public class TreinadorSeeder {
@@ -19,8 +21,8 @@ public class TreinadorSeeder {
     @Autowired
     private TreinadorRepository treinadorRepository;
     
-    // Treinadores icônicos do universo Pokémon
-    private static final List<TreinadorSeedData> TREINADORES = Arrays.asList(
+    // Treinadores mockados manualmente (NÃO REMOVER!)
+    private static final List<TreinadorSeedData> TREINADORES_MOCKADOS = Arrays.asList(
         new TreinadorSeedData("Admin", "admin@pokemon.com", "123456"),
         new TreinadorSeedData("Ash Ketchum", "ash@pokemon.com", "ash123"),
         new TreinadorSeedData("Misty", "misty@pokemon.com", "misty123"),
@@ -28,17 +30,60 @@ public class TreinadorSeeder {
         new TreinadorSeedData("Gary Oak", "gary@pokemon.com", "gary123")
     );
     
+    // Nomes para gerar treinadores adicionais (personagens do universo Pokémon)
+    private static final String[] NOMES_ADICIONAIS = {
+        "Lance", "Cynthia", "Steven Stone", "Wallace", "Diantha", "Leon",
+        "Iris", "Red", "Blue", "Green", "Gold", "Crystal", "Ruby", "Sapphire",
+        "Dawn", "May", "Serena", "Clemont", "Cilan", "Tracey", "Paul",
+        "Giovanni", "Archie", "Maxie", "Cyrus", "Ghetsis", "Lysandre",
+        "Erika", "Sabrina", "Lt. Surge", "Blaine", "Koga", "Janine",
+        "Whitney", "Morty", "Jasmine", "Pryce", "Clair", "Chuck",
+        "Roxanne", "Brawly", "Wattson", "Flannery", "Norman", "Winona", "Tate", "Liza",
+        "Roark", "Gardenia", "Maylene", "Crasher Wake", "Fantina", "Byron", "Candice", "Volkner",
+        "Lenora", "Burgh", "Elesa", "Clay", "Skyla", "Drayden", "Marlon",
+        "Viola", "Grant", "Korrina", "Ramos", "Valerie", "Olympia", "Wulfric",
+        "Milo", "Nessa", "Kabu", "Bea", "Allister", "Opal", "Gordie", "Melony", "Piers", "Raihan", "Clau"
+    };
+    
+    private static List<TreinadorSeedData> gerarTodosOsTreinadores() {
+        List<TreinadorSeedData> todos = new ArrayList<>(TREINADORES_MOCKADOS);
+        
+        // Adicionar 45 treinadores gerados para totalizar 50
+        int quantidade = 51 - TREINADORES_MOCKADOS.size();
+        
+        for (int i = 0; i < quantidade && i < NOMES_ADICIONAIS.length; i++) {
+            String nome = NOMES_ADICIONAIS[i];
+            String email = nome.toLowerCase()
+                    .replace(" ", "")
+                    .replace(".", "")
+                    + "@pokemon.com";
+            String senha = "senha123";
+            
+            todos.add(new TreinadorSeedData(nome, email, senha));
+        }
+        
+        return todos;
+    }
+    
+    private static final List<TreinadorSeedData> TREINADORES = gerarTodosOsTreinadores();
+    
     public void seed() {
         System.out.println("=== Iniciando seed de Treinadores ===");
-        System.out.println("Criando " + TREINADORES.size() + " treinadores...");
+        System.out.println("Total de treinadores a criar: " + TREINADORES.size());
+        System.out.println("  - Mockados manualmente: " + TREINADORES_MOCKADOS.size());
+        System.out.println("  - Gerados automaticamente: " + (TREINADORES.size() - TREINADORES_MOCKADOS.size()));
+        System.out.println();
         
         int count = 0;
         int salvos = 0;
+        int atualizados = 0;
         
         for (TreinadorSeedData treinadorSeedData : TREINADORES) {
             try {
                 count++;
-                System.out.println("[" + count + "/" + TREINADORES.size() + "] Processando: " + treinadorSeedData.nome);
+                System.out.print("[" + count + "/" + TREINADORES.size() + "] " + treinadorSeedData.nome + "... ");
+                
+                boolean existe = treinadorRepository.findByCredenciaisEmail(treinadorSeedData.email).isPresent();
                 
                 Treinador treinador = treinadorRepository
                         .findByCredenciaisEmail(treinadorSeedData.email)
@@ -60,17 +105,24 @@ public class TreinadorSeeder {
 
                 treinadorService.salvar(treinador);
                 salvos++;
-                System.out.println("  ✓ Salvo com sucesso!");
+                
+                if (existe) {
+                    atualizados++;
+                    System.out.println("✓ Atualizado");
+                } else {
+                    System.out.println("✓ Criado");
+                }
                 
             } catch (Exception e) {
-                System.err.println("  ✗ Erro ao processar treinador " + treinadorSeedData.nome + ": " + e.getMessage());
+                System.err.println("✗ Erro: " + e.getMessage());
                 e.printStackTrace();
             }
         }
         
+        System.out.println();
         System.out.println("=== Seed de Treinadores finalizado! ===");
         System.out.println("Total processado: " + count + " treinadores");
-        System.out.println("Total salvos: " + salvos + " treinadores");
+        System.out.println("Criados: " + (salvos - atualizados) + " | Atualizados: " + atualizados);
     }
 
     private static class TreinadorSeedData {

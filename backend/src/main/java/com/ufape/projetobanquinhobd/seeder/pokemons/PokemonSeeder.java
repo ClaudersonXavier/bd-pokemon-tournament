@@ -66,14 +66,15 @@ public class PokemonSeeder {
             return;
         }
         
-        System.out.println("Encontrados " + treinadores.size() + " treinadores");
-        System.out.println("Encontradas " + especies.size() + " espécies disponíveis");
-        System.out.println("Encontrados " + ataques.size() + " ataques disponíveis");
+        System.out.println("✓ Encontrados " + treinadores.size() + " treinadores (não-admin)");
+        System.out.println("✓ Encontradas " + especies.size() + " espécies disponíveis");
+        System.out.println("✓ Encontrados " + ataques.size() + " ataques disponíveis");
+        System.out.println("✓ Meta: " + POKEMONS_POR_TREINADOR + " pokémons por treinador");
         System.out.println();
         
-        int totalPokemons = treinadores.size() * POKEMONS_POR_TREINADOR;
-        int count = 0;
-        int salvos = 0;
+        int totalCriados = 0;
+        int totalExistentes = 0;
+        int treinadoresProcessados = 0;
         
         // Embaralhar espécies para distribuição aleatória
         List<Especie> especiesEmbaralhadas = new ArrayList<>(especies);
@@ -82,12 +83,25 @@ public class PokemonSeeder {
         int especieIndex = 0;
         
         for (Treinador treinador : treinadores) {
-            System.out.println(">>> Criando pokémons para: " + treinador.getNome());
+            treinadoresProcessados++;
             
-            for (int i = 1; i <= POKEMONS_POR_TREINADOR; i++) {
+            // Verificar quantos pokémons o treinador já tem
+            int pokemonsExistentes = treinador.getPokemons() != null ? treinador.getPokemons().size() : 0;
+            int pokemonsFaltantes = POKEMONS_POR_TREINADOR - pokemonsExistentes;
+            
+            if (pokemonsFaltantes <= 0) {
+                System.out.println("[" + treinadoresProcessados + "/" + treinadores.size() + "] " + 
+                                 treinador.getNome() + " - ✓ Já possui " + pokemonsExistentes + " pokémons");
+                totalExistentes += pokemonsExistentes;
+                continue;
+            }
+            
+            System.out.println("[" + treinadoresProcessados + "/" + treinadores.size() + "] " + 
+                             treinador.getNome() + " - Criando " + pokemonsFaltantes + " pokémon(s)...");
+            totalExistentes += pokemonsExistentes;
+            
+            for (int i = pokemonsExistentes + 1; i <= POKEMONS_POR_TREINADOR; i++) {
                 try {
-                    count++;
-                    
                     // Pegar próxima espécie (com wraparound)
                     Especie especie = especiesEmbaralhadas.get(especieIndex % especiesEmbaralhadas.size());
                     especieIndex++;
@@ -95,7 +109,8 @@ public class PokemonSeeder {
                     // Gerar apelido único
                     String apelido = gerarApelido(especie, treinador, i);
                     
-                    System.out.println("[" + count + "/" + totalPokemons + "] Criando: " + apelido + " (" + especie.getNome() + ")");
+                    System.out.print("  [" + i + "/" + POKEMONS_POR_TREINADOR + "] " + 
+                                   apelido + " (" + especie.getNome() + ")... ");
                     
                     // Criar pokémon
                     Pokemon pokemon = new Pokemon(apelido, especie, treinador);
@@ -105,7 +120,6 @@ public class PokemonSeeder {
                     List<Ataque> ataquesCompativeis = buscarAtaquesCompativeis(especie, ataques);
                     
                     if (ataquesCompativeis.isEmpty()) {
-                        System.out.println("  ⚠ Nenhum ataque compatível encontrado, usando ataques aleatórios");
                         ataquesCompativeis = new ArrayList<>(ataques);
                     }
                     
@@ -118,30 +132,33 @@ public class PokemonSeeder {
                         ataquesAdicionados++;
                     }
                     
-                    System.out.println("  - Ataques: " + pokemon.getAtaques().stream()
-                            .map(Ataque::getNome)
-                            .collect(Collectors.joining(", ")));
-                    
                     // Salvar
                     pokemonService.salvar(pokemon);
                     treinador.addPokemon(pokemon);
-                    treinadorService.salvar(treinador);
                     
-                    salvos++;
-                    System.out.println("  ✓ Salvo com sucesso!");
+                    totalCriados++;
+                    System.out.println("✓");
                     
                 } catch (Exception e) {
-                    System.err.println("  ✗ Erro ao criar pokémon: " + e.getMessage());
-                    e.printStackTrace();
+                    System.err.println("✗ Erro: " + e.getMessage());
                 }
             }
             
-            System.out.println();
+            // Salvar treinador após adicionar todos os pokémons
+            try {
+                treinadorService.salvar(treinador);
+            } catch (Exception e) {
+                System.err.println("  ✗ Erro ao salvar treinador: " + e.getMessage());
+            }
         }
         
+        System.out.println();
         System.out.println("=== Seed de Pokémons finalizado! ===");
-        System.out.println("Total processado: " + count + " pokémons");
-        System.out.println("Total salvos: " + salvos + " pokémons");
+        System.out.println("Total de treinadores processados: " + treinadoresProcessados);
+        System.out.println("Pokémons existentes: " + totalExistentes);
+        System.out.println("Pokémons criados: " + totalCriados);
+        System.out.println("Total final: " + (totalExistentes + totalCriados) + " pokémons");
+        System.out.println("Meta: " + (treinadores.size() * POKEMONS_POR_TREINADOR) + " pokémons");
     }
     
     /**

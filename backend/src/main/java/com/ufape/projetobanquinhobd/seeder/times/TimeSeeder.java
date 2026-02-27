@@ -44,22 +44,34 @@ public class TimeSeeder {
             return;
         }
         
-        System.out.println("Encontrados " + treinadores.size() + " treinadores");
-        System.out.println("Criando 1 time para cada treinador...");
+        System.out.println("✓ Encontrados " + treinadores.size() + " treinadores (não-admin)");
+        System.out.println("✓ Meta: 1 time por treinador");
         System.out.println();
         
-        int count = 0;
-        int salvos = 0;
+        int criados = 0;
+        int jaExistiam = 0;
+        int processados = 0;
         
         for (Treinador treinador : treinadores) {
             try {
-                count++;
+                processados++;
+                
+                // Verificar se o treinador já tem time
+                if (!treinador.getTimes().isEmpty()) {
+                    System.out.println("[" + processados + "/" + treinadores.size() + "] " + 
+                                     treinador.getNome() + " - ✓ Já possui time");
+                    jaExistiam++;
+                    continue;
+                }
                 
                 // Gerar nome do time
                 String sufixo = SUFIXOS_TIMES.getOrDefault(treinador.getNome(), "Desafiante");
                 String nomeTime = "Time " + sufixo + " de " + treinador.getNome().split(" ")[0];
                 
-                System.out.println("[" + count + "/" + treinadores.size() + "] Criando: " + nomeTime);
+                System.out.print("[" + processados + "/" + treinadores.size() + "] " + 
+                               treinador.getNome() + " - Criando: " + nomeTime + "... ");
+                System.out.print("[" + processados + "/" + treinadores.size() + "] " + 
+                               treinador.getNome() + " - Criando: " + nomeTime + "... ");
                 
                 // Criar time
                 Time time = new Time(nomeTime, treinador);
@@ -67,24 +79,11 @@ public class TimeSeeder {
                 // Buscar pokémons do treinador
                 Set<Pokemon> pokemonsDoTreinador = treinador.getPokemons();
                 
-                if (pokemonsDoTreinador.isEmpty()) {
-                    System.out.println("  ⚠ Treinador não possui pokémons, criando time vazio");
-                } else {
-                    System.out.println("  - Adicionando " + pokemonsDoTreinador.size() + " pokémons ao time");
-                    
-                    int pokemonCount = 0;
+                if (!pokemonsDoTreinador.isEmpty()) {
                     for (Pokemon pokemon : pokemonsDoTreinador) {
                         time.addPokemon(pokemon);
                         pokemon.addTime(time);
-                        pokemonCount++;
                     }
-                    
-                    System.out.println("  - Pokémons: " + pokemonsDoTreinador.stream()
-                            .map(Pokemon::getApelido)
-                            .limit(3)
-                            .reduce((a, b) -> a + ", " + b)
-                            .orElse("") + 
-                            (pokemonsDoTreinador.size() > 3 ? "..." : ""));
                 }
                 
                 // Salvar time
@@ -92,19 +91,19 @@ public class TimeSeeder {
                 treinador.addTime(time);
                 treinadorService.salvar(treinador);
                 
-                salvos++;
-                System.out.println("  ✓ Salvo com sucesso!");
+                criados++;
+                System.out.println("✓ (" + pokemonsDoTreinador.size() + " pokémons)");
                 
             } catch (Exception e) {
-                System.err.println("  ✗ Erro ao criar time: " + e.getMessage());
-                e.printStackTrace();
+                System.err.println("✗ Erro: " + e.getMessage());
             }
-            
-            System.out.println();
         }
         
+        System.out.println();
         System.out.println("=== Seed de Times finalizado! ===");
-        System.out.println("Total processado: " + count + " times");
-        System.out.println("Total salvos: " + salvos + " times");
+        System.out.println("Total de treinadores processados: " + processados);
+        System.out.println("Times já existentes: " + jaExistiam);
+        System.out.println("Times criados: " + criados);
+        System.out.println("Total final: " + (jaExistiam + criados) + " times");
     }
 }
