@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Torneio, Batalha } from '../models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TorneioService {
   private apiUrl = 'http://localhost:8080/api/torneios';
@@ -59,5 +59,35 @@ export class TorneioService {
 
   deletarBatalha(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/batalhas/${id}`);
+  }
+
+  // Definir vencedor de uma batalha
+  definirVencedor(batalhaId: number, timeId: number): Observable<Batalha> {
+    return this.http.put<Batalha>(
+      `${this.apiUrl}/batalhas/${batalhaId}/vencedor/${timeId}`,
+      {},
+    );
+  }
+
+  // Gerar batalhas da próxima rodada
+  gerarProximaRodada(
+    torneioId: number,
+    rodadaAtual: number,
+    random: boolean = false,
+  ): Observable<Batalha[]> {
+    return this.http.post<Batalha[]>(
+      `${this.apiUrl}/${torneioId}/gerar-proxima-rodada?rodadaAtual=${rodadaAtual}&random=${random}`,
+      {},
+    );
+  }
+
+  // Verificar se todas batalhas da rodada têm vencedor
+  verificarRodadaCompleta(
+    torneioId: number,
+    rodada: number,
+  ): Observable<boolean> {
+    return this.http.get<boolean>(
+      `${this.apiUrl}/${torneioId}/rodada/${rodada}/completa`,
+    );
   }
 }
