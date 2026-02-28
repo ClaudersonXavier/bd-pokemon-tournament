@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**[🏠 Início](README.md)** • **[🧠 Esquema do BD](esquema-bd.md)** • **[📚 Dicionário de Dados](dicionario-de-dados.md)** • **[📊 Views SQL](views-sql.md)**
+**[🏠 Início](../README.md)** • **[🧠 Esquema do BD](esquema-bd.md)** • **[📚 Dicionário de Dados](dicionario-de-dados.md)** • **[📊 Views SQL](views-sql.md)**
 
 </div>
 
@@ -14,11 +14,11 @@
 - [Como Popular o Banco de Dados](#-como-popular-o-banco-de-dados)
 - [Dados Populados](#-dados-populados)
 - [Ordem de Execução](#-ordem-de-execução-dependências)
-- [Como os Seeders Funcionam Tecnicamente](#️-como-os-seeders-funcionam-tecnicamente)
+- [Como os Seeders Funcionam Tecnicamente](#-como-os-seeders-funcionam-tecnicamente)
 - [Detalhes dos Seeders](#-detalhes-dos-seeders)
-- [Configurações Avançadas](#️-configurações-avançadas)
+- [Configurações Avançadas](#-configurações-avançadas)
 - [Verificar Dados Populados](#-verificar-dados-populados)
-- [Observações Importantes](#️-observações-importantes)
+- [Observações Importantes](#-observações-importantes)
 
 ---
 
@@ -458,6 +458,6 @@ Para ambientes de produção, altere `ddl-auto` para `validate` ou `update` para
 
 ---
 
-**[⬆️ Voltar ao topo](#-explicação-de-como-os-dados-do-banco-foram-povoados)** • **[🏠 Voltar ao início](README.md)**
+**[⬆️ Voltar ao topo](#-explicação-de-como-os-dados-do-banco-foram-povoados)** • **[🏠 Voltar ao início](../README.md)**
 
 </div>

@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**[🏠 Início](README.md)** • **[🧠 Esquema do BD](esquema-bd.md)** • **[🌱 Povoamento](povoamento-seeders.md)** • **[📊 Views SQL](views-sql.md)**
+**[🏠 Início](../README.md)** • **[🧠 Esquema do BD](esquema-bd.md)** • **[🌱 Povoamento](povoamento-seeders.md)** • **[📊 Views SQL](views-sql.md)**
 
 </div>
 
@@ -205,7 +205,7 @@ Este documento detalha todas as tabelas do banco de dados do sistema de torneios
 
 <div align="center">
 
-**[⬆️ Voltar ao topo](#-dicionário-de-dados)** • **[🏠 Voltar ao início](README.md)**
+**[⬆️ Voltar ao topo](#-dicionário-de-dados)** • **[🏠 Voltar ao início](../README.md)**
 
 </div>
 
