@@ -11,7 +11,7 @@ import {
   TopTreinador,
   TorneioResumo,
 } from '../../core/services/estatisticas.service';
-import { Torneio, Treinador } from '../../core/models';
+import { Time, Torneio, Treinador } from '../../core/models';
 
 export interface TreinadorUserDTO {
   id: number;
@@ -56,6 +56,10 @@ export class HomeComponent implements OnInit {
   errorTorneios = '';
   searchTorneio = '';
   filterStatus: 'ALL' | 'ABERTO' | 'EM_ANDAMENTO' | 'ENCERRADO' = 'ALL';
+  timesDoUsuario: Time[] = [];
+  loadingTimesDoUsuario = false;
+  selectedTimePorTorneio: Record<number, number | null> = {};
+  inscrevendoPorTorneio: Record<number, boolean> = {};
 
   // Treinadores (user management)
   treinadores: TreinadorUserDTO[] = [];
@@ -111,6 +115,7 @@ export class HomeComponent implements OnInit {
     this.isAdmin = this.currentUser.admin;
     this.loadSelectedTrainer();
     this.loadTorneios();
+    this.loadTimesDoUsuario();
   }
 
   // ─── Torneios ────────────────────────────────────────────────────────────────
@@ -128,6 +133,23 @@ export class HomeComponent implements OnInit {
         this.errorTorneios =
           'Não foi possível carregar os torneios. Tente novamente mais tarde.';
         this.loadingTorneios = false;
+      },
+    });
+  }
+
+  loadTimesDoUsuario(): void {
+    if (!this.currentUser) return;
+
+    this.loadingTimesDoUsuario = true;
+
+    this.treinadorService.listarTimesDoTreinador(this.currentUser.id).subscribe({
+      next: (times: Time[]) => {
+        this.timesDoUsuario = times;
+        this.loadingTimesDoUsuario = false;
+      },
+      error: () => {
+        this.timesDoUsuario = [];
+        this.loadingTimesDoUsuario = false;
       },
     });
   }
@@ -572,7 +594,31 @@ export class HomeComponent implements OnInit {
       alert(`As inscrições para ${torneio.nome} estão encerradas.`);
       return;
     }
-    alert(`Você se inscreveu no torneio: ${torneio.nome}`);
+
+    const timeId = this.selectedTimePorTorneio[torneio.id];
+    if (!timeId) {
+      alert('Selecione um time para concluir a inscrição.');
+      return;
+    }
+
+    this.inscrevendoPorTorneio[torneio.id] = true;
+
+    this.torneioService.inscreverTimeNoTorneio(torneio.id, timeId).subscribe({
+      next: () => {
+        this.inscrevendoPorTorneio[torneio.id] = false;
+        this.selectedTimePorTorneio[torneio.id] = null;
+        alert(`Você se inscreveu no torneio: ${torneio.nome}`);
+        this.loadTorneios();
+      },
+      error: (err) => {
+        this.inscrevendoPorTorneio[torneio.id] = false;
+        const message = this.extractApiErrorMessage(
+          err,
+          'Não foi possível realizar a inscrição. Tente novamente.',
+        );
+        alert(message);
+      },
+    });
   }
 
   verDetalhesTorneio(torneio: Torneio): void {
@@ -590,6 +636,36 @@ export class HomeComponent implements OnInit {
 
     if (abertura === null || encerramento === null) return false;
     return agora >= abertura && agora <= encerramento;
+  }
+
+  getTimesDisponiveisParaInscricao(torneio: Torneio): Time[] {
+    const idsJaInscritos = new Set((torneio.times || []).map((time) => time.id));
+    return this.timesDoUsuario.filter((time) => !idsJaInscritos.has(time.id));
+  }
+
+  getSelectedTimeId(torneioId: number): number | null {
+    return this.selectedTimePorTorneio[torneioId] ?? null;
+  }
+
+  selecionarTimeParaTorneio(torneioId: number, timeId: number | string | null): void {
+    if (timeId === null || timeId === '' || Number.isNaN(Number(timeId))) {
+      this.selectedTimePorTorneio[torneioId] = null;
+      return;
+    }
+
+    this.selectedTimePorTorneio[torneioId] = Number(timeId);
+  }
+
+  podeInscreverNoTorneio(torneio: Torneio): boolean {
+    if (!this.isInscricaoAberta(torneio)) return false;
+    if (this.loadingTimesDoUsuario || this.inscrevendoPorTorneio[torneio.id]) return false;
+
+    const selectedTimeId = this.selectedTimePorTorneio[torneio.id];
+    if (!selectedTimeId) return false;
+
+    return this.getTimesDisponiveisParaInscricao(torneio).some(
+      (time) => time.id === selectedTimeId,
+    );
   }
 
   // ─── Trainer Avatar ──────────────────────────────────────────────────────────
@@ -647,6 +723,16 @@ export class HomeComponent implements OnInit {
     parsedDate.setHours(0, 0, 0, 0);
     const timestamp = parsedDate.getTime();
     return Number.isNaN(timestamp) ? null : timestamp;
+  }
+
+  private extractApiErrorMessage(err: any, fallback: string): string {
+    return (
+      err?.error?.message ||
+      err?.error?.erro ||
+      err?.error?.detail ||
+      err?.message ||
+      fallback
+    );
   }
 
   private getTodayMs(): number {

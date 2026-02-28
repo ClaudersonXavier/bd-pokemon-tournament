@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -47,6 +48,20 @@ public class TorneioController {
     public ResponseEntity<Void> deletarTorneio(@PathVariable("id") Long id) {
         fachada.getTorneioService().deletarPorId(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/inscricoes")
+    public ResponseEntity<Torneio> inscreverTimeNoTorneio(
+            @PathVariable("id") Long id,
+            @RequestBody Map<String, Long> body
+    ) {
+        Long timeId = body.get("timeId");
+        if (timeId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Torneio torneioAtualizado = fachada.getTorneioService().inscreverTime(id, timeId);
+        return ResponseEntity.ok(torneioAtualizado);
     }
 
     // Endpoint para listar batalhas de um torneio específico
