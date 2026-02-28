@@ -237,8 +237,8 @@ export class TournamentViewComponent implements OnInit {
 
     for (let round = 0; round < numRounds; round++) {
       const matchesInRound = Math.pow(2, numRounds - round - 1);
-      const roundName =
-        roundNames[numRounds - round - 1] || `Rodada ${round + 1}`;
+      const nameIndex = roundNames.length - numRounds + round;
+      const roundName = roundNames[nameIndex] || `Rodada ${round + 1}`;
 
       const matches: BracketMatch[] = [];
       for (let i = 0; i < matchesInRound; i++) {
