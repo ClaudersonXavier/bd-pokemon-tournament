@@ -97,7 +97,9 @@ public class PokemonService {
     }
 
     public void deletarPorId(Long id) {
-        pokemonRepository.deleteById(id);
+        Pokemon pokemon = buscarPokemonPorId(id);
+        validarPokemonNaoEstaEmTime(pokemon.getId());
+        pokemonRepository.delete(pokemon);
     }
 
     public void removerParaTreinador(Long treinadorId, Long pokemonId) {
@@ -105,15 +107,27 @@ public class PokemonService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Pokémon não encontrado para este treinador"));
 
-        if (timeRepository.existsByPokemons_Id(pokemonId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Não é possível remover este pokémon porque ele está em um time. " +
-                            "Remova o pokémon do time primeiro."
-            );
-        }
+        validarPokemonNaoEstaEmTime(pokemonId);
 
         pokemonRepository.delete(pokemon);
+    }
+
+    private void validarPokemonNaoEstaEmTime(Long pokemonId) {
+        if (!timeRepository.existsByPokemons_Id(pokemonId)) {
+            return;
+        }
+
+        throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Não é possível remover este pokémon porque ele está em um time. " +
+                        "Remova o pokémon do time primeiro."
+        );
+    }
+
+    private Pokemon buscarPokemonPorId(Long pokemonId) {
+        return pokemonRepository.findById(pokemonId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Pokémon não encontrado: " + pokemonId));
     }
 
     public Set<Ataque> listarAtaquesDoPokemon(Long treinadorId, Long pokemonId) {

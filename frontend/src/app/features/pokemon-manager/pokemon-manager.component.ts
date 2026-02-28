@@ -251,6 +251,7 @@ export class PokemonManagerComponent implements OnInit {
           this.errorMessage = this.extractErrorMessage(
             err,
             'Nao foi possivel remover o pokemon.',
+            'Nao e possivel remover este pokemon porque ele esta em um time.',
           );
         },
       });
@@ -278,13 +279,23 @@ export class PokemonManagerComponent implements OnInit {
     this.editForm.ataquesNomes = [...this.editForm.ataquesNomes, ataqueNome];
   }
 
-  private extractErrorMessage(err: any, fallback: string): string {
-    return (
-      err?.error?.message ||
-      err?.error?.detail ||
-      err?.error?.error ||
-      fallback
-    );
+  private extractErrorMessage(
+    err: any,
+    fallback: string,
+    conflictFallback?: string,
+  ): string {
+    const backendMessage =
+      err?.error?.message || err?.error?.detail || err?.error?.error;
+
+    if (backendMessage) {
+      return backendMessage;
+    }
+
+    if (err?.status === 409 && conflictFallback) {
+      return conflictFallback;
+    }
+
+    return fallback;
   }
 
   imageFor(pokemon: Pokemon): string {

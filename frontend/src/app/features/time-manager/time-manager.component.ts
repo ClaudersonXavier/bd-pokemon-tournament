@@ -242,19 +242,30 @@ export class TimeManagerComponent implements OnInit {
           this.errorMessage = this.extractErrorMessage(
             err,
             'Não foi possível remover o time agora.',
+            'Não é possível remover este time porque ele está em um torneio.',
           );
           this.deletingTimeId = null;
         },
       });
   }
 
-  private extractErrorMessage(err: any, fallback: string): string {
-    return (
-      err?.error?.message ||
-      err?.error?.detail ||
-      err?.error?.error ||
-      fallback
-    );
+  private extractErrorMessage(
+    err: any,
+    fallback: string,
+    conflictFallback?: string,
+  ): string {
+    const backendMessage =
+      err?.error?.message || err?.error?.detail || err?.error?.error;
+
+    if (backendMessage) {
+      return backendMessage;
+    }
+
+    if (err?.status === 409 && conflictFallback) {
+      return conflictFallback;
+    }
+
+    return fallback;
   }
 
   sprite(pokemon: Pokemon): string {

@@ -87,7 +87,9 @@ public class TimeService {
     }
 
     public void deletarPorId(Long id) {
-        timeRepository.deleteById(id);
+        Time time = buscarTimePorId(id);
+        validarTimeNaoInscritoEmTorneio(time.getId());
+        timeRepository.delete(time);
     }
 
     public void removerParaTreinador(Long treinadorId, Long timeId) {
@@ -95,15 +97,27 @@ public class TimeService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Time não encontrado para este treinador"));
 
-        if (torneioRepository.existsByTimes_Id(timeId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Não é possível remover este time porque ele está inscrito em um torneio. " +
-                            "Remova o time do torneio primeiro."
-            );
-        }
+        validarTimeNaoInscritoEmTorneio(timeId);
 
         timeRepository.delete(time);
+    }
+
+    private void validarTimeNaoInscritoEmTorneio(Long timeId) {
+        if (!torneioRepository.existsByTimes_Id(timeId)) {
+            return;
+        }
+
+        throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Não é possível remover este time porque ele está inscrito em um torneio. " +
+                        "Remova o time do torneio primeiro."
+        );
+    }
+
+    private Time buscarTimePorId(Long timeId) {
+        return timeRepository.findById(timeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Time não encontrado: " + timeId));
     }
 
     private void validarTreinadorExiste(Long treinadorId) {
