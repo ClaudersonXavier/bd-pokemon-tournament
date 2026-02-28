@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**[🏠 Início](README.md)** • **[🧠 Esquema do BD](esquema-bd.md)** • **[📚 Dicionário de Dados](dicionario-de-dados.md)** • **[🌱 Povoamento](povoamento-seeders.md)**
+**[🏠 Início](../README.md)** • **[🧠 Esquema do BD](esquema-bd.md)** • **[📚 Dicionário de Dados](dicionario-de-dados.md)** • **[🌱 Povoamento](povoamento-seeders.md)**
 
 </div>
 
@@ -171,6 +171,6 @@ GROUP BY treinador_nome;
 
 ---
 
-**[⬆️ Voltar ao topo](#-views-sql)** • **[🏠 Voltar ao início](README.md)**
+**[⬆️ Voltar ao topo](#-views-sql)** • **[🏠 Voltar ao início](../README.md)**
 
 </div>

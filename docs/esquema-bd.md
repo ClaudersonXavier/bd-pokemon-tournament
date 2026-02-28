@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**[🏠 Início](README.md)** • **[📚 Dicionário de Dados](dicionario-de-dados.md)** • **[🌱 Povoamento](povoamento-seeders.md)** • **[📊 Views SQL](views-sql.md)**
+**[🏠 Início](../README.md)** • **[📚 Dicionário de Dados](dicionario-de-dados.md)** • **[🌱 Povoamento](povoamento-seeders.md)** • **[📊 Views SQL](views-sql.md)**
 
 </div>
 
@@ -31,6 +31,6 @@
 
 ---
 
-**[⬆️ Voltar ao topo](#-esquema-conceitual-do-bd)** • **[🏠 Voltar ao início](README.md)**
+**[⬆️ Voltar ao topo](#-esquema-conceitual-do-bd)** • **[🏠 Voltar ao início](../README.md)**
 
 </div>
