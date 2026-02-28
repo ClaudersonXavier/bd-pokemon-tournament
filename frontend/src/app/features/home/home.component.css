@@ -770,12 +770,23 @@ html {
 
 .tournament-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 8px;
 }
 
+.tournament-actions .btn-tournament,
+.tournament-actions select.btn-tournament {
+  flex: 1 1 calc(50% - 4px);
+  min-width: 0;
+}
+
+.tournament-actions .btn-details {
+  flex-basis: 100%;
+}
+
 .btn-tournament {
-  flex: 1;
+  flex: 1 1 calc(50% - 4px);
   padding: 10px 16px;
   border: 2px solid #1a1a1a;
   border-radius: 8px;
