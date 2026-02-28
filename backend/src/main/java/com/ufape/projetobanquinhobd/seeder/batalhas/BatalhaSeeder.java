@@ -147,6 +147,11 @@ public class BatalhaSeeder {
     }
 
     private int criarBatalhasParciais(Torneio torneio) {
+        // Verificar se já existem batalhas para este torneio
+        if (!torneio.getBatalhas().isEmpty()) {
+            return torneio.getBatalhas().size();
+        }
+        
         // Criar apenas a primeira rodada (metade das batalhas)
         List<Time> times = new ArrayList<>(torneio.getTimes());
         Collections.shuffle(times);

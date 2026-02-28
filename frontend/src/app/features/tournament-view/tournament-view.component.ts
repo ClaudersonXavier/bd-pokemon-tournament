@@ -83,6 +83,9 @@ export class TournamentViewComponent implements OnInit {
     // Carregar dados do torneio
     this.torneioService.buscarTorneio(id).subscribe({
       next: (torneio: Torneio) => {
+        console.log('🏆 Torneio carregado:', torneio);
+        console.log('📋 Times no torneio:', torneio.times);
+        console.log('🔢 Quantidade de times:', torneio.times?.length || 0);
         this.torneio = torneio;
         this.loadBattles(id);
         this.loadParticipants(id);

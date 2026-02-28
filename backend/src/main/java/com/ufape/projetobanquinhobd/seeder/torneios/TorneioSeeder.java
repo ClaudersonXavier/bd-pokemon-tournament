@@ -1,13 +1,10 @@
 package com.ufape.projetobanquinhobd.seeder.torneios;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -152,6 +149,14 @@ public class TorneioSeeder {
     public void seed() {
         System.out.println("\n=== Populando Torneios ===");
 
+        // Verificar se já existem torneios para evitar duplicação
+        List<Torneio> torneiosExistentes = torneioService.listarTodos();
+        if (!torneiosExistentes.isEmpty()) {
+            System.out.println("⚠️ Já existem " + torneiosExistentes.size() + " torneios no banco.");
+            System.out.println("✓ Pulando seed de torneios para evitar duplicação.");
+            return;
+        }
+
         List<Time> todosOsTimes = timeService.listarTodos();
         if (todosOsTimes.isEmpty()) {
             System.out.println("⚠️ Nenhum time encontrado. Execute TimeSeeder primeiro.");
@@ -162,19 +167,14 @@ public class TorneioSeeder {
         System.out.println("✓ Criando 10 torneios: 6 encerrados, 2 em andamento, 2 abertos");
         System.out.println();
 
-        // Embaralhar times para distribuição aleatória
-        List<Time> timesEmbaralhados = new ArrayList<>(todosOsTimes);
-        Collections.shuffle(timesEmbaralhados);
-
         int torneiosCriados = 0;
-        int timeIndex = 0;
 
         for (TorneioConfig config : TORNEIOS) {
             try {
                 torneiosCriados++;
                 
                 System.out.print("[" + torneiosCriados + "/10] " + config.nome + 
-                               " (" + config.estado + ", " + config.maxParticipantes + " times)... ");
+                               " (" + config.estado + ", " + config.maxParticipantes + " slots)... ");
                 
                 Torneio torneio = new Torneio(
                     config.nome,
@@ -185,25 +185,25 @@ public class TorneioSeeder {
                     config.dataFim
                 );
                 
-                // Adicionar times usando reflexão
-                try {
-                    Field timesField = Torneio.class.getDeclaredField("times");
-                    timesField.setAccessible(true);
-                    Set<Time> timesSelecionados = new HashSet<>();
-                    
-                    // Selecionar N times do pool embaralhado
-                    for (int i = 0; i < config.maxParticipantes && timeIndex < timesEmbaralhados.size(); i++) {
-                        timesSelecionados.add(timesEmbaralhados.get(timeIndex % timesEmbaralhados.size()));
-                        timeIndex++;
+                // Adicionar times diretamente ao Set (permite duplicação entre torneios)
+                List<Time> timesEmbaralhados = new ArrayList<>(todosOsTimes);
+                Collections.shuffle(timesEmbaralhados);
+                
+                int timesAdicionados = 0;
+                for (Time time : timesEmbaralhados) {
+                    if (timesAdicionados >= config.maxParticipantes) {
+                        break;
                     }
-                    
-                    timesField.set(torneio, timesSelecionados);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    System.err.println("Erro ao configurar times do torneio: " + e.getMessage());
+                    torneio.getTimes().add(time);
+                    timesAdicionados++;
+                }
+                
+                if (torneio.getTimes().size() < config.maxParticipantes) {
+                    System.err.print("⚠ Apenas " + torneio.getTimes().size() + " times adicionados... ");
                 }
 
                 torneioService.salvar(torneio);
-                System.out.println("✓");
+                System.out.println("✓ (" + torneio.getTimes().size() + "/" + config.maxParticipantes + " times)");
                 
             } catch (Exception e) {
                 System.err.println("✗ Erro: " + e.getMessage());
