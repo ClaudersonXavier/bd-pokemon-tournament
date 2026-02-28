@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TorneioService } from '../../core/services/torneio.service';
 import { TreinadorService } from '../../core/services/treinador.service';
 import { EstatisticasService } from '../../core/services/estatisticas.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Torneio, Batalha, Treinador, Time } from '../../core/models';
 import {
   TreinadorDesempenho,
@@ -59,16 +60,35 @@ export class TournamentViewComponent implements OnInit {
     batalhasFinalizadas: 0,
   };
 
+  // Admin controls
+  isAdmin = false;
+  showWinnerModal = false;
+  selectedBatalha: Batalha | null = null;
+  selectedTime: Time | null = null;
+  settingWinner = false;
+  generatingRound = false;
+  rodadasCompletas = new Map<number, boolean>();
+
+  // Modal de seleção de modo de geração
+  showGenerationModeModal = false;
+  currentRodadaToGenerate: number | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private torneioService: TorneioService,
     private estatisticasService: EstatisticasService,
     private treinadorService: TreinadorService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     const torneioId = this.route.snapshot.paramMap.get('id');
+
+    // Verificar se é admin
+    const currentUser = this.authService.currentUser();
+    this.isAdmin = currentUser?.admin || false;
+
     if (torneioId) {
       this.loadTournamentData(parseInt(torneioId, 10));
     } else {
@@ -104,6 +124,12 @@ export class TournamentViewComponent implements OnInit {
       next: (batalhas: Batalha[]) => {
         this.batalhas = batalhas;
         this.generateBracket();
+
+        // Verificar quais rodadas estão completas (apenas se for admin)
+        if (this.isAdmin && this.torneio) {
+          const rodadas = [...new Set(batalhas.map((b) => b.rodada))];
+          rodadas.forEach((rodada) => this.verificarRodadaCompleta(rodada));
+        }
       },
       error: (error: any) => {
         console.error('Erro ao carregar batalhas:', error);
@@ -301,7 +327,25 @@ export class TournamentViewComponent implements OnInit {
     const finalRound = this.bracketRounds[this.bracketRounds.length - 1];
     const finalMatch = finalRound.matches[0];
 
-    return finalMatch?.winner || null;
+    // Verificar se é realmente a final (apenas 1 batalha na rodada)
+    // e se essa batalha tem um vencedor
+    if (finalRound.matches.length === 1 && finalMatch?.winner) {
+      return finalMatch.winner;
+    }
+
+    return null;
+  }
+
+  isTournamentFinished(): boolean {
+    if (!this.torneio) return false;
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    const fim = new Date(this.torneio.dataFim);
+    fim.setHours(0, 0, 0, 0);
+
+    return fim < hoje;
   }
 
   loadResumoBatalhas(torneioId: number): void {
@@ -410,5 +454,147 @@ export class TournamentViewComponent implements OnInit {
     if (inicio > hoje) return 'status-open';
     if (inicio <= hoje && hoje <= fim) return 'status-progress';
     return 'status-closed';
+  }
+
+  // ─── Admin Functions ─────────────────────────────────────────────────────────
+
+  isTournamentInProgress(): boolean {
+    if (!this.torneio) return false;
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    const inicio = new Date(this.torneio.dataInicio);
+    const fim = new Date(this.torneio.dataFim);
+
+    return inicio <= hoje && hoje <= fim;
+  }
+
+  canManageBattle(): boolean {
+    return this.isAdmin && this.isTournamentInProgress();
+  }
+
+  openWinnerModal(batalha: Batalha, time: Time): void {
+    if (!this.canManageBattle() || batalha.timeVencedor) return;
+
+    this.selectedBatalha = batalha;
+    this.selectedTime = time;
+    this.showWinnerModal = true;
+  }
+
+  closeWinnerModal(): void {
+    this.showWinnerModal = false;
+    this.selectedBatalha = null;
+    this.selectedTime = null;
+  }
+
+  confirmWinner(): void {
+    if (!this.selectedBatalha || !this.selectedTime) return;
+
+    this.settingWinner = true;
+
+    this.torneioService
+      .definirVencedor(this.selectedBatalha.id, this.selectedTime.id)
+      .subscribe({
+        next: (batalhaAtualizada) => {
+          // Atualizar a batalha no array local
+          const index = this.batalhas.findIndex(
+            (b) => b.id === batalhaAtualizada.id,
+          );
+          if (index !== -1) {
+            this.batalhas[index] = batalhaAtualizada;
+          }
+
+          // Recriar o bracket com os dados atualizados
+          this.generateBracket();
+
+          // Verificar se a rodada ficou completa
+          if (this.torneio) {
+            this.verificarRodadaCompleta(this.selectedBatalha!.rodada);
+          }
+
+          this.settingWinner = false;
+          this.closeWinnerModal();
+        },
+        error: (error) => {
+          console.error('Erro ao definir vencedor:', error);
+          alert('Erro ao definir vencedor da batalha');
+          this.settingWinner = false;
+        },
+      });
+  }
+
+  verificarRodadaCompleta(rodada: number): void {
+    if (!this.torneio) return;
+
+    this.torneioService
+      .verificarRodadaCompleta(this.torneio.id, rodada)
+      .subscribe({
+        next: (completa) => {
+          this.rodadasCompletas.set(rodada, completa);
+        },
+        error: (error) => {
+          console.error('Erro ao verificar rodada:', error);
+        },
+      });
+  }
+
+  isRodadaCompleta(rodada: number): boolean {
+    return this.rodadasCompletas.get(rodada) || false;
+  }
+
+  proximaRodadaJaExiste(rodada: number): boolean {
+    // Verificar se já existe a rodada seguinte (rodada + 1)
+    const proximaRodada = rodada + 1;
+    return this.batalhas.some((b) => b.rodada === proximaRodada);
+  }
+
+  gerarProximaRodada(rodada: number): void {
+    if (!this.torneio || !this.isRodadaCompleta(rodada)) return;
+
+    // Abrir modal para escolher o modo de geração
+    this.currentRodadaToGenerate = rodada;
+    this.showGenerationModeModal = true;
+  }
+
+  closeGenerationModeModal(): void {
+    this.showGenerationModeModal = false;
+    this.currentRodadaToGenerate = null;
+  }
+
+  confirmarGeracaoRodada(random: boolean): void {
+    if (!this.torneio || this.currentRodadaToGenerate === null) return;
+
+    const rodada = this.currentRodadaToGenerate;
+    this.closeGenerationModeModal();
+    this.generatingRound = true;
+
+    this.torneioService
+      .gerarProximaRodada(this.torneio.id, rodada, random)
+      .subscribe({
+        next: (novasBatalhas) => {
+          console.log('Novas batalhas criadas:', novasBatalhas);
+
+          // Adicionar as novas batalhas ao array
+          this.batalhas.push(...novasBatalhas);
+
+          // Recriar o bracket
+          this.generateBracket();
+
+          this.generatingRound = false;
+
+          const modo = random ? 'aleatório' : 'ordem atual';
+          alert(
+            `${novasBatalhas.length} batalha(s) da próxima rodada criada(s) com sucesso (modo ${modo})!`,
+          );
+        },
+        error: (error) => {
+          console.error('Erro ao gerar próxima rodada:', error);
+          alert(
+            'Erro ao gerar próxima rodada. Verifique se todas as batalhas têm vencedor.',
+          );
+          this.generatingRound = false;
+        },
+      });
   }
 }

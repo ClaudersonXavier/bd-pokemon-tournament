@@ -10,4 +10,7 @@ import java.util.List;
 public interface BatalhaRepository extends JpaRepository<Batalha, Long> {
     @Query("SELECT b FROM Batalha b WHERE b.torneio.id = :torneioId ORDER BY b.rodada")
     List<Batalha> findByTorneioId(@Param("torneioId") Long torneioId);
+
+    @Query("SELECT b FROM Batalha b WHERE b.torneio.id = :torneioId AND b.rodada = :rodada")
+    List<Batalha> findByTorneioIdAndRodada(@Param("torneioId") Long torneioId, @Param("rodada") int rodada);
 }

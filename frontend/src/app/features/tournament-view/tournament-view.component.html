@@ -121,6 +121,31 @@
             *ngFor="let round of bracketRounds; let i = index"
           >
             <h3 class="round-title">{{ round.name }}</h3>
+
+            <!-- Botão para gerar próxima rodada (apenas para admin) -->
+            <div
+              class="round-actions"
+              *ngIf="
+                canManageBattle() &&
+                isRodadaCompleta(round.matches[0]?.batalha?.rodada || 0) &&
+                !proximaRodadaJaExiste(
+                  round.matches[0]?.batalha?.rodada || 0
+                ) &&
+                round.matches.length > 1
+              "
+            >
+              <button
+                class="btn-generate-round"
+                (click)="
+                  gerarProximaRodada(round.matches[0]?.batalha?.rodada || 0)
+                "
+                [disabled]="generatingRound"
+              >
+                <span *ngIf="!generatingRound">🎯 Gerar Próxima Rodada</span>
+                <span *ngIf="generatingRound">⏳ Gerando...</span>
+              </button>
+            </div>
+
             <div class="matches-container">
               <div class="match-card" *ngFor="let match of round.matches">
                 <div class="match-header">
@@ -137,10 +162,29 @@
                   <div
                     class="team"
                     [class.winner]="match.winner?.id === match.team1?.id"
+                    [class.clickable]="
+                      canManageBattle() && !match.winner && match.team1
+                    "
+                    (click)="
+                      canManageBattle() &&
+                      !match.winner &&
+                      match.team1 &&
+                      match.batalha
+                        ? openWinnerModal(match.batalha, match.team1)
+                        : null
+                    "
                   >
                     <div class="team-info">
                       <span class="team-name">
                         {{ match.team1?.nome || "TBD" }}
+                      </span>
+                      <span
+                        class="team-hint"
+                        *ngIf="
+                          canManageBattle() && !match.winner && match.team1
+                        "
+                      >
+                        👆 Clique para definir vencedor
                       </span>
                     </div>
                     <span
@@ -156,10 +200,29 @@
                   <div
                     class="team"
                     [class.winner]="match.winner?.id === match.team2?.id"
+                    [class.clickable]="
+                      canManageBattle() && !match.winner && match.team2
+                    "
+                    (click)="
+                      canManageBattle() &&
+                      !match.winner &&
+                      match.team2 &&
+                      match.batalha
+                        ? openWinnerModal(match.batalha, match.team2)
+                        : null
+                    "
                   >
                     <div class="team-info">
                       <span class="team-name">
                         {{ match.team2?.nome || "TBD" }}
+                      </span>
+                      <span
+                        class="team-hint"
+                        *ngIf="
+                          canManageBattle() && !match.winner && match.team2
+                        "
+                      >
+                        👆 Clique para definir vencedor
                       </span>
                     </div>
                     <span
@@ -331,6 +394,127 @@
           <h3>Nenhum Participante</h3>
           <p>Ainda não há treinadores inscritos neste torneio.</p>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação de Vencedor -->
+  <div class="modal-overlay" *ngIf="showWinnerModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">🏆 Confirmar Vencedor</h2>
+        <button class="btn-close-modal" (click)="closeWinnerModal()">✕</button>
+      </div>
+
+      <div class="modal-content">
+        <p class="modal-description">
+          Você está prestes a definir o vencedor desta batalha:
+        </p>
+
+        <div class="battle-info">
+          <div class="battle-detail">
+            <span class="detail-label">Batalha:</span>
+            <span class="detail-value">#{{ selectedBatalha?.id }}</span>
+          </div>
+          <div class="battle-detail">
+            <span class="detail-label">Rodada:</span>
+            <span class="detail-value">{{ selectedBatalha?.rodada }}</span>
+          </div>
+        </div>
+
+        <div class="winner-selection">
+          <div class="winner-card">
+            <div class="winner-icon">👑</div>
+            <div class="winner-info">
+              <span class="winner-label">Time Vencedor:</span>
+              <span class="winner-name">{{ selectedTime?.nome }}</span>
+              <span class="winner-trainer" *ngIf="selectedTime?.treinador">
+                Treinador: {{ selectedTime?.treinador?.nome }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <p class="modal-warning">
+          ⚠️ Esta ação não pode ser desfeita. Tem certeza?
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          class="btn-modal btn-cancel"
+          (click)="closeWinnerModal()"
+          [disabled]="settingWinner"
+        >
+          Cancelar
+        </button>
+        <button
+          class="btn-modal btn-confirm"
+          (click)="confirmWinner()"
+          [disabled]="settingWinner"
+        >
+          <span *ngIf="!settingWinner">✓ Confirmar Vencedor</span>
+          <span *ngIf="settingWinner">⏳ Processando...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Seleção de Modo de Geração -->
+  <div class="modal-overlay" *ngIf="showGenerationModeModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">⚙️ Modo de Geração da Próxima Rodada</h2>
+        <button class="btn-close-modal" (click)="closeGenerationModeModal()">
+          ✕
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <p class="modal-description">
+          Escolha como deseja parear os vencedores para a próxima rodada:
+        </p>
+
+        <div class="mode-selection">
+          <button
+            class="mode-option"
+            (click)="confirmarGeracaoRodada(false)"
+            [disabled]="generatingRound"
+          >
+            <div class="mode-icon">📋</div>
+            <div class="mode-info">
+              <h3>Ordem Atual</h3>
+              <p>Os vencedores serão pareados na ordem que aparecem</p>
+            </div>
+          </button>
+
+          <button
+            class="mode-option"
+            (click)="confirmarGeracaoRodada(true)"
+            [disabled]="generatingRound"
+          >
+            <div class="mode-icon">🎲</div>
+            <div class="mode-info">
+              <h3>Aleatório</h3>
+              <p>Os vencedores serão embaralhados e pareados aleatoriamente</p>
+            </div>
+          </button>
+        </div>
+
+        <p class="modal-info">
+          💡 A Rodada {{ currentRodadaToGenerate }} está completa e pronta para
+          avançar.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          class="btn-modal btn-cancel"
+          (click)="closeGenerationModeModal()"
+          [disabled]="generatingRound"
+        >
+          Cancelar
+        </button>
       </div>
     </div>
   </div>

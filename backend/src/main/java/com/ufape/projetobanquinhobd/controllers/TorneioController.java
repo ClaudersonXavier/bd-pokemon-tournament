@@ -1,15 +1,24 @@
 package com.ufape.projetobanquinhobd.controllers;
 
-import com.ufape.projetobanquinhobd.entities.Torneio;
-import com.ufape.projetobanquinhobd.entities.Batalha;
-import com.ufape.projetobanquinhobd.facade.Fachada;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ufape.projetobanquinhobd.entities.Batalha;
+import com.ufape.projetobanquinhobd.entities.Torneio;
+import com.ufape.projetobanquinhobd.facade.Fachada;
 
 @RestController
 @RequestMapping("/api/torneios")
@@ -106,5 +115,47 @@ public class TorneioController {
     public ResponseEntity<Void> deletarBatalha(@PathVariable("id") Long id) {
         fachada.getBatalhaService().deletarPorId(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Endpoint para definir vencedor de uma batalha
+    @PutMapping("/batalhas/{batalhaId}/vencedor/{timeId}")
+    public ResponseEntity<Batalha> definirVencedor(
+            @PathVariable("batalhaId") Long batalhaId,
+            @PathVariable("timeId") Long timeId) {
+        try {
+            Batalha batalhaAtualizada = fachada.getBatalhaService().definirVencedor(batalhaId, timeId);
+            return ResponseEntity.ok(batalhaAtualizada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // Endpoint para gerar batalhas da próxima rodada
+    @PostMapping("/{torneioId}/gerar-proxima-rodada")
+    public ResponseEntity<List<Batalha>> gerarProximaRodada(
+            @PathVariable("torneioId") Long torneioId,
+            @RequestParam("rodadaAtual") int rodadaAtual,
+            @RequestParam(value = "random", defaultValue = "false") boolean random) {
+        try {
+            Optional<Torneio> torneioOpt = fachada.getTorneioService().buscarPorId(torneioId);
+            if (torneioOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            List<Batalha> novasBatalhas = fachada.getBatalhaService()
+                    .gerarProximaRodada(torneioId, rodadaAtual, torneioOpt.get(), random);
+            return ResponseEntity.ok(novasBatalhas);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // Endpoint para verificar se todas batalhas da rodada têm vencedor
+    @GetMapping("/{torneioId}/rodada/{rodada}/completa")
+    public ResponseEntity<Boolean> verificarRodadaCompleta(
+            @PathVariable("torneioId") Long torneioId,
+            @PathVariable("rodada") int rodada) {
+        boolean completa = fachada.getBatalhaService().todasBatalhasComVencedor(torneioId, rodada);
+        return ResponseEntity.ok(completa);
     }
 }
