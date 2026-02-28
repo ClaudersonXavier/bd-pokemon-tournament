@@ -218,14 +218,34 @@
                       </div>
                     </div>
                     <div class="tournament-actions">
+                      <select
+                        class="btn-tournament btn-secondary"
+                        [ngModel]="getSelectedTimeId(torneio.id)"
+                        (ngModelChange)="selecionarTimeParaTorneio(torneio.id, $event)"
+                        [disabled]="
+                          loadingTimesDoUsuario ||
+                          getTimesDisponiveisParaInscricao(torneio).length === 0 ||
+                          !isInscricaoAberta(torneio)
+                        "
+                      >
+                        <option [ngValue]="null">Selecione um time</option>
+                        <option
+                          *ngFor="let time of getTimesDisponiveisParaInscricao(torneio)"
+                          [ngValue]="time.id"
+                        >
+                          {{ time.nome }}
+                        </option>
+                      </select>
                       <button
                         class="btn-tournament btn-primary btn-register"
-                        [disabled]="!isInscricaoAberta(torneio)"
+                        [disabled]="!podeInscreverNoTorneio(torneio)"
                         (click)="inscreverNoTorneio(torneio)"
                       >
                         {{
                           isInscricaoAberta(torneio)
-                            ? "Inscrever-se"
+                            ? inscrevendoPorTorneio[torneio.id]
+                              ? "Inscrevendo..."
+                              : "Inscrever-se"
                             : "Inscrições Encerradas"
                         }}
                       </button>

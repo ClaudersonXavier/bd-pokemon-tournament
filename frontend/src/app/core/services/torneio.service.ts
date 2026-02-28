@@ -28,6 +28,10 @@ export class TorneioService {
     return this.http.put<Torneio>(`${this.apiUrl}/${id}`, torneio);
   }
 
+  inscreverTimeNoTorneio(torneioId: number, timeId: number): Observable<Torneio> {
+    return this.http.post<Torneio>(`${this.apiUrl}/${torneioId}/inscricoes`, { timeId });
+  }
+
   deletarTorneio(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
