@@ -34,14 +34,14 @@ public class SeedRunner {
             // 2. Seed de Espécies (Pokémons da PokeAPI)
             System.out.println(">>> 2. Executando seed de Espécies...\n");
             EspecieSeeder especieSeeder = context.getBean(EspecieSeeder.class);
-            especieSeeder.seed(50); // Quantidade de espécies
+            especieSeeder.seed(151); // Quantidade de espécies
             
             System.out.println("\n");
             
             // 3. Seed de Ataques
             System.out.println(">>> 3. Executando seed de Ataques...\n");
             AtaqueSeeder ataqueSeeder = context.getBean(AtaqueSeeder.class);
-            ataqueSeeder.seed(50); // Quantidade de ataques
+            ataqueSeeder.seed(100); // Quantidade de ataques
             
             System.out.println("\n");
             

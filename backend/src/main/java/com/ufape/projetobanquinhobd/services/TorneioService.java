@@ -1,5 +1,6 @@
 package com.ufape.projetobanquinhobd.services;
 
+import com.ufape.projetobanquinhobd.entities.StatusTorneio;
 import com.ufape.projetobanquinhobd.entities.Time;
 import com.ufape.projetobanquinhobd.entities.Torneio;
 import com.ufape.projetobanquinhobd.entities.Treinador;
@@ -49,6 +50,9 @@ public class TorneioService {
                 torneio.setDataEncerramentoInscricoes(torneioAtualizado.getDataEncerramentoInscricoes());
                 torneio.setDataInicio(torneioAtualizado.getDataInicio());
                 torneio.setDataFim(torneioAtualizado.getDataFim());
+                if (torneioAtualizado.getStatus() != null) {
+                    torneio.setStatus(torneioAtualizado.getStatus());
+                }
                 return torneioRepository.save(torneio);
             })
             .orElseThrow(() -> new RuntimeException("Torneio não encontrado com id: " + id));
@@ -82,7 +86,7 @@ public class TorneioService {
                     "Você só pode inscrever seus próprios times");
         }
 
-        if (!torneio.isInscricoesAbertas()) {
+        if (torneio.getStatus() != StatusTorneio.ABERTO) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "As inscrições para este torneio estão encerradas");
         }

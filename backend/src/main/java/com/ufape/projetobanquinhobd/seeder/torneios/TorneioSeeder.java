@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ufape.projetobanquinhobd.entities.StatusTorneio;
 import com.ufape.projetobanquinhobd.entities.Time;
 import com.ufape.projetobanquinhobd.entities.Torneio;
 import com.ufape.projetobanquinhobd.services.TimeService;
@@ -185,13 +186,21 @@ public class TorneioSeeder {
                     config.dataFim
                 );
                 
+                // Definir o status baseado na configuração
+                torneio.setStatus(StatusTorneio.valueOf(config.estado));
+                
                 // Adicionar times diretamente ao Set (permite duplicação entre torneios)
                 List<Time> timesEmbaralhados = new ArrayList<>(todosOsTimes);
                 Collections.shuffle(timesEmbaralhados);
                 
                 int timesAdicionados = 0;
+                // Para torneios ABERTOS, deixar pelo menos 1 vaga livre
+                int limiteParticipantes = config.estado.equals("ABERTO") 
+                    ? config.maxParticipantes - 1 
+                    : config.maxParticipantes;
+                    
                 for (Time time : timesEmbaralhados) {
-                    if (timesAdicionados >= config.maxParticipantes) {
+                    if (timesAdicionados >= limiteParticipantes) {
                         break;
                     }
                     torneio.getTimes().add(time);

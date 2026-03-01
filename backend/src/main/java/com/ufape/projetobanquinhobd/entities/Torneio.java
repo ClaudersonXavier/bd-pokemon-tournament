@@ -37,6 +37,10 @@ public class Torneio {
     @Column(nullable = false)
     private Date dataFim;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "status_torneio_enum")
+    private StatusTorneio status;
+
     @OneToMany(mappedBy = "torneio")
     @JsonIgnoreProperties({"torneio", "time1", "time2"})
     private Set<Batalha> batalhas;
@@ -53,6 +57,7 @@ public class Torneio {
         this.setDataEncerramentoInscricoes(dataEncerramentoInscricoes);
         this.setDataInicio(dataInicio);
         this.setDataFim(dataFim);
+        this.status = StatusTorneio.ABERTO;
     }
 
     public void setNome(String nome) {
@@ -110,33 +115,11 @@ public class Torneio {
         return times;
     }
 
-    @Transient
-    public String getStatusAtual() {
-        Date hoje = normalizeToDay(new Date());
-        Date fim = dataFim == null ? null : normalizeToDay(dataFim);
-        Date inicio = dataInicio == null ? null : normalizeToDay(dataInicio);
-
-        if (fim != null && hoje.after(fim)) {
-            return "ENCERRADO";
+    public void setStatus(StatusTorneio status) {
+        if (status == null) {
+            throw new IllegalArgumentException("Status do torneio é obrigatório");
         }
-
-        if (inicio != null && !hoje.before(inicio)) {
-            return "EM_ANDAMENTO";
-        }
-
-        return "ABERTO";
-    }
-
-    @Transient
-    public boolean isInscricoesAbertas() {
-        if (dataAberturaInscricoes == null || dataEncerramentoInscricoes == null) {
-            return false;
-        }
-
-        Date hoje = normalizeToDay(new Date());
-        Date abertura = normalizeToDay(dataAberturaInscricoes);
-        Date encerramento = normalizeToDay(dataEncerramentoInscricoes);
-        return !hoje.before(abertura) && !hoje.after(encerramento);
+        this.status = status;
     }
 
     private Date normalizeToDay(Date date) {
