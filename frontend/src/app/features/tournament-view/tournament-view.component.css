@@ -14,7 +14,6 @@
   flex-direction: column;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
-  overflow-x: hidden;
 }
 
 /* ---- BACKGROUND ---- */
@@ -31,8 +30,9 @@
 
 /* ---- HEADER ---- */
 .tournament-header {
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 100;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   padding: 20px 40px;

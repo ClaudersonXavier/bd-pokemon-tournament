@@ -60,8 +60,7 @@ export interface Batalha {
 export interface Torneio {
   id: number;
   nome: string;
-  statusAtual?: 'ABERTO' | 'EM_ANDAMENTO' | 'ENCERRADO';
-  inscricoesAbertas?: boolean;
+  status: 'ABERTO' | 'EM_ANDAMENTO' | 'ENCERRADO';
   maxParticipantes: number;
   dataAberturaInscricoes: string; // Date será string no JSON
   dataEncerramentoInscricoes: string;

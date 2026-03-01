@@ -260,6 +260,8 @@ html {
   padding: 8px 16px 16px 16px;
   min-height: 0;
   height: calc(100vh - 190px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .tab-content {
@@ -267,25 +269,25 @@ html {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-y: auto;
+  min-height: fit-content;
 }
 
-.tab-content::-webkit-scrollbar {
+.content-area::-webkit-scrollbar {
   width: 10px;
 }
 
-.tab-content::-webkit-scrollbar-track {
+.content-area::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.05);
   border-radius: 5px;
 }
 
-.tab-content::-webkit-scrollbar-thumb {
+.content-area::-webkit-scrollbar-thumb {
   background: linear-gradient(145deg, #cc2200, #ff4436);
   border-radius: 5px;
   border: 2px solid #9a1800;
 }
 
-.tab-content::-webkit-scrollbar-thumb:hover {
+.content-area::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(145deg, #ff4436, #ff6b5e);
 }
 
@@ -348,10 +350,11 @@ html {
   max-height: none;
 }
 
+.tab-content .content-card:first-child {
+  margin-bottom: 0;
+}
+
 .content-header-fixed {
-  position: sticky;
-  top: 0;
-  z-index: 100;
   background: linear-gradient(145deg, #f8f8f3, #f0f0eb);
   padding: 20px 20px 16px 20px;
   margin: 0 0 16px 0;
@@ -368,6 +371,7 @@ html {
 .content-scrollable {
   flex: 1;
   min-height: 0;
+  overflow-y: visible;
 }
 
 .content-header-row {
@@ -708,6 +712,9 @@ html {
   gap: 12px;
   border-bottom: 2px solid #e0e0e0;
   padding-bottom: 12px;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .tournament-header h4 {
@@ -716,7 +723,11 @@ html {
   color: #1a1a1a;
   margin: 0;
   line-height: 1.5;
-  flex: 1;
+  flex: 1 1 0%;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tournament-status {
@@ -773,6 +784,25 @@ html {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 8px;
+}
+
+/* Mensagem de alerta quando não há times */
+.no-teams-message {
+  width: 100%;
+  padding: 4px 6px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 4px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.no-teams-message span {
+  display: block;
+  font-family: "Press Start 2P", monospace;
+  font-size: 6px;
+  line-height: 1.3;
 }
 
 .tournament-actions .btn-tournament,

@@ -626,16 +626,7 @@ export class HomeComponent implements OnInit {
   }
 
   isInscricaoAberta(torneio: Torneio): boolean {
-    if (typeof torneio.inscricoesAbertas === 'boolean') {
-      return torneio.inscricoesAbertas;
-    }
-
-    const agora = this.getTodayMs();
-    const abertura = this.parseDateMs(torneio.dataAberturaInscricoes);
-    const encerramento = this.parseDateMs(torneio.dataEncerramentoInscricoes);
-
-    if (abertura === null || encerramento === null) return false;
-    return agora >= abertura && agora <= encerramento;
+    return torneio.status === 'ABERTO';
   }
 
   getTimesDisponiveisParaInscricao(torneio: Torneio): Time[] {
@@ -666,6 +657,26 @@ export class HomeComponent implements OnInit {
     return this.getTimesDisponiveisParaInscricao(torneio).some(
       (time) => time.id === selectedTimeId,
     );
+  }
+
+  getInscricaoButtonTooltip(torneio: Torneio): string {
+    if (!this.isInscricaoAberta(torneio)) {
+      return 'Inscrições encerradas';
+    }
+    if (this.loadingTimesDoUsuario) {
+      return 'Carregando seus times...';
+    }
+    if (this.timesDoUsuario.length === 0) {
+      return 'Você precisa criar um time primeiro';
+    }
+    if (this.getTimesDisponiveisParaInscricao(torneio).length === 0) {
+      return 'Todos os seus times já estão inscritos';
+    }
+    const selectedTimeId = this.selectedTimePorTorneio[torneio.id];
+    if (!selectedTimeId) {
+      return 'Selecione um time no dropdown acima';
+    }
+    return 'Clique para se inscrever';
   }
 
   // ─── Trainer Avatar ──────────────────────────────────────────────────────────
@@ -700,21 +711,7 @@ export class HomeComponent implements OnInit {
   private getStatusTorneio(
     torneio: Torneio,
   ): 'ABERTO' | 'EM_ANDAMENTO' | 'ENCERRADO' {
-    if (
-      torneio.statusAtual === 'ABERTO' ||
-      torneio.statusAtual === 'EM_ANDAMENTO' ||
-      torneio.statusAtual === 'ENCERRADO'
-    ) {
-      return torneio.statusAtual;
-    }
-
-    const agora = this.getTodayMs();
-    const inicio = this.parseDateMs(torneio.dataInicio);
-    const fim = this.parseDateMs(torneio.dataFim);
-
-    if (fim !== null && agora > fim) return 'ENCERRADO';
-    if (inicio !== null && agora >= inicio) return 'EM_ANDAMENTO';
-    return 'ABERTO';
+    return torneio.status;
   }
 
   private parseDateMs(dateValue: string): number | null {
