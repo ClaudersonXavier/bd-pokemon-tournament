@@ -85,45 +85,60 @@ public class BatalhaService {
     }
 
     public List<Batalha> gerarProximaRodada(Long torneioId, int rodadaAtual, Torneio torneio, boolean random) {
-        // Verificar se todas as batalhas da rodada atual têm vencedor
-        if (!todasBatalhasComVencedor(torneioId, rodadaAtual)) {
-            throw new RuntimeException("Nem todas as batalhas da rodada atual têm vencedor definido");
-        }
+        List<Time> participantes = new ArrayList<>();
+        int proximaRodada;
 
-        // Buscar vencedores da rodada atual
-        List<Batalha> batalhasRodadaAtual = buscarPorTorneioERodada(torneioId, rodadaAtual);
-        List<Time> vencedores = new ArrayList<>();
-        
-        for (Batalha batalha : batalhasRodadaAtual) {
-            if (batalha.getTimeVencedor() != null) {
-                vencedores.add(batalha.getTimeVencedor());
+        // Se for rodada 0, estamos gerando a primeira rodada com os times inscritos
+        if (rodadaAtual == 0) {
+            // Buscar times inscritos no torneio
+            participantes.addAll(torneio.getTimes());
+            
+            if (participantes.isEmpty()) {
+                throw new RuntimeException("Não há times inscritos neste torneio");
             }
+            
+            proximaRodada = 1; // Primeira rodada será a rodada 1
+        } else {
+            // Para rodadas subsequentes, verificar se todas as batalhas da rodada atual têm vencedor
+            if (!todasBatalhasComVencedor(torneioId, rodadaAtual)) {
+                throw new RuntimeException("Nem todas as batalhas da rodada atual têm vencedor definido");
+            }
+
+            // Buscar vencedores da rodada atual
+            List<Batalha> batalhasRodadaAtual = buscarPorTorneioERodada(torneioId, rodadaAtual);
+            
+            for (Batalha batalha : batalhasRodadaAtual) {
+                if (batalha.getTimeVencedor() != null) {
+                    participantes.add(batalha.getTimeVencedor());
+                }
+            }
+            
+            proximaRodada = rodadaAtual + 1;
         }
         
-        // Se random for true, embaralhar os vencedores
+        // Se random for true, embaralhar os participantes
         if (random) {
-            Collections.shuffle(vencedores);
+            Collections.shuffle(participantes);
         }
 
-        // Se houver apenas 1 vencedor, o torneio acabou
-        if (vencedores.size() <= 1) {
-            throw new RuntimeException("Torneio finalizado - campeão definido");
+        // Se houver apenas 1 participante, o torneio acabou
+        if (participantes.size() <= 1) {
+            throw new RuntimeException("Número insuficiente de participantes para criar batalhas");
         }
 
         // Criar batalhas da próxima rodada
         List<Batalha> novasBatalhas = new ArrayList<>();
-        int proximaRodada = rodadaAtual + 1;
         
-        // Emparelar os vencedores (2 a 2)
-        for (int i = 0; i < vencedores.size(); i += 2) {
-            if (i + 1 < vencedores.size()) {
+        // Emparelar os participantes (2 a 2)
+        for (int i = 0; i < participantes.size(); i += 2) {
+            if (i + 1 < participantes.size()) {
                 // Criar horários para a batalha (pode ajustar conforme necessário)
                 LocalDateTime horarioInicio = LocalDateTime.now().plusDays(proximaRodada);
                 LocalDateTime horarioFim = horarioInicio.plusHours(1);
                 
                 Batalha novaBatalha = new Batalha(proximaRodada, horarioFim, horarioInicio, torneio);
-                novaBatalha.addTimeParticipante(vencedores.get(i));
-                novaBatalha.addTimeParticipante(vencedores.get(i + 1));
+                novaBatalha.addTimeParticipante(participantes.get(i));
+                novaBatalha.addTimeParticipante(participantes.get(i + 1));
                 
                 Batalha batalhaSalva = batalhaRepository.save(novaBatalha);
                 novasBatalhas.add(batalhaSalva);

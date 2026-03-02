@@ -110,14 +110,23 @@ model tipo {
   especie_tipos especie_tipos[]
 }
 
+enum StatusTorneioEnum {
+  ABERTO
+  EM_ANDAMENTO
+  ENCERRADO
+
+  @@map("status_torneio_enum")
+}
+
 model torneio {
   max_participantes            Int
-  data_abertura_inscricoes     DateTime        @db.Timestamp(6)
-  data_encerramento_inscricoes DateTime        @db.Timestamp(6)
-  data_fim                     DateTime        @db.Timestamp(6)
-  data_inicio                  DateTime        @db.Timestamp(6)
-  id                           BigInt          @id @default(autoincrement())
-  nome                         String          @db.VarChar(255)
+  data_abertura_inscricoes     DateTime           @db.Timestamp(6)
+  data_encerramento_inscricoes DateTime           @db.Timestamp(6)
+  data_fim                     DateTime           @db.Timestamp(6)
+  data_inicio                  DateTime           @db.Timestamp(6)
+  id                           BigInt             @id @default(autoincrement())
+  nome                         String             @db.VarChar(255)
+  status                       StatusTorneioEnum
   batalha                      batalha[]
   torneio_times                torneio_times[]
 }

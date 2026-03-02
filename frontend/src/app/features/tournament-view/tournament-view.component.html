@@ -248,9 +248,23 @@
         <div class="empty-state" *ngIf="bracketRounds.length === 0">
           <div class="empty-icon">🏆</div>
           <h3>Chaveamento em Preparação</h3>
-          <p>
+          <p *ngIf="!isTournamentInProgress()">
             O chaveamento será gerado assim que as inscrições forem encerradas.
           </p>
+          <p *ngIf="isTournamentInProgress() && !canManageBattle()">
+            Aguarde o administrador gerar a primeira rodada.
+          </p>
+
+          <!-- Botão para admin gerar primeira rodada -->
+          <button
+            *ngIf="canManageBattle() && isTournamentInProgress()"
+            class="btn-generate-round"
+            (click)="gerarPrimeiraRodada()"
+            [disabled]="generatingRound"
+          >
+            <span *ngIf="!generatingRound">🎯 Gerar Primeira Rodada</span>
+            <span *ngIf="generatingRound">⏳ Gerando...</span>
+          </button>
         </div>
       </div>
     </div>
@@ -464,7 +478,13 @@
   <div class="modal-overlay" *ngIf="showGenerationModeModal">
     <div class="modal-container">
       <div class="modal-header">
-        <h2 class="modal-title">⚙️ Modo de Geração da Próxima Rodada</h2>
+        <h2 class="modal-title">
+          {{
+            currentRodadaToGenerate === 0
+              ? "⚙️ Gerar Primeira Rodada"
+              : "⚙️ Modo de Geração da Próxima Rodada"
+          }}
+        </h2>
         <button class="btn-close-modal" (click)="closeGenerationModeModal()">
           ✕
         </button>
@@ -472,11 +492,17 @@
 
       <div class="modal-content">
         <p class="modal-description">
-          Escolha como deseja parear os vencedores para a próxima rodada:
+          {{
+            currentRodadaToGenerate === 0
+              ? "Escolha como deseja parear os times inscritos:"
+              : "Escolha como deseja parear os vencedores para a próxima rodada:"
+          }}
         </p>
 
         <div class="mode-selection">
+          <!-- Ordem atual: apenas para rodadas após a primeira -->
           <button
+            *ngIf="currentRodadaToGenerate !== 0"
             class="mode-option"
             (click)="confirmarGeracaoRodada(false)"
             [disabled]="generatingRound"
@@ -488,6 +514,7 @@
             </div>
           </button>
 
+          <!-- Aleatório: sempre disponível -->
           <button
             class="mode-option"
             (click)="confirmarGeracaoRodada(true)"
@@ -496,14 +523,23 @@
             <div class="mode-icon">🎲</div>
             <div class="mode-info">
               <h3>Aleatório</h3>
-              <p>Os vencedores serão embaralhados e pareados aleatoriamente</p>
+              <p>
+                {{
+                  currentRodadaToGenerate === 0
+                    ? "Os times serão embaralhados e pareados aleatoriamente"
+                    : "Os vencedores serão embaralhados e pareados aleatoriamente"
+                }}
+              </p>
             </div>
           </button>
         </div>
 
-        <p class="modal-info">
+        <p class="modal-info" *ngIf="currentRodadaToGenerate !== 0">
           💡 A Rodada {{ currentRodadaToGenerate }} está completa e pronta para
           avançar.
+        </p>
+        <p class="modal-info" *ngIf="currentRodadaToGenerate === 0">
+          💡 Gerando a primeira rodada com os times inscritos.
         </p>
       </div>
 

@@ -218,19 +218,56 @@
                       </div>
                     </div>
                     <div class="tournament-actions">
+                      <!-- Mensagem quando não há times disponíveis -->
+                      <div
+                        *ngIf="
+                          !loadingTimesDoUsuario &&
+                          getTimesDisponiveisParaInscricao(torneio).length ===
+                            0 &&
+                          isInscricaoAberta(torneio)
+                        "
+                        class="no-teams-message"
+                      >
+                        <span style="color: #f59e0b; font-size: 14px">
+                          ⚠️
+                          {{
+                            timesDoUsuario.length === 0
+                              ? "Você precisa criar um time primeiro"
+                              : "Todos os seus times já estão inscritos"
+                          }}
+                        </span>
+                      </div>
+
                       <select
+                        *ngIf="
+                          loadingTimesDoUsuario ||
+                          getTimesDisponiveisParaInscricao(torneio).length > 0
+                        "
                         class="btn-tournament btn-secondary"
                         [ngModel]="getSelectedTimeId(torneio.id)"
-                        (ngModelChange)="selecionarTimeParaTorneio(torneio.id, $event)"
+                        (ngModelChange)="
+                          selecionarTimeParaTorneio(torneio.id, $event)
+                        "
                         [disabled]="
                           loadingTimesDoUsuario ||
-                          getTimesDisponiveisParaInscricao(torneio).length === 0 ||
+                          getTimesDisponiveisParaInscricao(torneio).length ===
+                            0 ||
                           !isInscricaoAberta(torneio)
                         "
                       >
-                        <option [ngValue]="null">Selecione um time</option>
+                        <option [ngValue]="null">
+                          {{
+                            loadingTimesDoUsuario
+                              ? "Carregando times..."
+                              : "Selecione um time"
+                          }}
+                        </option>
                         <option
-                          *ngFor="let time of getTimesDisponiveisParaInscricao(torneio)"
+                          *ngFor="
+                            let time of getTimesDisponiveisParaInscricao(
+                              torneio
+                            )
+                          "
                           [ngValue]="time.id"
                         >
                           {{ time.nome }}
@@ -239,6 +276,7 @@
                       <button
                         class="btn-tournament btn-primary btn-register"
                         [disabled]="!podeInscreverNoTorneio(torneio)"
+                        [title]="getInscricaoButtonTooltip(torneio)"
                         (click)="inscreverNoTorneio(torneio)"
                       >
                         {{

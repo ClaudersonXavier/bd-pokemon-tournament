@@ -251,8 +251,13 @@ export class TournamentViewComponent implements OnInit {
         })),
       }));
 
-    // Se não houver batalhas, criar estrutura mock baseada no número de participantes
-    if (this.bracketRounds.length === 0 && this.torneio.maxParticipantes) {
+    // Se não houver batalhas, criar estrutura mock APENAS para torneios ABERTOS
+    // (para torneios EM_ANDAMENTO, mostrar empty-state com botão de gerar)
+    if (
+      this.bracketRounds.length === 0 &&
+      this.torneio.maxParticipantes &&
+      this.torneio.status === 'ABERTO'
+    ) {
       this.generateMockBracket(this.torneio.maxParticipantes);
     }
   }
@@ -431,43 +436,40 @@ export class TournamentViewComponent implements OnInit {
   getTournamentStatus(): string {
     if (!this.torneio) return '';
 
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-
-    const inicio = new Date(this.torneio.dataInicio);
-    const fim = new Date(this.torneio.dataFim);
-
-    if (inicio > hoje) return '📝 Inscrições Abertas';
-    if (inicio <= hoje && hoje <= fim) return '⚔️ Em Andamento';
-    return '🏆 Encerrado';
+    // Usar o campo status do banco, não cálculos de datas
+    switch (this.torneio.status) {
+      case 'ABERTO':
+        return '📝 Inscrições Abertas';
+      case 'EM_ANDAMENTO':
+        return '⚔️ Em Andamento';
+      case 'ENCERRADO':
+        return '🏆 Encerrado';
+      default:
+        return '';
+    }
   }
 
   getTournamentStatusClass(): string {
     if (!this.torneio) return '';
 
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-
-    const inicio = new Date(this.torneio.dataInicio);
-    const fim = new Date(this.torneio.dataFim);
-
-    if (inicio > hoje) return 'status-open';
-    if (inicio <= hoje && hoje <= fim) return 'status-progress';
-    return 'status-closed';
+    // Usar o campo status do banco, não cálculos de datas
+    switch (this.torneio.status) {
+      case 'ABERTO':
+        return 'status-open';
+      case 'EM_ANDAMENTO':
+        return 'status-progress';
+      case 'ENCERRADO':
+        return 'status-closed';
+      default:
+        return '';
+    }
   }
 
   // ─── Admin Functions ─────────────────────────────────────────────────────────
 
   isTournamentInProgress(): boolean {
     if (!this.torneio) return false;
-
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-
-    const inicio = new Date(this.torneio.dataInicio);
-    const fim = new Date(this.torneio.dataFim);
-
-    return inicio <= hoje && hoje <= fim;
+    return this.torneio.status === 'EM_ANDAMENTO';
   }
 
   canManageBattle(): boolean {
@@ -596,5 +598,13 @@ export class TournamentViewComponent implements OnInit {
           this.generatingRound = false;
         },
       });
+  }
+
+  gerarPrimeiraRodada(): void {
+    if (!this.torneio || !this.isTournamentInProgress()) return;
+
+    // Para a primeira rodada, usar rodada 0 como base (será criada rodada 1)
+    this.currentRodadaToGenerate = 0;
+    this.showGenerationModeModal = true;
   }
 }
