@@ -587,6 +587,10 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/times']);
   }
 
+  goToReports(): void {
+    this.router.navigate(['/relatorios']);
+  }
+
   // ─── Torneio Actions ─────────────────────────────────────────────────────────
 
   inscreverNoTorneio(torneio: Torneio): void {
