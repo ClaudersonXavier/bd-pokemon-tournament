@@ -58,6 +58,18 @@
             <span class="nav-label">Meu Perfil</span>
           </button>
         </li>
+        <li>
+          <button class="nav-item" (click)="goToReports()">
+            <span class="nav-icon">
+              <img
+                src="/icons/combo-chart.png"
+                alt="Relatórios"
+                class="nav-icon-img"
+              />
+            </span>
+            <span class="nav-label">Relatórios</span>
+          </button>
+        </li>
         <li *ngIf="isAdmin">
           <button
             class="nav-item"

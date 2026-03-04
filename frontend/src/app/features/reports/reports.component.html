@@ -1,0 +1,166 @@
+<div class="reports-page">
+  <div class="reports-bg"></div>
+
+  <header class="reports-header">
+    <div>
+      <h1>Relatórios</h1>
+      <p>Consulta das views de estatísticas do sistema</p>
+    </div>
+    <button class="btn-back" (click)="voltarHome()">Voltar para Home</button>
+  </header>
+
+  <main class="reports-content">
+    <section class="panel">
+      <div class="table-section">
+        <h2>Desempenho do treinador no torneio (v_treinador_desempenho_torneio)</h2>
+
+        <label class="filter-label" for="torneioSelectDesempenho">Selecione o torneio</label>
+        <select
+          id="torneioSelectDesempenho"
+          class="filter-select"
+          [value]="torneioDesempenhoSelecionadoId ?? ''"
+          (change)="onTorneioDesempenhoSelecionado($event)"
+        >
+          <option value="" disabled *ngIf="torneios.length === 0">Nenhum torneio disponível</option>
+          <option *ngFor="let torneio of torneios" [value]="torneio.id">
+            {{ torneio.nome }}
+          </option>
+        </select>
+
+        <div *ngIf="loadingDesempenho" class="state">Carregando desempenho...</div>
+        <div *ngIf="!loadingDesempenho && errorDesempenho" class="state error">{{ errorDesempenho }}</div>
+
+        <div class="table-wrapper" *ngIf="!loadingDesempenho">
+          <table>
+            <thead>
+              <tr>
+                <th>Treinador</th>
+                <th>Time</th>
+                <th>Batalhas</th>
+                <th>Vitórias</th>
+                <th>Derrotas</th>
+                <th>% Vitórias</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of desempenhoTorneio">
+                <td>{{ item.treinadorNome }}</td>
+                <td>{{ item.timeNome }}</td>
+                <td>{{ item.totalBatalhas }}</td>
+                <td>{{ item.totalVitorias }}</td>
+                <td>{{ item.totalDerrotas }}</td>
+                <td>{{ formatPercent(item.percentualVitorias) }}</td>
+              </tr>
+              <tr *ngIf="desempenhoTorneio.length === 0">
+                <td colspan="6" class="empty">Sem dados para o torneio selecionado.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="table-section">
+        <h2>Resumo das batalhas do torneio (v_resumo_batalhas_torneio)</h2>
+
+        <label class="filter-label" for="torneioSelectResumo">Selecione o torneio</label>
+        <select
+          id="torneioSelectResumo"
+          class="filter-select"
+          [value]="torneioResumoSelecionadoId ?? ''"
+          (change)="onTorneioResumoSelecionado($event)"
+        >
+          <option value="" disabled *ngIf="torneios.length === 0">Nenhum torneio disponível</option>
+          <option *ngFor="let torneio of torneios" [value]="torneio.id">
+            {{ torneio.nome }}
+          </option>
+        </select>
+
+        <div *ngIf="loadingResumoBatalhas" class="state">Carregando resumo de batalhas...</div>
+        <div *ngIf="!loadingResumoBatalhas && errorResumoBatalhas" class="state error">{{ errorResumoBatalhas }}</div>
+
+        <div class="table-wrapper" *ngIf="!loadingResumoBatalhas">
+          <table>
+            <thead>
+              <tr>
+                <th>Batalha</th>
+                <th>Rodada</th>
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Duração</th>
+                <th>Vencedor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of resumoBatalhasTorneio">
+                <td>#{{ item.batalhaId }}</td>
+                <td>{{ item.rodada }}</td>
+                <td>{{ formatDateTime(item.horarioInicio) }}</td>
+                <td>{{ formatDateTime(item.horarioFim) }}</td>
+                <td>{{ formatDuration(item.duracaoMinutos) }}</td>
+                <td>{{ item.timeVencedorNome || '-' }}</td>
+              </tr>
+              <tr *ngIf="resumoBatalhasTorneio.length === 0">
+                <td colspan="6" class="empty">Sem batalhas para o torneio selecionado.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="table-section">
+        <h2>Pokémons detalhados do time (v_time_pokemons_detalhado)</h2>
+
+        <label class="filter-label" for="timeSelect">Selecione o time</label>
+        <select
+          id="timeSelect"
+          class="filter-select"
+          [value]="timeSelecionadoId ?? ''"
+          (change)="onTimeSelecionado($event)"
+        >
+          <option value="" disabled *ngIf="times.length === 0">Nenhum time disponível</option>
+          <option *ngFor="let time of times" [value]="time.id">
+            {{ time.nome }} ({{ time.treinador ? time.treinador.nome : 'Sem treinador' }})
+          </option>
+        </select>
+
+        <div *ngIf="loadingPokemonsTime" class="state">Carregando pokémons do time...</div>
+        <div *ngIf="!loadingPokemonsTime && errorPokemonsTime" class="state error">{{ errorPokemonsTime }}</div>
+
+        <div class="table-wrapper" *ngIf="!loadingPokemonsTime">
+          <table>
+            <thead>
+              <tr>
+                <th>Treinador</th>
+                <th>Time</th>
+                <th>Pokémon</th>
+                <th>Espécie</th>
+                <th>Tipos</th>
+                <th>Imagem</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of pokemonsDoTime">
+                <td>{{ item.treinadorNome }}</td>
+                <td>{{ item.timeNome }}</td>
+                <td>{{ item.pokemonApelido || '-' }}</td>
+                <td>{{ item.especieNome }}</td>
+                <td>{{ item.tipos }}</td>
+                <td>
+                  <img
+                    *ngIf="item.especieImagemUrl"
+                    [src]="item.especieImagemUrl"
+                    [alt]="item.especieNome"
+                    class="pokemon-thumb"
+                  />
+                </td>
+              </tr>
+              <tr *ngIf="pokemonsDoTime.length === 0">
+                <td colspan="6" class="empty">Sem pokémons para o time selecionado.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
