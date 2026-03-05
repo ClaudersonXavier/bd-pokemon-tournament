@@ -2,31 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { TreinadorDesempenho, TimePokemonDetalhado, ResumoBatalhaTorneio } from '../models/estatisticas';
+import {
+  TreinadorDesempenho,
+  TimePokemonDetalhado,
+  ResumoBatalhaTorneio,
+  EstatisticasGerais,
+  TopTreinador,
+  TorneioResumo,
+} from '../models/estatisticas';
 
-export interface EstatisticasGerais {
-  totalTreinadores: number;
-  totalTorneios: number;
-  totalBatalhas: number;
-}
-
-export interface TopTreinador {
-  treinador_id: number;
-  treinador_nome: string;
-  total_batalhas: number;
-  total_vitorias: number;
-  total_derrotas: number;
-  percentual_vitorias: number;
-}
-
-export interface TorneioResumo {
-  torneio_id: number;
-  torneio_nome: string;
-  data_inicio: string;
-  data_fim: string;
-  total_participantes: number;
-  total_batalhas: number;
-}
+export type { EstatisticasGerais, TopTreinador, TorneioResumo };
 
 @Injectable({
   providedIn: 'root'
