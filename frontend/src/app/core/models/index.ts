@@ -72,3 +72,28 @@ export interface Torneio {
 
 // Estatísticas
 export * from './estatisticas';
+
+// Auth
+export * from './auth';
+
+// DTOs and bracket types
+export interface TreinadorUserDTO {
+  id: number;
+  nome: string;
+  email: string;
+  isAdmin: boolean;
+}
+
+export interface BracketMatch {
+  id: number;
+  team1?: Time;
+  team2?: Time;
+  winner?: Time;
+  batalha?: Batalha;
+  position: number;
+}
+
+export interface BracketRound {
+  name: string;
+  matches: BracketMatch[];
+}

@@ -4,10 +4,6 @@
 
 /* Import/reuse login styles - register uses the same visual style */
 
-* {
-  box-sizing: border-box;
-}
-
 /* ---- SCENE ---- */
 .scene {
   position: relative;
@@ -51,12 +47,12 @@
 /* ---- CARD ---- */
 .login-card {
   background: linear-gradient(145deg, #f8f8f3, #f0f0eb);
-  border: 4px solid #1a1a1a;
+  border: 4px solid var(--color-ink);
   border-radius: 16px;
   padding: 36px 40px 32px;
   width: 380px;
   box-shadow: 
-    8px 8px 0 #1a1a1a, 
+    8px 8px 0 var(--color-ink), 
     0 20px 60px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     inset 0 -1px 0 rgba(0, 0, 0, 0.1);
@@ -96,9 +92,9 @@
 
 /* ---- TYPOGRAPHY ---- */
 .game-title {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 20px;
-  color: #cc2200;
+  color: var(--color-red);
   text-shadow: 
     2px 2px 0 #9a1800,
     4px 4px 0 rgba(0, 0, 0, 0.3),
@@ -109,16 +105,16 @@
 }
 
 .game-subtitle {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 14px;
-  color: #1a5fb4;
+  color: var(--color-blue);
   margin: 2px 0 0;
   letter-spacing: 3px;
   text-transform: uppercase;
 }
 
 .game-tagline {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 7px;
   color: #777;
   margin: 10px 0 0;
@@ -145,9 +141,9 @@
 }
 
 .field-label {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 9px;
-  color: #1a1a1a;
+  color: var(--color-ink);
   letter-spacing: 1.5px;
 }
 
@@ -155,28 +151,28 @@
 .input-wrapper {
   display: flex;
   align-items: center;
-  border: 3px solid #1a1a1a;
+  border: 3px solid var(--color-ink);
   border-radius: 8px;
   background: linear-gradient(145deg, #ffffff, #f8f8f8);
   overflow: hidden;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
   box-shadow: 
-    2px 2px 0 #1a1a1a,
+    2px 2px 0 var(--color-ink),
     inset 0 2px 4px rgba(0, 0, 0, 0.1),
     inset 0 -1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .input-wrapper:focus-within {
-  border-color: #1a5fb4;
+  border-color: var(--color-blue);
   box-shadow: 
-    3px 3px 0 #1a5fb4,
+    3px 3px 0 var(--color-blue),
     inset 0 2px 4px rgba(26, 95, 180, 0.1),
     0 0 10px rgba(26, 95, 180, 0.3);
   transform: translateY(-1px);
 }
 
 .input-wrapper.error {
-  border-color: #cc2200;
+  border-color: var(--color-red);
   box-shadow: 
     2px 2px 0 rgba(204, 34, 0, 0.7),
     inset 0 2px 4px rgba(204, 34, 0, 0.1),
@@ -198,7 +194,7 @@
   padding: 11px 10px 11px 0;
   font-family: 'Nunito', 'Segoe UI', sans-serif;
   font-size: 13px;
-  color: #1a1a1a;
+  color: var(--color-ink);
   min-width: 0;
 }
 
@@ -221,16 +217,16 @@
 .toggle-pw:hover { transform: scale(1.2); }
 
 .toggle-pw:focus-visible {
-  outline: 2px solid #1a5fb4;
+  outline: 2px solid var(--color-blue);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 /* ---- ERROR & SUCCESS MESSAGES ---- */
 .error-msg {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 11px;
-  color: #cc2200;
+  color: var(--color-red);
   letter-spacing: 0.5px;
   min-height: 14px;
   padding-left: 2px;
@@ -276,11 +272,11 @@
   margin-top: 8px;
   width: 100%;
   padding: 16px;
-  background: linear-gradient(145deg, #ee3333, #cc2200, #990000);
+  background: linear-gradient(145deg, #ee3333, var(--color-red), #990000);
   color: #fff;
-  border: 3px solid #1a1a1a;
+  border: 3px solid var(--color-ink);
   border-radius: 8px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 10px;
   letter-spacing: 2px;
   cursor: pointer;
@@ -304,7 +300,7 @@
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: linear-gradient(145deg, #2266dd, #1a5fb4, #0f3d7a);
+  background: linear-gradient(145deg, #2266dd, var(--color-blue), #0f3d7a);
   box-shadow: 
     4px 4px 0 #0f3d7a,
     0 10px 25px rgba(26, 95, 180, 0.4),
@@ -367,9 +363,9 @@
 }
 
 .pixel-link {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 9px;
-  color: #1a5fb4;
+  color: var(--color-blue);
   text-decoration: none;
   letter-spacing: 0.2px;
   transition: color 0.15s;
@@ -377,19 +373,19 @@
 }
 
 .pixel-link:hover {
-  color: #cc2200;
+  color: var(--color-red);
   text-decoration: underline;
 }
 
 .pixel-link:focus-visible {
-  outline: 2px solid #1a5fb4;
+  outline: 2px solid var(--color-blue);
   outline-offset: 2px;
   border-radius: 3px;
 }
 
 /* ---- VERSION TAG ---- */
 .version-tag {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 10px;
   color: rgba(255, 255, 255, 1);
   letter-spacing: 1px;

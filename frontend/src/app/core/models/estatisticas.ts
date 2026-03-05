@@ -34,3 +34,27 @@ export interface ResumoBatalhaTorneio {
   timeVencedorId: number | null;
   timeVencedorNome: string | null;
 }
+
+export interface EstatisticasGerais {
+  totalTreinadores: number;
+  totalTorneios: number;
+  totalBatalhas: number;
+}
+
+export interface TopTreinador {
+  treinador_id: number;
+  treinador_nome: string;
+  total_batalhas: number;
+  total_vitorias: number;
+  total_derrotas: number;
+  percentual_vitorias: number;
+}
+
+export interface TorneioResumo {
+  torneio_id: number;
+  torneio_nome: string;
+  data_inicio: string;
+  data_fim: string;
+  total_participantes: number;
+  total_batalhas: number;
+}

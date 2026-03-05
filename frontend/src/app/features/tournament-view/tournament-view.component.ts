@@ -5,28 +5,15 @@ import { TorneioService } from '../../core/services/torneio.service';
 import { TreinadorService } from '../../core/services/treinador.service';
 import { EstatisticasService } from '../../core/services/estatisticas.service';
 import { AuthService } from '../../core/services/auth.service';
-import { Torneio, Batalha, Treinador, Time } from '../../core/models';
+import { Torneio, Batalha, Treinador, Time, BracketRound, BracketMatch } from '../../core/models';
 import {
   TreinadorDesempenho,
   TimePokemonDetalhado,
   ResumoBatalhaTorneio,
 } from '../../core/models/estatisticas';
+import { AppRoutes } from '../../core/constants';
 
 type TournamentTab = 'bracket' | 'trainers';
-
-interface BracketRound {
-  name: string;
-  matches: BracketMatch[];
-}
-
-interface BracketMatch {
-  id: number;
-  team1?: Time;
-  team2?: Time;
-  winner?: Time;
-  batalha?: Batalha;
-  position: number;
-}
 
 @Component({
   selector: 'app-tournament-view',
@@ -421,7 +408,7 @@ export class TournamentViewComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate([AppRoutes.HOME]);
   }
 
   formatDate(date: Date | string): string {

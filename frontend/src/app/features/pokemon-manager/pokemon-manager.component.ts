@@ -7,11 +7,13 @@ import { CatalogoService } from '../../core/services/catalogo.service';
 import { TreinadorService } from '../../core/services/treinador.service';
 import { Ataque, Especie, Pokemon } from '../../core/models';
 import { switchMap } from 'rxjs';
+import { AppRoutes } from '../../core/constants';
+import { PageHeaderComponent } from '../../shared';
 
 @Component({
   selector: 'app-pokemon-manager',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PageHeaderComponent],
   templateUrl: './pokemon-manager.component.html',
   styleUrl: './pokemon-manager.component.css',
 })
@@ -54,7 +56,7 @@ export class PokemonManagerComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser = this.authService.currentUser();
     if (!this.currentUser) {
-      this.router.navigate(['/login']);
+      this.router.navigate([AppRoutes.LOGIN]);
       return;
     }
 
@@ -303,6 +305,6 @@ export class PokemonManagerComponent implements OnInit {
   }
 
   goHome(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate([AppRoutes.HOME]);
   }
 }

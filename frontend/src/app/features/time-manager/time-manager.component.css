@@ -3,10 +3,6 @@
    Following home.component.css patterns
    ============================================ */
 
-* {
-  box-sizing: border-box;
-}
-
 .time-page {
   position: relative;
   width: 100vw;
@@ -29,117 +25,6 @@
   z-index: -1;
 }
 
-/* ---- HEADER ---- */
-.page-header {
-  background: linear-gradient(135deg, #f8f8f3 0%, #f0f0eb 100%);
-  border-bottom: 4px solid #1a1a1a;
-  box-shadow: 
-    0 8px 16px rgba(0, 0, 0, 0.25),
-    0 4px 8px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  padding: 16px 24px;
-  z-index: 100;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.header-logo {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.logo-img {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-  image-rendering: pixelated;
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.logo-text h1 {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 18px;
-  color: #cc2200;
-  text-shadow: 
-    2px 2px 0 #9a1800,
-    3px 3px 0 rgba(0, 0, 0, 0.2);
-  margin: 0;
-  letter-spacing: 1px;
-}
-
-.logo-text p {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 9px;
-  color: #1a5fb4;
-  margin: 2px 0 0;
-  letter-spacing: 2px;
-}
-
-.header-user {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 16px;
-  background: linear-gradient(145deg, #ffffff, #f5f5f5);
-  border: 3px solid #1a1a1a;
-  border-radius: 8px;
-  box-shadow: 
-    4px 4px 0 #1a1a1a,
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-.user-name {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
-  color: #1a1a1a;
-  letter-spacing: 0.5px;
-}
-
-.user-email {
-  font-family: 'Nunito', sans-serif;
-  font-size: 12px;
-  color: #777;
-  border-left: 2px solid #1a1a1a;
-  padding-left: 12px;
-}
-
-.btn-back {
-  background: linear-gradient(145deg, #1a5fb4, #1976d2);
-  color: #fff;
-  border: 2px solid #1a1a1a;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 8px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 2px 2px 0 #0f3d7a;
-}
-
-.btn-back:hover {
-  background: linear-gradient(145deg, #2266dd, #1a5fb4);
-  box-shadow: 3px 3px 0 #0f3d7a;
-  transform: translateY(-1px);
-}
-
-.btn-back:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 #0f3d7a;
-}
-
 /* ---- MAIN CONTENT ---- */
 .page-main {
   max-width: 1400px;
@@ -153,20 +38,20 @@
   grid-template-columns: 1.5fr 1fr;
   gap: 24px;
   background: linear-gradient(145deg, #f8f8f3, #f0f0eb);
-  border: 4px solid #1a1a1a;
-  border-top: 6px solid #cc2200;
+  border: 4px solid var(--color-ink);
+  border-top: 6px solid var(--color-red);
   border-radius: 12px;
   padding: 32px;
   margin-bottom: 24px;
   box-shadow: 
-    12px 12px 0 #1a1a1a,
+    12px 12px 0 var(--color-ink),
     0 20px 48px rgba(0, 0, 0, 0.25);
 }
 
 .hero-copy h2 {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 20px;
-  color: #cc2200;
+  color: var(--color-red);
   text-shadow: 2px 2px 0 #9a1800;
   margin: 0 0 12px;
 }
@@ -187,27 +72,27 @@
 
 .chip {
   background: linear-gradient(145deg, #e3f2fd, #bbdefb);
-  border: 3px solid #1a5fb4;
+  border: 3px solid var(--color-blue);
   border-radius: 8px;
   padding: 12px 16px;
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 2px 2px 0 #1a5fb4;
+  box-shadow: 2px 2px 0 var(--color-blue);
 }
 
 .chip-label {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 8px;
-  color: #1a5fb4;
+  color: var(--color-blue);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .chip strong {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 16px;
-  color: #cc2200;
+  color: var(--color-red);
 }
 
 .hero-illustration {
@@ -232,19 +117,19 @@
 /* ---- CARD BASE ---- */
 .card {
   background: linear-gradient(145deg, #f8f8f3, #f0f0eb);
-  border: 4px solid #1a1a1a;
+  border: 4px solid var(--color-ink);
   border-radius: 12px;
   padding: 24px;
   box-shadow: 
-    8px 8px 0 #1a1a1a,
+    8px 8px 0 var(--color-ink),
     0 12px 32px rgba(0, 0, 0, 0.2);
 }
 
 .card-title h3,
 .card-header h3 {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 14px;
-  color: #cc2200;
+  color: var(--color-red);
   margin: 0 0 8px;
 }
 
@@ -272,9 +157,9 @@
 
 .field label {
   display: block;
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 9px;
-  color: #1a1a1a;
+  color: var(--color-ink);
   margin-bottom: 8px;
   letter-spacing: 0.5px;
 }
@@ -282,7 +167,7 @@
 .field-hint {
   font-family: 'Nunito', sans-serif;
   font-size: 12px;
-  color: #1a5fb4;
+  color: var(--color-blue);
   margin: 4px 0 8px;
 }
 
@@ -290,19 +175,19 @@
   width: 100%;
   padding: 12px 14px;
   background: #ffffff;
-  border: 3px solid #1a1a1a;
+  border: 3px solid var(--color-ink);
   border-radius: 8px;
   font-family: 'Nunito', sans-serif;
   font-size: 14px;
-  color: #1a1a1a;
-  box-shadow: 2px 2px 0 #1a1a1a;
+  color: var(--color-ink);
+  box-shadow: 2px 2px 0 var(--color-ink);
   transition: all 0.2s ease;
 }
 
 .field input[type="text"]:focus {
   outline: none;
-  border-color: #1a5fb4;
-  box-shadow: 3px 3px 0 #1a5fb4;
+  border-color: var(--color-blue);
+  box-shadow: 3px 3px 0 var(--color-blue);
 }
 
 .field input[type="text"]::placeholder {
@@ -317,16 +202,16 @@
   width: 100%;
   padding: 10px 12px;
   background: #ffffff;
-  border: 2px solid #1a1a1a;
+  border: 2px solid var(--color-ink);
   border-radius: 6px;
   font-family: 'Nunito', sans-serif;
   font-size: 13px;
-  box-shadow: 2px 2px 0 #1a1a1a;
+  box-shadow: 2px 2px 0 var(--color-ink);
 }
 
 .search-box input:focus {
   outline: none;
-  border-color: #1a5fb4;
+  border-color: var(--color-blue);
 }
 
 /* ---- POKEMON SELECTOR ---- */
@@ -360,15 +245,15 @@
 }
 
 .pokemon-option:hover {
-  border-color: #1a5fb4;
+  border-color: var(--color-blue);
   transform: translateY(-2px);
-  box-shadow: 2px 2px 0 #1a5fb4;
+  box-shadow: 2px 2px 0 var(--color-blue);
 }
 
 .pokemon-option.selected {
   background: linear-gradient(145deg, #e3f2fd, #bbdefb);
-  border-color: #1a5fb4;
-  box-shadow: 2px 2px 0 #1a5fb4;
+  border-color: var(--color-blue);
+  box-shadow: 2px 2px 0 var(--color-blue);
 }
 
 .pokemon-option img {
@@ -379,9 +264,9 @@
 }
 
 .pokemon-name {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 7px;
-  color: #1a1a1a;
+  color: var(--color-ink);
   text-align: center;
   max-width: 80px;
   overflow: hidden;
@@ -398,14 +283,14 @@
 
 .btn {
   padding: 12px 16px;
-  border: 3px solid #1a1a1a;
+  border: 3px solid var(--color-ink);
   border-radius: 8px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 9px;
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 3px 3px 0 #1a1a1a;
+  box-shadow: 3px 3px 0 var(--color-ink);
 }
 
 .btn:disabled {
@@ -414,30 +299,30 @@
 }
 
 .btn-primary {
-  background: linear-gradient(145deg, #cc2200, #e63900);
+  background: linear-gradient(145deg, var(--color-red), #e63900);
   color: #fff;
-  border-color: #1a1a1a;
+  border-color: var(--color-ink);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: linear-gradient(145deg, #e63900, #ff4500);
   transform: translateY(-2px);
-  box-shadow: 4px 4px 0 #1a1a1a;
+  box-shadow: 4px 4px 0 var(--color-ink);
 }
 
 .btn-primary:active:not(:disabled) {
   transform: translate(1px, 1px);
-  box-shadow: 2px 2px 0 #1a1a1a;
+  box-shadow: 2px 2px 0 var(--color-ink);
 }
 
 .btn-ghost {
   background: linear-gradient(145deg, #ffffff, #f5f5f5);
-  color: #1a1a1a;
+  color: var(--color-ink);
 }
 
 .btn-ghost:hover:not(:disabled) {
   background: linear-gradient(145deg, #e3f2fd, #bbdefb);
-  border-color: #1a5fb4;
+  border-color: var(--color-blue);
 }
 
 .btn-danger {
@@ -448,7 +333,7 @@
 .btn-danger:hover:not(:disabled) {
   background: linear-gradient(145deg, #ff8a8a, #e63333);
   transform: translateY(-2px);
-  box-shadow: 4px 4px 0 #1a1a1a;
+  box-shadow: 4px 4px 0 var(--color-ink);
 }
 
 /* ---- ERROR MESSAGE ---- */
@@ -458,7 +343,7 @@
   background: linear-gradient(145deg, #ffebee, #ffcdd2);
   border: 2px solid #d32f2f;
   border-radius: 6px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 8px;
   color: #c62828;
 }
@@ -469,15 +354,15 @@
   padding: 32px 20px;
   text-align: center;
   background: linear-gradient(145deg, #ffffff, #f8f8f8);
-  border: 3px dashed #1a5fb4;
+  border: 3px dashed var(--color-blue);
   border-radius: 8px;
 }
 
 .loading-state p,
 .empty-state p {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 11px;
-  color: #1a1a1a;
+  color: var(--color-ink);
   margin: 8px 0 0;
 }
 
@@ -507,16 +392,16 @@
 
 .team-card {
   background: linear-gradient(145deg, #ffffff, #f8f8f8);
-  border: 3px solid #1a1a1a;
+  border: 3px solid var(--color-ink);
   border-radius: 10px;
   padding: 16px;
-  box-shadow: 4px 4px 0 #1a1a1a;
+  box-shadow: 4px 4px 0 var(--color-ink);
   transition: all 0.2s ease;
 }
 
 .team-card:hover {
   transform: translateY(-2px);
-  box-shadow: 6px 6px 0 #1a1a1a;
+  box-shadow: 6px 6px 0 var(--color-ink);
 }
 
 .team-header {
@@ -529,20 +414,20 @@
 }
 
 .team-header h4 {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 11px;
-  color: #1a1a1a;
+  color: var(--color-ink);
   margin: 0;
 }
 
 .team-badge {
   background: linear-gradient(145deg, #e3f2fd, #bbdefb);
-  border: 2px solid #1a5fb4;
+  border: 2px solid var(--color-blue);
   border-radius: 6px;
   padding: 4px 10px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 8px;
-  color: #1a5fb4;
+  color: var(--color-blue);
 }
 
 /* ---- TEAM POKEMONS ---- */
@@ -573,9 +458,9 @@
 }
 
 .slot-name {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 5px;
-  color: #1a1a1a;
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  color: var(--color-ink);
   text-align: center;
   max-width: 100%;
   overflow: hidden;
@@ -589,7 +474,7 @@
 }
 
 .empty-slot {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 16px;
   color: #bdbdbd;
   line-height: 32px;
@@ -600,7 +485,7 @@
 }
 
 .info-count {
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 8px;
   color: #666;
 }
@@ -624,6 +509,12 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  background: linear-gradient(145deg, #e3f2fd, #d0e8ff);
+  border: 2px solid var(--color-blue);
+  border-radius: 8px;
+  padding: 12px;
+  margin: -4px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .edit-panel .field {
@@ -659,26 +550,6 @@
 }
 
 @media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-  }
-
-  .header-user {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .logo-text h1 {
-    font-size: 14px;
-  }
-
-  .btn-back {
-    align-self: flex-start;
-  }
-
   .page-main {
     padding: 16px;
   }
@@ -722,7 +593,7 @@
 
 .pokemon-selector::-webkit-scrollbar-thumb,
 .teams-card::-webkit-scrollbar-thumb {
-  background: #1a5fb4;
+  background: var(--color-blue);
   border-radius: 4px;
 }
 

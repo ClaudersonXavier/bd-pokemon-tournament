@@ -1,0 +1,352 @@
+<div class="content-card">
+  <!-- Filtros de Torneios -->
+  <div
+    class="tournaments-filters"
+    *ngIf="!loadingTorneios && !errorTorneios"
+  >
+    <!-- Barra de Pesquisa -->
+    <div class="filter-search">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        class="search-input"
+        [(ngModel)]="searchTorneio"
+        placeholder="Buscar torneio por nome..."
+      />
+      <button
+        class="btn-clear-search"
+        *ngIf="searchTorneio"
+        (click)="searchTorneio = ''"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Filtros de Status -->
+    <div class="filter-status">
+      <button
+        class="status-filter-btn"
+        [class.active]="filterStatus === 'ALL'"
+        (click)="setFilterStatus('ALL')"
+      >
+        🌟 Todos
+      </button>
+      <button
+        class="status-filter-btn"
+        [class.active]="filterStatus === 'ABERTO'"
+        (click)="setFilterStatus('ABERTO')"
+      >
+        📝 Abertos
+      </button>
+      <button
+        class="status-filter-btn"
+        [class.active]="filterStatus === 'EM_ANDAMENTO'"
+        (click)="setFilterStatus('EM_ANDAMENTO')"
+      >
+        ⚔️ Em Andamento
+      </button>
+      <button
+        class="status-filter-btn"
+        [class.active]="filterStatus === 'ENCERRADO'"
+        (click)="setFilterStatus('ENCERRADO')"
+      >
+        🏆 Encerrados
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loadingTorneios" class="tournaments-loading">
+    <p>Carregando torneios...</p>
+  </div>
+
+  <!-- Error State -->
+  <div
+    *ngIf="errorTorneios && !loadingTorneios"
+    class="tournaments-error"
+  >
+    <p>❌ {{ errorTorneios }}</p>
+    <button class="btn-retry" (click)="loadTorneios()">
+      Tentar Novamente
+    </button>
+  </div>
+
+  <!-- Torneios Content -->
+  <div
+    *ngIf="!loadingTorneios && !errorTorneios"
+    class="tournaments-content"
+  >
+    <!-- Torneios Abertos (Inscrições) -->
+    <div
+      class="tournament-section"
+      *ngIf="
+        torneiosAbertosFiltered.length > 0 &&
+        (filterStatus === 'ALL' || filterStatus === 'ABERTO')
+      "
+    >
+      <h3 class="section-title">
+        <span class="status-badge status-open">📝 Abertos</span>
+      </h3>
+      <div class="tournaments-grid">
+        <div
+          class="tournament-card"
+          *ngFor="let torneio of torneiosAbertosFiltered"
+        >
+          <div class="tournament-header">
+            <h4>{{ torneio.nome }}</h4>
+            <span class="tournament-status status-open">Aberto</span>
+          </div>
+          <div class="tournament-info">
+            <div class="info-row">
+              <span class="info-label">📅 Início:</span>
+              <span class="info-value">{{
+                formatDate(torneio.dataInicio)
+              }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">🏁 Término:</span>
+              <span class="info-value">{{
+                formatDate(torneio.dataFim)
+              }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">👥 Participantes:</span>
+              <span class="info-value"
+                >{{ torneio.times?.length || 0 }}/{{
+                  torneio.maxParticipantes
+                }}</span
+              >
+            </div>
+            <div class="info-row">
+              <span class="info-label">✉️ Inscrições até:</span>
+              <span class="info-value">{{
+                formatDate(torneio.dataEncerramentoInscricoes)
+              }}</span>
+            </div>
+          </div>
+          <div class="tournament-actions">
+            <!-- Mensagem quando não há times disponíveis -->
+            <div
+              *ngIf="
+                !loadingTimesDoUsuario &&
+                getTimesDisponiveisParaInscricao(torneio).length ===
+                  0 &&
+                isInscricaoAberta(torneio)
+              "
+              class="no-teams-message"
+            >
+              <span style="color: #f59e0b; font-size: 14px">
+                ⚠️
+                {{
+                  timesDoUsuario.length === 0
+                    ? "Você precisa criar um time primeiro"
+                    : "Todos os seus times já estão inscritos"
+                }}
+              </span>
+            </div>
+
+            <select
+              *ngIf="
+                loadingTimesDoUsuario ||
+                getTimesDisponiveisParaInscricao(torneio).length > 0
+              "
+              class="btn-tournament btn-secondary"
+              [ngModel]="getSelectedTimeId(torneio.id)"
+              (ngModelChange)="
+                selecionarTimeParaTorneio(torneio.id, $event)
+              "
+              [disabled]="
+                loadingTimesDoUsuario ||
+                getTimesDisponiveisParaInscricao(torneio).length ===
+                  0 ||
+                !isInscricaoAberta(torneio)
+              "
+            >
+              <option [ngValue]="null">
+                {{
+                  loadingTimesDoUsuario
+                    ? "Carregando times..."
+                    : "Selecione um time"
+                }}
+              </option>
+              <option
+                *ngFor="
+                  let time of getTimesDisponiveisParaInscricao(
+                    torneio
+                  )
+                "
+                [ngValue]="time.id"
+              >
+                {{ time.nome }}
+              </option>
+            </select>
+            <button
+              class="btn-tournament btn-primary btn-register"
+              [disabled]="!podeInscreverNoTorneio(torneio)"
+              [title]="getInscricaoButtonTooltip(torneio)"
+              (click)="inscreverNoTorneio(torneio)"
+            >
+              {{
+                isInscricaoAberta(torneio)
+                  ? inscrevendoPorTorneio[torneio.id]
+                    ? "Inscrevendo..."
+                    : "Inscrever-se"
+                  : "Inscrições Encerradas"
+              }}
+            </button>
+            <button
+              class="btn-tournament btn-secondary btn-details"
+              (click)="verDetalhesTorneio(torneio)"
+            >
+              Ver Detalhes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Torneios Em Andamento -->
+    <div
+      class="tournament-section"
+      *ngIf="
+        torneiosEmAndamentoFiltered.length > 0 &&
+        (filterStatus === 'ALL' || filterStatus === 'EM_ANDAMENTO')
+      "
+    >
+      <h3 class="section-title">
+        <span class="status-badge status-progress"
+          >⚔️ Em Andamento</span
+        >
+      </h3>
+      <div class="tournaments-grid">
+        <div
+          class="tournament-card"
+          *ngFor="let torneio of torneiosEmAndamentoFiltered"
+        >
+          <div class="tournament-header">
+            <h4>{{ torneio.nome }}</h4>
+            <span class="tournament-status status-progress"
+              >Em Andamento</span
+            >
+          </div>
+          <div class="tournament-info">
+            <div class="info-row">
+              <span class="info-label">📅 Início:</span>
+              <span class="info-value">{{
+                formatDate(torneio.dataInicio)
+              }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">🏁 Término:</span>
+              <span class="info-value">{{
+                formatDate(torneio.dataFim)
+              }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">👥 Participantes:</span>
+              <span class="info-value">{{
+                torneio.times?.length || 0
+              }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">⚔️ Batalhas:</span>
+              <span class="info-value">{{
+                torneio.batalhas?.length || 0
+              }}</span>
+            </div>
+          </div>
+          <div class="tournament-actions">
+            <button
+              class="btn-tournament btn-primary"
+              (click)="verDetalhesTorneio(torneio)"
+            >
+              Acompanhar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Torneios Encerrados -->
+    <div
+      class="tournament-section"
+      *ngIf="
+        torneiosEncerradosFiltered.length > 0 &&
+        (filterStatus === 'ALL' || filterStatus === 'ENCERRADO')
+      "
+    >
+      <h3 class="section-title">
+        <span class="status-badge status-closed">🏆 Encerrados</span>
+      </h3>
+      <div class="tournaments-grid">
+        <div
+          class="tournament-card"
+          *ngFor="let torneio of torneiosEncerradosFiltered"
+        >
+          <div class="tournament-header">
+            <h4>{{ torneio.nome }}</h4>
+            <span class="tournament-status status-closed"
+              >Encerrado</span
+            >
+          </div>
+          <div class="tournament-info">
+            <div class="info-row">
+              <span class="info-label">📅 Realizado:</span>
+              <span class="info-value"
+                >{{ formatDate(torneio.dataInicio) }} -
+                {{ formatDate(torneio.dataFim) }}</span
+              >
+            </div>
+            <div class="info-row">
+              <span class="info-label">👥 Participantes:</span>
+              <span class="info-value">{{
+                torneio.times?.length || 0
+              }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">⚔️ Batalhas:</span>
+              <span class="info-value">{{
+                torneio.batalhas?.length || 0
+              }}</span>
+            </div>
+          </div>
+          <div class="tournament-actions">
+            <button
+              class="btn-tournament btn-secondary"
+              (click)="verDetalhesTorneio(torneio)"
+            >
+              Ver Resultados
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No tournaments message -->
+    <div
+      class="tournament-placeholder"
+      *ngIf="
+        (filterStatus === 'ALL' &&
+          torneiosAbertos.length === 0 &&
+          torneiosEmAndamento.length === 0 &&
+          torneiosEncerrados.length === 0) ||
+        (filterStatus === 'ABERTO' &&
+          torneiosAbertosFiltered.length === 0) ||
+        (filterStatus === 'EM_ANDAMENTO' &&
+          torneiosEmAndamentoFiltered.length === 0) ||
+        (filterStatus === 'ENCERRADO' &&
+          torneiosEncerradosFiltered.length === 0)
+      "
+    >
+      <div class="placeholder-icon">
+        <img
+          src="/icons/trofeu.png"
+          alt="Troféu"
+          class="placeholder-icon-img"
+        />
+      </div>
+      <p>Nenhum torneio disponível</p>
+      <small>Novos torneios em breve...</small>
+    </div>
+  </div>
+</div>

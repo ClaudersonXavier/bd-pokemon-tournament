@@ -3,8 +3,11 @@
 
   <section class="edit-card">
     <header class="edit-header">
-      <h1>Editar Perfil</h1>
-      <p>Atualize seus dados e escolha seu treinador</p>
+      <div class="header-text">
+        <h1>Editar Perfil</h1>
+        <p>Atualize seus dados e escolha seu treinador</p>
+      </div>
+      <button class="btn-back" (click)="cancel()">← Voltar</button>
     </header>
 
     <div class="success-msg" *ngIf="saveSuccess">

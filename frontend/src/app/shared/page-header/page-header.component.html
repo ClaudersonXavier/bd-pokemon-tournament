@@ -1,0 +1,19 @@
+<header class="page-header">
+  <div class="header-content">
+    <div class="header-logo">
+      <img [src]="logoSrc" alt="logo" class="logo-img" />
+      <div class="logo-text">
+        <h1>{{ title }}</h1>
+        <p *ngIf="subtitle">{{ subtitle }}</p>
+      </div>
+    </div>
+
+    <div class="header-user" *ngIf="userName">
+      <span class="user-name">{{ userName }}</span>
+      <span class="user-email" *ngIf="userEmail">{{ userEmail }}</span>
+      <button class="btn-back" *ngIf="showBack" (click)="onBack()">← Voltar</button>
+    </div>
+
+    <button class="btn-back" *ngIf="showBack && !userName" (click)="onBack()">← Voltar</button>
+  </div>
+</header>

@@ -1,23 +1,14 @@
 <div class="pokemon-page">
   <div class="bg-sky"></div>
 
-  <header class="page-header">
-    <div class="header-content">
-      <div class="header-logo">
-        <img src="/icons/poke-ball.png" alt="Pokemon" class="logo-img" />
-        <div class="logo-text">
-          <h1>Meus Pokemons</h1>
-          <p>Gerencie sua box de batalha</p>
-        </div>
-      </div>
-
-      <div class="header-user">
-        <span class="user-name">{{ currentUser?.nome }}</span>
-        <span class="user-email">{{ currentUser?.email }}</span>
-        <button class="btn-back" (click)="goHome()">Voltar</button>
-      </div>
-    </div>
-  </header>
+  <app-page-header
+    title="Meus Pokemons"
+    subtitle="Gerencie sua box de batalha"
+    [userName]="currentUser?.nome"
+    [userEmail]="currentUser?.email"
+    [showBack]="true"
+    (backClick)="goHome()">
+  </app-page-header>
 
   <div class="page-main">
     <section class="hero-card">

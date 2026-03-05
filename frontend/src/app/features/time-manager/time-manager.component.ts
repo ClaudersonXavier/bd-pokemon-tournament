@@ -5,11 +5,13 @@ import { Router } from '@angular/router';
 import { AuthService, User } from '../../core/services/auth.service';
 import { TreinadorService } from '../../core/services/treinador.service';
 import { Pokemon, Time } from '../../core/models';
+import { AppRoutes } from '../../core/constants';
+import { PageHeaderComponent } from '../../shared';
 
 @Component({
   selector: 'app-time-manager',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PageHeaderComponent],
   templateUrl: './time-manager.component.html',
   styleUrls: ['./time-manager.component.css'],
 })
@@ -49,7 +51,7 @@ export class TimeManagerComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser = this.authService.currentUser();
     if (!this.currentUser) {
-        this.router.navigate(['/login']);
+        this.router.navigate([AppRoutes.LOGIN]);
         return;
     }
 
@@ -281,6 +283,6 @@ export class TimeManagerComponent implements OnInit {
   }
 
   goHome(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate([AppRoutes.HOME]);
   }
 }
