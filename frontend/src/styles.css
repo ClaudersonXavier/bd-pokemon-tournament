@@ -1,5 +1,14 @@
 /* Global styles for the Pokemon Tournament application */
 
+:root {
+  --color-ink:  #1a1a1a;
+  --color-blue: #1a5fb4;
+  --color-red:  #cc2200;
+  --color-gold: #b8860b;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-base:  'Nunito', 'Segoe UI', sans-serif;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -7,8 +16,6 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Nunito', 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-base);
   background-color: #f5f5f5;
 }
-
-/* You can add your global styles here */

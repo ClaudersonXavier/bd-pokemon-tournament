@@ -1,0 +1,124 @@
+.page-header {
+  background: linear-gradient(135deg, #f8f8f3 0%, #f0f0eb 100%);
+  border-bottom: 4px solid var(--color-ink);
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.25),
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  padding: 16px 24px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 16px;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.logo-text h1 {
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  color: var(--color-red);
+  text-shadow: 2px 2px 0 #9a1800;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.logo-text p {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--color-blue);
+  margin: 4px 0 0;
+  letter-spacing: 1px;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: linear-gradient(145deg, #ffffff, #f5f5f5);
+  border: 3px solid var(--color-ink);
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 var(--color-ink);
+}
+
+.user-name {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--color-ink);
+}
+
+.user-email {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  color: #777;
+  border-left: 2px solid var(--color-ink);
+  padding-left: 12px;
+}
+
+.btn-back {
+  background: linear-gradient(145deg, #ffde59, #ffb347);
+  color: var(--color-ink);
+  border: 3px solid var(--color-ink);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #b07800;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.btn-back:hover {
+  background: linear-gradient(145deg, #ffd020, #ffa020);
+}
+
+.btn-back:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #b07800;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .header-user {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .logo-text h1 {
+    font-size: 14px;
+  }
+
+  .btn-back {
+    align-self: flex-start;
+  }
+}
