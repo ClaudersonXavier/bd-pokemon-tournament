@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/public/images/pokemon-header.gif" alt="Pokémon Tournament Header" width="100%" height="240" />
+  <img src="frontend/public/images/pokemon-header.gif" alt="Pokémon Tournament Header" width="100%" height="500" />
 </p>
 
 # 🏆 BD Pokémon Tournament
@@ -22,28 +22,34 @@
 
 <table>
   <tr>
-    <td align="center" width="25%">
+    <td align="center" width="20%">
       <a href="docs/esquema-bd.md">
         <b>🧠 Esquema do BD</b><br/>
         <sub>Diagrama ER e Modelo Conceitual</sub>
       </a>
     </td>
-    <td align="center" width="25%">
+    <td align="center" width="20%">
       <a href="docs/dicionario-de-dados.md">
         <b>📚 Dicionário de Dados</b><br/>
         <sub>Especificação de Tabelas e Campos</sub>
       </a>
     </td>
-    <td align="center" width="25%">
+    <td align="center" width="20%">
       <a href="docs/povoamento-seeders.md">
         <b>🌱 Povoamento/Seeders</b><br/>
         <sub>Como os Dados são Inseridos</sub>
       </a>
     </td>
-    <td align="center" width="25%">
+    <td align="center" width="20%">
       <a href="docs/views-sql.md">
         <b>📊 Views SQL</b><br/>
         <sub>Consultas Otimizadas e Views</sub>
+      </a>
+    </td>
+    <td align="center" width="20%">
+      <a href="docs/triggers-sql.md">
+        <b>⚙️ Triggers SQL</b><br/>
+        <sub>Regras de Negócio Automatizadas</sub>
       </a>
     </td>
   </tr>
@@ -57,6 +63,7 @@
 - [🚀 Como Rodar o Projeto](#-como-rodar-o-projeto)
 - [🔐 Autenticação (JWT)](#-autenticação-jwt)
 - [🗄️ Estrutura do Banco de Dados](#️-estrutura-do-banco-de-dados)
+- [⚙️ Regras de Negócio e Testes SQL](#️-regras-de-negócio-e-testes-sql)
 - [🌱 Povoamento do Banco de Dados](#-povoamento-do-banco-de-dados)
 - [❓ FAQ / Troubleshooting](#-faq--troubleshooting)
 - [🛠️ Tecnologias Utilizadas](#️-tecnologias-utilizadas)
@@ -259,6 +266,29 @@ O projeto inclui **3 views otimizadas** para consultas frequentes:
 | `v_treinador_desempenho_torneio`  | Desempenho de treinadores em torneios      |
 
 > 📊 **Ver exemplos de uso:** [Views SQL](docs/views-sql.md)
+> 
+> ⚙️ **Regras automatizadas (triggers):** [Triggers SQL](docs/triggers-sql.md)
+
+---
+
+## ⚙️ Regras de Negócio e Testes SQL
+
+O status dos torneios é atualizado automaticamente no banco com base em regras de negócio:
+
+- `ABERTO` → `EM_ANDAMENTO` quando o torneio atinge capacidade máxima.
+- `EM_ANDAMENTO` → `ENCERRADO` quando existe um campeão (apenas um time sem derrotas).
+- Atualização por data via função manual/agendada para ajustar torneios em atraso.
+
+### Resumo de Testes
+
+1. Suba o projeto com `docker compose up --build`.
+2. Acesse o PostgreSQL com `docker compose exec db psql -U dev -d projeto_banquinho`.
+3. Execute os scripts SQL de validação para:
+  - Trigger de capacidade (`trg_verificar_capacidade`)
+  - Trigger de campeão (`trg_verificar_campeao`)
+  - Função por data (`atualizar_status_por_datas()`)
+
+> 📘 **Roteiro completo de testes e resultados esperados:** [Triggers SQL](docs/triggers-sql.md)
 
 ---
 
@@ -430,6 +460,7 @@ Use a [navegação no topo](#-navegação-da-documentação) deste documento par
 - **Dicionário de Dados:** Especificação de todas as tabelas
 - **Povoamento/Seeders:** Como os dados são inseridos
 - **Views SQL:** Consultas otimizadas e views disponíveis
+- **Triggers SQL:** Regras de negócio automáticas e scripts de teste
 </details>
 
 ---
@@ -478,6 +509,11 @@ Para dúvidas, sugestões ou contribuições, entre em contato com qualquer um d
     <td align="center">
       <a href="docs/views-sql.md">
         <b>📊 Views SQL</b>
+      </a>
+    </td>
+    <td align="center">
+      <a href="docs/triggers-sql.md">
+        <b>⚙️ Triggers SQL</b>
       </a>
     </td>
   </tr>
