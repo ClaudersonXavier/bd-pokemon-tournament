@@ -151,6 +151,27 @@ public class EstatisticasController {
         return ResponseEntity.ok(desempenho);
     }
 
+    // GET /api/estatisticas/treinador/{treinadorId}/titulos
+    // Retorna quantos torneios encerrados o treinador venceu (campeão da final)
+    @GetMapping("/treinador/{treinadorId}/titulos")
+    public ResponseEntity<Map<String, Object>> obterTitulosTreinador(@PathVariable Long treinadorId) {
+        Long totalTitulos = jdbcTemplate.queryForObject(
+            "SELECT COUNT(DISTINCT t.id) " +
+            "FROM torneio t " +
+            "JOIN batalha b ON b.torneio_id = t.id " +
+            "JOIN time tm ON tm.id = b.time_vencedor_id " +
+            "WHERE tm.treinador_id = ? " +
+            "  AND t.status = 'ENCERRADO' " +
+            "  AND b.rodada = (SELECT MAX(b2.rodada) FROM batalha b2 WHERE b2.torneio_id = t.id)",
+            Long.class,
+            treinadorId
+        );
+
+        Map<String, Object> response = new java.util.LinkedHashMap<>();
+        response.put("totalTitulos", totalTitulos != null ? totalTitulos : 0);
+        return ResponseEntity.ok(response);
+    }
+
     // GET /api/estatisticas/torneio/{torneioId}/resumo-batalhas
     // Consulta a view v_resumo_batalhas_torneio
     @GetMapping("/torneio/{torneioId}/resumo-batalhas")

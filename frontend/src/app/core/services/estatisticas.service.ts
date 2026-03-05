@@ -51,6 +51,12 @@ export class EstatisticasService {
     );
   }
 
+  obterTitulosTreinador(treinadorId: number): Observable<{ totalTitulos: number }> {
+    return this.http.get<{ totalTitulos: number }>(
+      `${this.apiUrl}/treinador/${treinadorId}/titulos`
+    );
+  }
+
   obterResumoBatalhasTorneio(torneioId: number): Observable<ResumoBatalhaTorneio[]> {
     return this.http.get<ResumoBatalhaTorneio[]>(
       `${this.apiUrl}/torneio/${torneioId}/resumo-batalhas`
