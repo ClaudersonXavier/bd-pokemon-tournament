@@ -1,414 +1,327 @@
-<div class="tournament-view-container">
-  <!-- Background -->
+<div class="tournament-page">
   <div class="bg-sky"></div>
 
   <!-- Header -->
-  <header class="tournament-header">
-    <button class="btn-back" (click)="goBack()">
-      <span class="back-icon">←</span>
-      Voltar
-    </button>
-
-    <div class="tournament-info" *ngIf="torneio && !loading">
-      <h1 class="tournament-name">{{ torneio.nome }}</h1>
-      <div class="tournament-meta">
-        <span class="status-badge" [class]="getTournamentStatusClass()">
-          {{ getTournamentStatus() }}
-        </span>
-        <span class="tournament-dates">
-          📅 {{ formatDate(torneio.dataInicio) }} -
-          {{ formatDate(torneio.dataFim) }}
-        </span>
-        <span class="tournament-participants">
-          👥 {{ torneio.maxParticipantes }} participantes
-        </span>
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-logo">
+        <img src="/icons/poke-ball.png" alt="Pokemon" class="logo-img" />
+        <div class="logo-text">
+          <h1>{{ torneio?.nome || 'Torneio' }}</h1>
+          <div class="tournament-meta" *ngIf="torneio && !loading">
+            <span class="status-badge" [class]="getTournamentStatusClass()">
+              {{ getTournamentStatus() }}
+            </span>
+            <span class="tournament-dates">
+              📅 {{ formatDate(torneio.dataInicio) }} - {{ formatDate(torneio.dataFim) }}
+            </span>
+            <span class="tournament-participants">
+              👥 {{ torneio.maxParticipantes }} participantes
+            </span>
+          </div>
+        </div>
       </div>
+      <button class="btn-back" (click)="goBack()">← Voltar</button>
     </div>
   </header>
 
-  <!-- Loading State -->
-  <div class="loading-container" *ngIf="loading">
-    <div class="spinner"></div>
-    <p>Carregando dados do torneio...</p>
-  </div>
+  <div class="page-main">
 
-  <!-- Error State -->
-  <div class="error-container" *ngIf="error && !loading">
-    <p>❌ {{ error }}</p>
-    <button class="btn-retry" (click)="goBack()">Voltar</button>
-  </div>
-
-  <!-- Main Content -->
-  <div class="tournament-content" *ngIf="!loading && !error && torneio">
-    <!-- Tabs Navigation -->
-    <nav class="tabs-nav">
-      <button
-        class="tab-button"
-        [class.active]="isTabActive('bracket')"
-        (click)="setActiveTab('bracket')"
-      >
-        <span class="tab-icon">🏆</span>
-        <span class="tab-label">Chaveamento</span>
-      </button>
-      <button
-        class="tab-button"
-        [class.active]="isTabActive('trainers')"
-        (click)="setActiveTab('trainers')"
-      >
-        <span class="tab-icon">👥</span>
-        <span class="tab-label">Treinadores</span>
-      </button>
-    </nav>
-
-    <!-- Bracket Tab -->
-    <div class="tab-content" *ngIf="isTabActive('bracket')">
-      <div class="bracket-container">
-        <h2 class="content-title">Chaveamento do Torneio</h2>
-        <p class="content-subtitle">Acompanhe o caminho até a final</p>
-
-        <!-- Estatísticas Gerais do Torneio -->
-        <div
-          class="tournament-stats"
-          *ngIf="estatisticasTorneio.totalBatalhas > 0"
-        >
-          <div class="stat-card">
-            <span class="stat-icon">⚔️</span>
-            <div class="stat-info">
-              <span class="stat-value">{{
-                estatisticasTorneio.totalBatalhas
-              }}</span>
-              <span class="stat-label">Total de Batalhas</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <span class="stat-icon">✅</span>
-            <div class="stat-info">
-              <span class="stat-value">{{
-                estatisticasTorneio.batalhasFinalizadas
-              }}</span>
-              <span class="stat-label">Batalhas Finalizadas</span>
-            </div>
-          </div>
-          <div class="stat-card" *ngIf="estatisticasTorneio.duracaoMedia > 0">
-            <span class="stat-icon">⏱️</span>
-            <div class="stat-info">
-              <span class="stat-value"
-                >{{ estatisticasTorneio.duracaoMedia }}min</span
-              >
-              <span class="stat-label">Duração Média</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Campeão do Torneio -->
-        <div class="champion-section" *ngIf="getCampeao()">
-          <div class="champion-card">
-            <div class="champion-crown">👑</div>
-            <h3 class="champion-title">Campeão do Torneio</h3>
-            <div class="champion-team">
-              <span class="champion-team-name">{{ getCampeao()?.nome }}</span>
-              <span class="champion-trainer" *ngIf="getCampeao()?.treinador">
-                Treinador: {{ getCampeao()?.treinador?.nome }}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bracket Visual -->
-        <div class="bracket" *ngIf="bracketRounds.length > 0">
-          <div
-            class="bracket-round"
-            *ngFor="let round of bracketRounds; let i = index"
-          >
-            <h3 class="round-title">{{ round.name }}</h3>
-
-            <!-- Botão para gerar próxima rodada (apenas para admin) -->
-            <div
-              class="round-actions"
-              *ngIf="
-                canManageBattle() &&
-                isRodadaCompleta(round.matches[0]?.batalha?.rodada || 0) &&
-                !proximaRodadaJaExiste(
-                  round.matches[0]?.batalha?.rodada || 0
-                ) &&
-                round.matches.length > 1
-              "
-            >
-              <button
-                class="btn-generate-round"
-                (click)="
-                  gerarProximaRodada(round.matches[0]?.batalha?.rodada || 0)
-                "
-                [disabled]="generatingRound"
-              >
-                <span *ngIf="!generatingRound">🎯 Gerar Próxima Rodada</span>
-                <span *ngIf="generatingRound">⏳ Gerando...</span>
-              </button>
-            </div>
-
-            <div class="matches-container">
-              <div class="match-card" *ngFor="let match of round.matches">
-                <div class="match-header">
-                  <span class="match-id">Partida #{{ match.id }}</span>
-                  <span class="match-status" *ngIf="match.winner"
-                    >✅ Finalizada</span
-                  >
-                  <span class="match-status pending" *ngIf="!match.winner"
-                    >⏳ Pendente</span
-                  >
-                </div>
-
-                <div class="match-teams">
-                  <div
-                    class="team"
-                    [class.winner]="match.winner?.id === match.team1?.id"
-                    [class.clickable]="
-                      canManageBattle() && !match.winner && match.team1
-                    "
-                    (click)="
-                      canManageBattle() &&
-                      !match.winner &&
-                      match.team1 &&
-                      match.batalha
-                        ? openWinnerModal(match.batalha, match.team1)
-                        : null
-                    "
-                  >
-                    <div class="team-info">
-                      <span class="team-name">
-                        {{ match.team1?.nome || "TBD" }}
-                      </span>
-                      <span
-                        class="team-hint"
-                        *ngIf="
-                          canManageBattle() && !match.winner && match.team1
-                        "
-                      >
-                        👆 Clique para definir vencedor
-                      </span>
-                    </div>
-                    <span
-                      class="winner-badge"
-                      *ngIf="match.winner?.id === match.team1?.id"
-                    >
-                      👑
-                    </span>
-                  </div>
-
-                  <div class="vs-divider">VS</div>
-
-                  <div
-                    class="team"
-                    [class.winner]="match.winner?.id === match.team2?.id"
-                    [class.clickable]="
-                      canManageBattle() && !match.winner && match.team2
-                    "
-                    (click)="
-                      canManageBattle() &&
-                      !match.winner &&
-                      match.team2 &&
-                      match.batalha
-                        ? openWinnerModal(match.batalha, match.team2)
-                        : null
-                    "
-                  >
-                    <div class="team-info">
-                      <span class="team-name">
-                        {{ match.team2?.nome || "TBD" }}
-                      </span>
-                      <span
-                        class="team-hint"
-                        *ngIf="
-                          canManageBattle() && !match.winner && match.team2
-                        "
-                      >
-                        👆 Clique para definir vencedor
-                      </span>
-                    </div>
-                    <span
-                      class="winner-badge"
-                      *ngIf="match.winner?.id === match.team2?.id"
-                    >
-                      👑
-                    </span>
-                  </div>
-                </div>
-
-                <div class="match-footer" *ngIf="match.batalha">
-                  <span class="match-date">
-                    📅 {{ formatDate(match.batalha.horarioInicio) }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Empty State -->
-        <div class="empty-state" *ngIf="bracketRounds.length === 0">
-          <div class="empty-icon">🏆</div>
-          <h3>Chaveamento em Preparação</h3>
-          <p *ngIf="!isTournamentInProgress()">
-            O chaveamento será gerado assim que as inscrições forem encerradas.
-          </p>
-          <p *ngIf="isTournamentInProgress() && !canManageBattle()">
-            Aguarde o administrador gerar a primeira rodada.
-          </p>
-
-          <!-- Botão para admin gerar primeira rodada -->
-          <button
-            *ngIf="canManageBattle() && isTournamentInProgress()"
-            class="btn-generate-round"
-            (click)="gerarPrimeiraRodada()"
-            [disabled]="generatingRound"
-          >
-            <span *ngIf="!generatingRound">🎯 Gerar Primeira Rodada</span>
-            <span *ngIf="generatingRound">⏳ Gerando...</span>
-          </button>
-        </div>
-      </div>
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Carregando dados do torneio...</p>
     </div>
 
-    <!-- Trainers Tab -->
-    <div class="tab-content" *ngIf="isTabActive('trainers')">
-      <div class="trainers-container">
-        <h2 class="content-title">Treinadores Participantes</h2>
-        <p class="content-subtitle">
-          {{ treinadores.length }} treinador(es) inscrito(s)
-        </p>
+    <!-- Error State -->
+    <div class="error-container" *ngIf="error && !loading">
+      <p>❌ {{ error }}</p>
+      <button class="btn-back" (click)="goBack()">← Voltar</button>
+    </div>
 
-        <!-- Trainers List -->
-        <div class="trainers-grid" *ngIf="treinadores.length > 0">
+    <!-- Main Content -->
+    <div class="tournament-content" *ngIf="!loading && !error && torneio">
+
+      <!-- Tabs Navigation -->
+      <nav class="tabs-nav">
+        <button
+          class="tab-button"
+          [class.active]="isTabActive('bracket')"
+          (click)="setActiveTab('bracket')"
+        >
+          <span class="tab-icon">🏆</span>
+          <span class="tab-label">Chaveamento</span>
+        </button>
+        <button
+          class="tab-button"
+          [class.active]="isTabActive('trainers')"
+          (click)="setActiveTab('trainers')"
+        >
+          <span class="tab-icon">👥</span>
+          <span class="tab-label">Treinadores</span>
+        </button>
+      </nav>
+
+      <!-- Bracket Tab -->
+      <div class="tab-content" *ngIf="isTabActive('bracket')">
+        <div class="bracket-container">
+          <h2 class="content-title">Chaveamento do Torneio</h2>
+          <p class="content-subtitle">Acompanhe o caminho até a final</p>
+
+          <!-- Estatísticas Gerais do Torneio -->
           <div
-            class="trainer-card"
-            *ngFor="let treinador of treinadores; let i = index"
+            class="tournament-stats"
+            *ngIf="estatisticasTorneio.totalBatalhas > 0"
           >
-            <div class="trainer-header">
-              <div class="trainer-avatar">
-                <img
-                  src="/images/trainers/unknown.png"
-                  [alt]="treinador.nome"
-                  class="avatar-img"
-                />
-              </div>
-              <div class="trainer-info">
-                <h3 class="trainer-name">{{ treinador.nome }}</h3>
-                <p class="trainer-badges">
-                  � {{ getTotalVitorias(treinador.id) }} vitória(s) • ⚔️
-                  {{ getTotalBatalhas(treinador.id) }} batalha(s)
-                </p>
-                <p
-                  class="trainer-winrate"
-                  *ngIf="getTotalBatalhas(treinador.id) > 0"
-                >
-                  📊 {{ getPercentualVitorias(treinador.id) }}% de
-                  aproveitamento
-                </p>
-              </div>
-              <div class="trainer-rank">
-                <span class="rank-badge">#{{ i + 1 }}</span>
+            <div class="stat-card">
+              <span class="stat-icon">⚔️</span>
+              <div class="stat-info">
+                <span class="stat-value">{{ estatisticasTorneio.totalBatalhas }}</span>
+                <span class="stat-label">Total de Batalhas</span>
               </div>
             </div>
+            <div class="stat-card">
+              <span class="stat-icon">✅</span>
+              <div class="stat-info">
+                <span class="stat-value">{{ estatisticasTorneio.batalhasFinalizadas }}</span>
+                <span class="stat-label">Batalhas Finalizadas</span>
+              </div>
+            </div>
+            <div class="stat-card" *ngIf="estatisticasTorneio.duracaoMedia > 0">
+              <span class="stat-icon">⏱️</span>
+              <div class="stat-info">
+                <span class="stat-value">{{ estatisticasTorneio.duracaoMedia }}min</span>
+                <span class="stat-label">Duração Média</span>
+              </div>
+            </div>
+          </div>
 
-            <!-- Times do Treinador -->
-            <div class="trainer-teams">
-              <h4 class="teams-title">
-                Times ({{ getTeamsForTrainer(treinador.id).length }})
-              </h4>
+          <!-- Campeão do Torneio -->
+          <div class="champion-section" *ngIf="getCampeao()">
+            <div class="champion-card">
+              <div class="champion-crown">👑</div>
+              <h3 class="champion-title">Campeão do Torneio</h3>
+              <div class="champion-team">
+                <span class="champion-team-name">{{ getCampeao()?.nome }}</span>
+                <span class="champion-trainer" *ngIf="getCampeao()?.treinador">
+                  Treinador: {{ getCampeao()?.treinador?.nome }}
+                </span>
+              </div>
+            </div>
+          </div>
 
-              <!-- Tem times -->
+          <!-- Bracket Visual -->
+          <div class="bracket" *ngIf="bracketRounds.length > 0">
+            <div
+              class="bracket-round"
+              *ngFor="let round of bracketRounds; let i = index; let last = last"
+            >
+              <h3 class="round-title" [class.round-final]="last">{{ round.name }}</h3>
+
+              <!-- Botão para gerar próxima rodada (apenas para admin) -->
               <div
-                class="teams-list"
-                *ngIf="getTeamsForTrainer(treinador.id).length > 0"
+                class="round-actions"
+                *ngIf="
+                  canManageBattle() &&
+                  isRodadaCompleta(round.matches[0]?.batalha?.rodada || 0) &&
+                  !proximaRodadaJaExiste(round.matches[0]?.batalha?.rodada || 0) &&
+                  round.matches.length > 1
+                "
               >
-                <div
-                  class="team-item"
-                  *ngFor="let time of getTeamsForTrainer(treinador.id)"
+                <button
+                  class="btn-generate-round"
+                  (click)="gerarProximaRodada(round.matches[0]?.batalha?.rodada || 0)"
+                  [disabled]="generatingRound"
                 >
-                  <div
-                    class="team-item-header"
-                    (click)="toggleTimeExpansion(time.id)"
-                  >
-                    <span class="team-item-name">🛡️ {{ time.nome }}</span>
-                    <button class="btn-expand" type="button">
-                      {{
-                        isTimeExpandido(time.id)
-                          ? "▼ Ocultar"
-                          : "▶ Ver Pokémons"
-                      }}
-                    </button>
+                  <span *ngIf="!generatingRound">🎯 Gerar Próxima Rodada</span>
+                  <span *ngIf="generatingRound">⏳ Gerando...</span>
+                </button>
+              </div>
+
+              <div class="matches-container">
+                <div class="match-card" *ngFor="let match of round.matches">
+                  <div class="match-header">
+                    <span class="match-id">Partida #{{ match.id }}</span>
+                    <span class="match-status" *ngIf="match.winner">✅ Finalizada</span>
+                    <span class="match-status pending" *ngIf="!match.winner">⏳ Pendente</span>
                   </div>
 
-                  <!-- Pokémons detalhados carregados da view -->
-                  <div
-                    class="team-pokemons-detalhado"
-                    *ngIf="isTimeExpandido(time.id)"
-                  >
+                  <div class="match-teams">
                     <div
-                      class="pokemon-card"
-                      *ngFor="let pokemon of getPokemonsDoTime(time.id)"
+                      class="team"
+                      [class.winner]="match.winner?.id === match.team1?.id"
+                      [class.clickable]="canManageBattle() && !match.winner && match.team1"
+                      (click)="
+                        canManageBattle() && !match.winner && match.team1 && match.batalha
+                          ? openWinnerModal(match.batalha, match.team1)
+                          : null
+                      "
                     >
-                      <img
-                        [src]="
-                          pokemon.especieImagemUrl ||
-                          '/images/pokemon-placeholder.png'
-                        "
-                        [alt]="pokemon.pokemonApelido"
-                        class="pokemon-img"
-                      />
-                      <div class="pokemon-info">
-                        <span class="pokemon-apelido">{{
-                          pokemon.pokemonApelido
-                        }}</span>
-                        <span class="pokemon-especie">{{
-                          pokemon.especieNome
-                        }}</span>
-                        <span class="pokemon-tipos">{{ pokemon.tipos }}</span>
+                      <div class="team-info">
+                        <span class="team-name">{{ match.team1?.nome || 'TBD' }}</span>
+                        <span class="team-hint" *ngIf="canManageBattle() && !match.winner && match.team1">
+                          👆 Clique para definir vencedor
+                        </span>
                       </div>
+                      <span class="winner-badge" *ngIf="match.winner?.id === match.team1?.id">👑</span>
                     </div>
-                    <p
-                      class="loading-pokemons"
-                      *ngIf="getPokemonsDoTime(time.id).length === 0"
+
+                    <div class="vs-divider">VS</div>
+
+                    <div
+                      class="team"
+                      [class.winner]="match.winner?.id === match.team2?.id"
+                      [class.clickable]="canManageBattle() && !match.winner && match.team2"
+                      (click)="
+                        canManageBattle() && !match.winner && match.team2 && match.batalha
+                          ? openWinnerModal(match.batalha, match.team2)
+                          : null
+                      "
                     >
-                      Carregando pokémons...
-                    </p>
+                      <div class="team-info">
+                        <span class="team-name">{{ match.team2?.nome || 'TBD' }}</span>
+                        <span class="team-hint" *ngIf="canManageBattle() && !match.winner && match.team2">
+                          👆 Clique para definir vencedor
+                        </span>
+                      </div>
+                      <span class="winner-badge" *ngIf="match.winner?.id === match.team2?.id">👑</span>
+                    </div>
                   </div>
 
-                  <!-- Preview simples (quando não expandido) -->
-                  <div
-                    class="team-pokemons"
-                    *ngIf="
-                      !isTimeExpandido(time.id) &&
-                      time.pokemons &&
-                      time.pokemons.length > 0
-                    "
-                  >
-                    <span
-                      class="pokemon-badge"
-                      *ngFor="let pokemon of time.pokemons.slice(0, 6)"
-                    >
-                      {{ pokemon.apelido || pokemon.especie.nome }}
-                    </span>
+                  <div class="match-footer" *ngIf="match.batalha">
+                    <span class="match-date">📅 {{ formatDate(match.batalha.horarioInicio) }}</span>
                   </div>
                 </div>
               </div>
-              <p
-                class="no-teams"
-                *ngIf="getTeamsForTrainer(treinador.id).length === 0"
-              >
-                Nenhum time cadastrado
-              </p>
             </div>
           </div>
-        </div>
 
-        <!-- Empty State -->
-        <div class="empty-state" *ngIf="treinadores.length === 0">
-          <div class="empty-icon">👥</div>
-          <h3>Nenhum Participante</h3>
-          <p>Ainda não há treinadores inscritos neste torneio.</p>
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="bracketRounds.length === 0">
+            <div class="empty-icon">🏆</div>
+            <h3>Chaveamento em Preparação</h3>
+            <p *ngIf="!isTournamentInProgress()">
+              O chaveamento será gerado assim que as inscrições forem encerradas.
+            </p>
+            <p *ngIf="isTournamentInProgress() && !canManageBattle()">
+              Aguarde o administrador gerar a primeira rodada.
+            </p>
+            <button
+              *ngIf="canManageBattle() && isTournamentInProgress()"
+              class="btn-generate-round"
+              (click)="gerarPrimeiraRodada()"
+              [disabled]="generatingRound"
+            >
+              <span *ngIf="!generatingRound">🎯 Gerar Primeira Rodada</span>
+              <span *ngIf="generatingRound">⏳ Gerando...</span>
+            </button>
+          </div>
         </div>
       </div>
+
+      <!-- Trainers Tab -->
+      <div class="tab-content" *ngIf="isTabActive('trainers')">
+        <div class="trainers-container">
+          <h2 class="content-title">Treinadores Participantes</h2>
+          <p class="content-subtitle">{{ treinadores.length }} treinador(es) inscrito(s)</p>
+
+          <!-- Trainers List -->
+          <div class="trainers-grid" *ngIf="treinadores.length > 0">
+            <div
+              class="trainer-card"
+              *ngFor="let treinador of treinadores; let i = index"
+            >
+              <div class="trainer-header">
+                <div class="trainer-avatar">
+                  <img
+                    src="/images/trainers/unknown.png"
+                    [alt]="treinador.nome"
+                    class="avatar-img"
+                  />
+                </div>
+                <div class="trainer-info">
+                  <h3 class="trainer-name">{{ treinador.nome }}</h3>
+                  <p class="trainer-badges">
+                    🏆 {{ getTotalVitorias(treinador.id) }} vitória(s) • ⚔️ {{ getTotalBatalhas(treinador.id) }} batalha(s)
+                  </p>
+                  <p class="trainer-winrate" *ngIf="getTotalBatalhas(treinador.id) > 0">
+                    📊 {{ getPercentualVitorias(treinador.id) }}% de aproveitamento
+                  </p>
+                </div>
+                <div class="trainer-rank">
+                  <span class="rank-badge">#{{ i + 1 }}</span>
+                </div>
+              </div>
+
+              <!-- Times do Treinador -->
+              <div class="trainer-teams">
+                <h4 class="teams-title">Times ({{ getTeamsForTrainer(treinador.id).length }})</h4>
+
+                <div class="teams-list" *ngIf="getTeamsForTrainer(treinador.id).length > 0">
+                  <div
+                    class="team-item"
+                    *ngFor="let time of getTeamsForTrainer(treinador.id)"
+                  >
+                    <div class="team-item-header" (click)="toggleTimeExpansion(time.id)">
+                      <span class="team-item-name">🛡️ {{ time.nome }}</span>
+                      <button class="btn-expand" type="button">
+                        {{ isTimeExpandido(time.id) ? '▼ Ocultar' : '▶ Ver Pokémons' }}
+                      </button>
+                    </div>
+
+                    <!-- Pokémons detalhados -->
+                    <div class="team-pokemons-detalhado" *ngIf="isTimeExpandido(time.id)">
+                      <div
+                        class="pokemon-card"
+                        *ngFor="let pokemon of getPokemonsDoTime(time.id)"
+                      >
+                        <img
+                          [src]="pokemon.especieImagemUrl || '/images/pokemon-placeholder.png'"
+                          [alt]="pokemon.pokemonApelido"
+                          class="pokemon-img"
+                        />
+                        <div class="pokemon-info">
+                          <span class="pokemon-apelido">{{ pokemon.pokemonApelido }}</span>
+                          <span class="pokemon-especie">{{ pokemon.especieNome }}</span>
+                          <span class="pokemon-tipos">{{ pokemon.tipos }}</span>
+                        </div>
+                      </div>
+                      <p class="loading-pokemons" *ngIf="getPokemonsDoTime(time.id).length === 0">
+                        Carregando pokémons...
+                      </p>
+                    </div>
+
+                    <!-- Preview simples -->
+                    <div
+                      class="team-pokemons"
+                      *ngIf="!isTimeExpandido(time.id) && time.pokemons && time.pokemons.length > 0"
+                    >
+                      <span
+                        class="pokemon-badge"
+                        *ngFor="let pokemon of time.pokemons.slice(0, 6)"
+                      >
+                        {{ pokemon.apelido || pokemon.especie.nome }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="no-teams" *ngIf="getTeamsForTrainer(treinador.id).length === 0">
+                  Nenhum time cadastrado
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="treinadores.length === 0">
+            <div class="empty-icon">👥</div>
+            <h3>Nenhum Participante</h3>
+            <p>Ainda não há treinadores inscritos neste torneio.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -427,11 +340,11 @@
 
         <div class="battle-info">
           <div class="battle-detail">
-            <span class="detail-label">Batalha:</span>
+            <span class="detail-label">Batalha</span>
             <span class="detail-value">#{{ selectedBatalha?.id }}</span>
           </div>
           <div class="battle-detail">
-            <span class="detail-label">Rodada:</span>
+            <span class="detail-label">Rodada</span>
             <span class="detail-value">{{ selectedBatalha?.rodada }}</span>
           </div>
         </div>
@@ -455,18 +368,10 @@
       </div>
 
       <div class="modal-footer">
-        <button
-          class="btn-modal btn-cancel"
-          (click)="closeWinnerModal()"
-          [disabled]="settingWinner"
-        >
+        <button class="btn-modal btn-cancel" (click)="closeWinnerModal()" [disabled]="settingWinner">
           Cancelar
         </button>
-        <button
-          class="btn-modal btn-confirm"
-          (click)="confirmWinner()"
-          [disabled]="settingWinner"
-        >
+        <button class="btn-modal btn-confirm" (click)="confirmWinner()" [disabled]="settingWinner">
           <span *ngIf="!settingWinner">✓ Confirmar Vencedor</span>
           <span *ngIf="settingWinner">⏳ Processando...</span>
         </button>
@@ -479,28 +384,21 @@
     <div class="modal-container">
       <div class="modal-header">
         <h2 class="modal-title">
-          {{
-            currentRodadaToGenerate === 0
-              ? "⚙️ Gerar Primeira Rodada"
-              : "⚙️ Modo de Geração da Próxima Rodada"
-          }}
+          {{ currentRodadaToGenerate === 0 ? '⚙️ Gerar Primeira Rodada' : '⚙️ Modo de Geração da Próxima Rodada' }}
         </h2>
-        <button class="btn-close-modal" (click)="closeGenerationModeModal()">
-          ✕
-        </button>
+        <button class="btn-close-modal" (click)="closeGenerationModeModal()">✕</button>
       </div>
 
       <div class="modal-content">
         <p class="modal-description">
           {{
             currentRodadaToGenerate === 0
-              ? "Escolha como deseja parear os times inscritos:"
-              : "Escolha como deseja parear os vencedores para a próxima rodada:"
+              ? 'Escolha como deseja parear os times inscritos:'
+              : 'Escolha como deseja parear os vencedores para a próxima rodada:'
           }}
         </p>
 
         <div class="mode-selection">
-          <!-- Ordem atual: apenas para rodadas após a primeira -->
           <button
             *ngIf="currentRodadaToGenerate !== 0"
             class="mode-option"
@@ -514,7 +412,6 @@
             </div>
           </button>
 
-          <!-- Aleatório: sempre disponível -->
           <button
             class="mode-option"
             (click)="confirmarGeracaoRodada(true)"
@@ -526,8 +423,8 @@
               <p>
                 {{
                   currentRodadaToGenerate === 0
-                    ? "Os times serão embaralhados e pareados aleatoriamente"
-                    : "Os vencedores serão embaralhados e pareados aleatoriamente"
+                    ? 'Os times serão embaralhados e pareados aleatoriamente'
+                    : 'Os vencedores serão embaralhados e pareados aleatoriamente'
                 }}
               </p>
             </div>
@@ -535,8 +432,7 @@
         </div>
 
         <p class="modal-info" *ngIf="currentRodadaToGenerate !== 0">
-          💡 A Rodada {{ currentRodadaToGenerate }} está completa e pronta para
-          avançar.
+          💡 A Rodada {{ currentRodadaToGenerate }} está completa e pronta para avançar.
         </p>
         <p class="modal-info" *ngIf="currentRodadaToGenerate === 0">
           💡 Gerando a primeira rodada com os times inscritos.
@@ -555,8 +451,4 @@
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="tournament-footer">
-    <p>Pokémon Tournament © 2026 - Battle Arena</p>
-  </footer>
 </div>

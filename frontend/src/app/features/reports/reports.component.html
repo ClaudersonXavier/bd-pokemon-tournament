@@ -1,13 +1,12 @@
 <div class="reports-page">
   <div class="reports-bg"></div>
 
-  <header class="reports-header">
-    <div>
-      <h1>Relatórios</h1>
-      <p>Consulta das views de estatísticas do sistema</p>
-    </div>
-    <button class="btn-back" (click)="voltarHome()">Voltar para Home</button>
-  </header>
+  <app-page-header
+    title="Relatórios"
+    subtitle="Consulta das views de estatísticas do sistema"
+    [showBack]="true"
+    (backClick)="voltarHome()">
+  </app-page-header>
 
   <main class="reports-content">
     <section class="panel">

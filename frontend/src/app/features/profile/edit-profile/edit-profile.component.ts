@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../../core/services/auth.service';
+import { AppRoutes, REDIRECT_DELAY_MS, NAME_MIN_LENGTH, TRAINER_AVATAR_KEY } from '../../../core/constants';
 
 @Component({
   selector: 'app-edit-profile',
@@ -37,7 +38,7 @@ export class EditProfileComponent implements OnInit {
     private router: Router
   ) {
     this.profileForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', [Validators.required, Validators.minLength(NAME_MIN_LENGTH)]],
       email: ['', [Validators.required, Validators.email]]
     });
   }
@@ -46,7 +47,7 @@ export class EditProfileComponent implements OnInit {
     this.currentUser = this.authService.currentUser();
 
     if (!this.currentUser) {
-      this.router.navigate(['/login']);
+      this.router.navigate([AppRoutes.LOGIN]);
       return;
     }
 
@@ -87,18 +88,18 @@ export class EditProfileComponent implements OnInit {
     };
 
     this.authService.setAuthUser(updatedUser);
-    localStorage.setItem(this.getTrainerStorageKey(updatedUser), this.selectedTrainer);
+    localStorage.setItem(TRAINER_AVATAR_KEY(updatedUser.id || updatedUser.email || 'default'), this.selectedTrainer);
 
     this.isSaving = false;
     this.saveSuccess = 'Perfil atualizado com sucesso!';
 
     setTimeout(() => {
-      this.router.navigate(['/home']);
-    }, 1200);
+      this.router.navigate([AppRoutes.HOME]);
+    }, REDIRECT_DELAY_MS);
   }
 
   cancel(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate([AppRoutes.HOME]);
   }
 
   private loadSelectedTrainer(): void {
@@ -106,14 +107,9 @@ export class EditProfileComponent implements OnInit {
       return;
     }
 
-    const savedTrainer = localStorage.getItem(this.getTrainerStorageKey(this.currentUser));
+    const savedTrainer = localStorage.getItem(TRAINER_AVATAR_KEY(this.currentUser.id || this.currentUser.email || 'default'));
     if (savedTrainer && this.trainerOptions.includes(savedTrainer)) {
       this.selectedTrainer = savedTrainer;
     }
-  }
-
-  private getTrainerStorageKey(user: User): string {
-    const userId = user.id || user.email || 'default';
-    return `trainer-avatar-${userId}`;
   }
 }

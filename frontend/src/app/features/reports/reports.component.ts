@@ -11,11 +11,13 @@ import {
   Torneio,
   TreinadorDesempenho,
 } from '../../core/models';
+import { AppRoutes } from '../../core/constants';
+import { PageHeaderComponent } from '../../shared';
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PageHeaderComponent],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.css',
 })
@@ -51,7 +53,7 @@ export class ReportsComponent implements OnInit {
   }
 
   voltarHome(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate([AppRoutes.HOME]);
   }
 
   carregarEntidadesBase(): void {
