@@ -30,6 +30,9 @@ public class TorneioService {
     private TreinadorRepository treinadorRepository;
 
     public Torneio salvar(Torneio torneio) {
+        if (torneio.getStatus() == null) {
+            torneio.setStatus(StatusTorneio.ABERTO);
+        }
         return torneioRepository.save(torneio);
     }
 

@@ -340,6 +340,7 @@ export class AdminPanelComponent implements OnInit {
       dataEncerramentoInscricoes: this.newTournament.registrationEndDate,
       dataInicio: this.newTournament.startDate,
       dataFim: this.newTournament.endDate,
+      status: 'ABERTO',
     };
 
     this.torneioService.criarTorneio(torneioParaSalvar).subscribe({
