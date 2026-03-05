@@ -6,6 +6,9 @@ import { AuthService, User } from '../../core/services/auth.service';
 import { AppRoutes, REDIRECT_DELAY_MS, TRAINER_AVATAR_KEY } from '../../core/constants';
 import { AdminPanelComponent } from './admin-panel/admin-panel.component';
 import { TournamentListComponent } from './tournament-list/tournament-list.component';
+import { EstatisticasService } from '../../core/services/estatisticas.service';
+import { TreinadorDesempenho } from '../../core/models/estatisticas';
+import { forkJoin } from 'rxjs';
 
 type Tab = 'tournaments' | 'profile' | 'admin';
 
@@ -22,6 +25,11 @@ export class HomeComponent implements OnInit {
   isAdmin = false;
   selectedTrainer = 'unknown.png';
   showChangePassword = false;
+  profileStats = {
+    totalTorneios: 0,
+    totalVitorias: 0,
+    taxaVitorias: 0,
+  };
 
   // Alterar Senha
   passwordForm = {
@@ -36,6 +44,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private estatisticasService: EstatisticasService,
   ) {}
 
   ngOnInit(): void {
@@ -49,6 +58,7 @@ export class HomeComponent implements OnInit {
 
     this.isAdmin = this.currentUser.admin;
     this.loadSelectedTrainer();
+    this.loadProfileStats();
   }
 
   // ─── Alterar Senha ───────────────────────────────────────────────────────────
@@ -171,5 +181,51 @@ export class HomeComponent implements OnInit {
     if (savedTrainer) {
       this.selectedTrainer = savedTrainer;
     }
+  }
+
+  private loadProfileStats(): void {
+    if (!this.currentUser) return;
+    const treinadorId = this.currentUser.id;
+
+    forkJoin({
+      desempenho: this.estatisticasService.obterDesempenhoGeralTreinador(treinadorId),
+      titulos: this.estatisticasService.obterTitulosTreinador(treinadorId),
+    }).subscribe({
+      next: ({ desempenho, titulos }) => {
+        this.profileStats = this.aggregateProfileStats(
+          desempenho,
+          titulos.totalTitulos || 0,
+        );
+      },
+      error: (error) => {
+        console.error('Erro ao carregar estatísticas do perfil:', error);
+        this.profileStats = {
+          totalTorneios: 0,
+          totalVitorias: 0,
+          taxaVitorias: 0,
+        };
+      },
+    });
+  }
+
+  private aggregateProfileStats(
+    dados: TreinadorDesempenho[],
+    totalTitulos: number,
+  ): {
+    totalTorneios: number;
+    totalVitorias: number;
+    taxaVitorias: number;
+  } {
+    const totalTorneios = new Set(dados.map((item) => item.torneioId)).size;
+    const taxaVitorias =
+      totalTorneios > 0
+        ? Math.round((totalTitulos / totalTorneios) * 100 * 100) / 100
+        : 0;
+
+    return {
+      totalTorneios,
+      totalVitorias: totalTitulos,
+      taxaVitorias,
+    };
   }
 }
