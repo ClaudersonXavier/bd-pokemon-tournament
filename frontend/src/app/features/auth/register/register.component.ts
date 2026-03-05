@@ -10,6 +10,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { AppRoutes, REDIRECT_DELAY_MS, PASSWORD_MIN_LENGTH, NAME_MIN_LENGTH } from '../../../core/constants';
 
 @Component({
   selector: 'app-register',
@@ -34,9 +35,9 @@ export class RegisterComponent {
   ) {
     this.registerForm = this.fb.group(
       {
-        nome: ['', [Validators.required, Validators.minLength(3)]],
+        nome: ['', [Validators.required, Validators.minLength(NAME_MIN_LENGTH)]],
         email: ['', [Validators.required, Validators.email]],
-        senha: ['', [Validators.required, Validators.minLength(6)]],
+        senha: ['', [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH)]],
         confirmarSenha: ['', [Validators.required]],
       },
       { validators: this.senhasIguaisValidator },
@@ -108,8 +109,8 @@ export class RegisterComponent {
           this.isLoading = false;
           this.isSubmitting = false;
           // O AuthService já armazenou o token; redireciona direto para home
-          this.router.navigate(['/home']);
-        }, 1000);
+          this.router.navigate([AppRoutes.HOME]);
+        }, REDIRECT_DELAY_MS);
       },
       error: (err) => {
         console.error('Erro no registro:', err);

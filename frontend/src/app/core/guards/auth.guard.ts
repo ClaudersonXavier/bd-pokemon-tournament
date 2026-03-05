@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { AppRoutes } from '../constants';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
@@ -11,7 +12,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   }
 
   // Redirect to login page if not authenticated
-  router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+  router.navigate([AppRoutes.LOGIN], { queryParams: { returnUrl: state.url } });
   return false;
 };
 
@@ -22,7 +23,7 @@ export const loginGuard: CanActivateFn = (route, state) => {
 
   // If user is already authenticated, redirect to home
   if (authService.isAuthenticated()) {
-    router.navigate(['/home']);
+    router.navigate([AppRoutes.HOME]);
     return false;
   }
 
