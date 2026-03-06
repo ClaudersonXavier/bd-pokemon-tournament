@@ -5,6 +5,7 @@ import com.ufape.projetobanquinhobd.entities.Time;
 import com.ufape.projetobanquinhobd.entities.Torneio;
 import com.ufape.projetobanquinhobd.services.BatalhaService;
 import com.ufape.projetobanquinhobd.services.TorneioService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+
+import com.ufape.projetobanquinhobd.entities.StatusTorneio;
 
 @Component
 public class BatalhaSeeder {
@@ -37,21 +40,20 @@ public class BatalhaSeeder {
         System.out.println("✓ Encontrados " + torneios.size() + " torneios");
         System.out.println();
 
-        Date hoje = new Date();
         int totalBatalhasCriadas = 0;
         int torneiosProcessados = 0;
 
         for (Torneio torneio : torneios) {
             torneiosProcessados++;
             
-            // Determinar estado do torneio
-            String estado = determinarEstado(torneio, hoje);
+            // Usar o status do torneio
+            StatusTorneio status = torneio.getStatus();
             int numTimes = torneio.getTimes().size();
             
             System.out.print("[" + torneiosProcessados + "/" + torneios.size() + "] " + 
-                           torneio.getNome() + " (" + estado + ", " + numTimes + " times)... ");
+                           torneio.getNome() + " (" + status + ", " + numTimes + " times)... ");
 
-            if (estado.equals("ABERTO")) {
+            if (status == StatusTorneio.ABERTO) {
                 System.out.println("⊘ Sem batalhas (aberto para inscrição)");
                 continue;
             }
@@ -64,10 +66,10 @@ public class BatalhaSeeder {
             try {
                 int batalhasCriadas = 0;
                 
-                if (estado.equals("ENCERRADO")) {
+                if (status == StatusTorneio.ENCERRADO) {
                     // Criar TODAS as batalhas
                     batalhasCriadas = criarBatalhasCompletas(torneio);
-                } else if (estado.equals("EM_ANDAMENTO")) {
+                } else if (status == StatusTorneio.EM_ANDAMENTO) {
                     // Criar METADE das batalhas
                     batalhasCriadas = criarBatalhasParciais(torneio);
                 }
@@ -85,16 +87,6 @@ public class BatalhaSeeder {
         System.out.println("  - Torneios encerrados: todas as rodadas completas");
         System.out.println("  - Torneios em andamento: apenas primeira rodada");
         System.out.println("  - Torneios abertos: sem batalhas");
-    }
-
-    private String determinarEstado(Torneio torneio, Date hoje) {
-        if (hoje.before(torneio.getDataEncerramentoInscricoes())) {
-            return "ABERTO";
-        } else if (hoje.after(torneio.getDataFim())) {
-            return "ENCERRADO";
-        } else {
-            return "EM_ANDAMENTO";
-        }
     }
 
     private int criarBatalhasCompletas(Torneio torneio) {
